@@ -92,7 +92,7 @@
     "listening": "Luisteren...",
     "processing": "Verwerken...",
     "holdToSpeak": "Houd ingedrukt om te spreken",
-    "notSupported": "Spraakinvoer niet ondersteund in deze browser",
+    "notSupported": "Spraakinvoer vereist HTTPS. Gebruik een beveiligde verbinding.",
     "error": "Dictatie niet beschikbaar. Typ in plaats daarvan of probeer een andere browser."
   }
 }

@@ -193,7 +193,19 @@ git clone https://github.com/SimonvanAs/tss_ppm.git
 cd tss_ppm
 ```
 
-### Step 3: Build and start the containers
+### Step 3: Configure your domain
+
+Create a `.env` file with your domain:
+
+```bash
+echo "DOMAIN=your-domain.com" > .env
+```
+
+> **Note:** Replace `your-domain.com` with your actual domain. Make sure your domain's DNS A record points to your VPS IP address.
+
+For local testing without a domain, you can skip this step (defaults to `localhost`).
+
+### Step 4: Build and start the containers
 
 ```bash
 # Build and start in detached mode
@@ -201,14 +213,15 @@ docker compose up -d --build
 ```
 
 This will:
-1. Build the frontend container (React app served by nginx)
-2. Build the Whisper container (Python speech-to-text server)
-3. Download the Whisper AI model (~500MB, first time only)
-4. Start both services
+1. Start Caddy (reverse proxy with automatic HTTPS)
+2. Build the frontend container (React app served by nginx)
+3. Build the Whisper container (Python speech-to-text server)
+4. Download the Whisper AI model (~500MB, first time only)
+5. Automatically obtain SSL certificate from Let's Encrypt
 
 **Note:** First build takes 5-10 minutes. The Whisper model download happens during the build.
 
-### Step 4: Verify deployment
+### Step 5: Verify deployment
 
 ```bash
 # Check container status
@@ -218,21 +231,27 @@ docker compose ps
 docker compose logs -f
 
 # Test the application
-curl http://localhost
+curl https://your-domain.com
 ```
 
-The application is now available at `http://your-vps-ip`
+The application is now available at `https://your-domain.com` with automatic HTTPS!
 
 ### Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│                   nginx (port 80)                │
-│  ┌─────────────────┐    ┌────────────────────┐  │
-│  │  Static Files   │    │  /transcribe proxy │  │
-│  │  (React App)    │    │  → whisper:3001    │  │
-│  └─────────────────┘    └────────────────────┘  │
-└─────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│              Caddy (ports 80/443)                   │
+│         Automatic HTTPS + Reverse Proxy             │
+└─────────────────────────────────────────────────────┘
+                           │
+                           ▼
+┌─────────────────────────────────────────────────────┐
+│                   nginx (internal)                   │
+│  ┌─────────────────┐    ┌────────────────────┐      │
+│  │  Static Files   │    │  /transcribe proxy │      │
+│  │  (React App)    │    │  → whisper:3001    │      │
+│  └─────────────────┘    └────────────────────┘      │
+└─────────────────────────────────────────────────────┘
                            │
                            ▼
               ┌─────────────────────────┐
@@ -284,38 +303,6 @@ docker compose up -d --build
 # Clean up old images (optional)
 docker image prune -f
 ```
-
-### Setting up HTTPS (Optional)
-
-For production, you should use HTTPS. Here's a quick setup with Caddy as a reverse proxy:
-
-```bash
-# Install Caddy
-sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-sudo apt update
-sudo apt install caddy
-
-# Edit Caddyfile
-sudo nano /etc/caddy/Caddyfile
-```
-
-Add this configuration (replace `your-domain.com`):
-
-```
-your-domain.com {
-    reverse_proxy localhost:80
-}
-```
-
-Then restart Caddy:
-
-```bash
-sudo systemctl restart caddy
-```
-
-Caddy will automatically obtain and renew SSL certificates.
 
 ### GPU Support (Optional)
 

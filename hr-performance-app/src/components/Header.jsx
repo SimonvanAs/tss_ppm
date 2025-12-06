@@ -61,6 +61,7 @@ export function Header() {
       <header className="header">
         <div className="header-content">
           <div className="header-left">
+            <img src="/TSS_logo.png" alt="Total Specific Solutions" className="header-logo" />
             <h1 className="header-title">{t('app.title')}</h1>
           </div>
 

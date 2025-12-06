@@ -92,7 +92,7 @@
     "listening": "Escuchando...",
     "processing": "Procesando...",
     "holdToSpeak": "Mantener presionado para hablar",
-    "notSupported": "Entrada de voz no soportada en este navegador",
+    "notSupported": "La entrada de voz requiere HTTPS. Use una conexión segura.",
     "error": "Dictado no disponible. Por favor escriba o pruebe con otro navegador."
   }
 }

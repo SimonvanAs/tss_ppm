@@ -110,7 +110,14 @@ export function useVoiceInput({ language = 'en-US', onResult, onError } = {}) {
   }, [language]);
 
   useEffect(() => {
-    const supported = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
+    // Check for secure context (HTTPS or localhost) - required for getUserMedia
+    const isSecureContext = window.isSecureContext ||
+      window.location.protocol === 'https:' ||
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1';
+
+    const supported = isSecureContext &&
+      !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia && window.MediaRecorder);
     setIsSupported(supported);
   }, []);
 

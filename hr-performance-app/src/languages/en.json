@@ -92,7 +92,7 @@
     "listening": "Listening...",
     "processing": "Processing...",
     "holdToSpeak": "Hold to speak",
-    "notSupported": "Voice input not supported in this browser",
+    "notSupported": "Voice input requires HTTPS. Please use a secure connection.",
     "error": "Dictation unavailable. Please type instead or try a different browser."
   }
 }

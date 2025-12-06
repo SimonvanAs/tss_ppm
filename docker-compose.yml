@@ -1,17 +1,30 @@
-version: '3.8'
-
 services:
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - frontend
+    networks:
+      - tss-ppm
+    environment:
+      - DOMAIN=${DOMAIN:-localhost}
+
   frontend:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    ports:
-      - "80:80"
-    depends_on:
-      - whisper
     restart: unless-stopped
     networks:
       - tss-ppm
+    depends_on:
+      - whisper
 
   whisper:
     build:
@@ -40,3 +53,5 @@ networks:
 
 volumes:
   whisper-cache:
+  caddy-data:
+  caddy-config:

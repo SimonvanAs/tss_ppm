@@ -8,7 +8,10 @@
       "Bash(npm run build:*)",
       "Bash(where:*)",
       "Bash(git add:*)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nImplement Phase 1 MVP of TSS PPM Generator\n\nFeatures implemented:\n- React 18 frontend with Vite build system\n- 9-grid performance scoring (WHAT-axis x HOW-axis)\n- Multi-language support (EN, NL, ES) with flag icons\n- Hold-to-dictate voice input using local Whisper server\n- DOCX report generation\n- Session-based auto-save with 14-day retention\n- Drag-and-drop goal reordering\n- VETO rule for competency scoring\n\nUI improvements:\n- Pink gradient background with magenta accents\n- SVG flag icons for language selector\n- Visual feedback for recording/processing states\n- Error tooltips for voice input failures\n- Version label display\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []

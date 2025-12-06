@@ -1,0 +1,20 @@
+{$DOMAIN:localhost} {
+    # Reverse proxy to frontend nginx
+    reverse_proxy frontend:80
+
+    # Enable compression
+    encode gzip
+
+    # Security headers
+    header {
+        X-Content-Type-Options nosniff
+        X-Frame-Options DENY
+        Referrer-Policy strict-origin-when-cross-origin
+    }
+
+    # Logging
+    log {
+        output stdout
+        format console
+    }
+}

@@ -1,3 +1,5 @@
+![Total Specific Solutions](TSS_logo.png)
+
 # TSS PPM Generator
 
 A web-based HR Performance Review application for Total Specific Solutions. This tool replaces the Excel-based annual employee performance review process with a modern, user-friendly web interface.

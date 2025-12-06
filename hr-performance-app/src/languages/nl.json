@@ -1,0 +1,98 @@
+{
+  "app": {
+    "title": "Beoordelingsgesprek",
+    "progress": "Voltooid",
+    "sessionCode": "Sessiecode",
+    "copyCode": "Kopiëren",
+    "emailCode": "E-mail",
+    "resumeSession": "Sessie hervatten",
+    "enterCode": "Voer sessiecode in",
+    "resume": "Hervatten",
+    "cancel": "Annuleren",
+    "codeCopied": "Code gekopieerd!",
+    "invalidCode": "Ongeldige of verlopen sessiecode",
+    "sessionExpired": "Sessie verlopen"
+  },
+  "employee": {
+    "title": "Medewerkersinformatie",
+    "name": "Naam medewerker",
+    "namePlaceholder": "Voer naam medewerker in",
+    "role": "Functietitel / Rol",
+    "rolePlaceholder": "Voer functietitel in",
+    "businessUnit": "Business Unit",
+    "businessUnitPlaceholder": "Voer business unit in",
+    "tovLevel": "TOV-Niveau",
+    "selectLevel": "Selecteer niveau",
+    "reviewDate": "Beoordelingsdatum",
+    "managerName": "Naam manager",
+    "managerPlaceholder": "Voer naam manager in"
+  },
+  "summary": {
+    "title": "Samenvatting",
+    "placeholder": "Voer samenvatting van prestaties in..."
+  },
+  "whatAxis": {
+    "title": "WAT-As: Doelen & Resultaten",
+    "addGoal": "Doel toevoegen",
+    "goalTitle": "Doeltitel",
+    "goalTitlePlaceholder": "SMART geformuleerd doel",
+    "description": "Beschrijving",
+    "descriptionPlaceholder": "Beschrijf het doel...",
+    "score": "Score",
+    "weight": "Weging",
+    "totalWeight": "Totale weging",
+    "weightError": "Wegingen moeten optellen tot 100%",
+    "maxGoals": "Maximum van 9 doelen bereikt",
+    "removeGoal": "Doel verwijderen",
+    "dragToReorder": "Sleep om te herschikken"
+  },
+  "howAxis": {
+    "title": "HOE-As: Competenties",
+    "selectedLevel": "Geselecteerd niveau",
+    "competencies": "Competenties voor niveau",
+    "vetoWarning": "VETO: Elke score van 1 zet de HOE-score op 1.00"
+  },
+  "grid": {
+    "title": "Prestatiematrix",
+    "whatScore": "WAT Score",
+    "howScore": "HOE Score",
+    "position": "Uw positie"
+  },
+  "selfAssessment": {
+    "title": "Zelfevaluatie medewerker",
+    "placeholder": "Voer de zelfevaluatie van de medewerker in zoals besproken tijdens het beoordelingsgesprek..."
+  },
+  "comments": {
+    "title": "Aanvullende opmerkingen",
+    "placeholder": "Voer aanvullende notities, ontwikkelgebieden, actiepunten in..."
+  },
+  "actions": {
+    "preview": "Voorbeeld rapport",
+    "saveDraft": "Opslaan als concept",
+    "download": "Definitief rapport downloaden",
+    "clearSession": "Sessie wissen",
+    "confirmClear": "Weet u zeker dat u deze sessie wilt wissen? Alle gegevens gaan verloren."
+  },
+  "validation": {
+    "required": "Dit veld is verplicht",
+    "weightsSum": "Wegingen moeten exact optellen tot 100%",
+    "allGoalsScored": "Alle doelen moeten worden gescoord",
+    "allGoalsWeighted": "Alle doelen met inhoud moeten een weging hebben",
+    "selectTovLevel": "Selecteer een TOV-Niveau",
+    "formIncomplete": "Vul alle verplichte velden in voordat u downloadt"
+  },
+  "scores": {
+    "1": "Onder verwachting",
+    "2": "Voldoet aan verwachting",
+    "3": "Overtreft verwachting"
+  },
+  "voice": {
+    "start": "Start spraakinvoer",
+    "stop": "Stop spraakinvoer",
+    "listening": "Luisteren...",
+    "processing": "Verwerken...",
+    "holdToSpeak": "Houd ingedrukt om te spreken",
+    "notSupported": "Spraakinvoer niet ondersteund in deze browser",
+    "error": "Dictatie niet beschikbaar. Typ in plaats daarvan of probeer een andere browser."
+  }
+}

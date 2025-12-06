@@ -1,0 +1,11 @@
+.comments .textarea-with-voice {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.comments textarea {
+  flex: 1;
+  resize: vertical;
+  min-height: 120px;
+}

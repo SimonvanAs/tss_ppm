@@ -1,0 +1,209 @@
+.how-axis .no-level-selected {
+  padding: 40px;
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+  color: #666;
+}
+
+.level-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding: 16px;
+  background: #f0f4f8;
+  border-radius: 8px;
+  border-left: 4px solid #004A91;
+}
+
+.level-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.level-label {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.level-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #004A91;
+  background: white;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 2px solid #004A91;
+}
+
+.level-description {
+  margin: 0;
+  color: #333;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.veto-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  color: #856404;
+  font-size: 0.875rem;
+}
+
+.warning-icon {
+  font-size: 1.25rem;
+}
+
+.competencies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.competency-item {
+  background: #f8f9fa;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.competency-header {
+  margin-bottom: 12px;
+}
+
+.competency-category {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.category-name {
+  font-weight: 600;
+  color: #004A91;
+}
+
+.subcategory-name {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.subcategory-name::before {
+  content: '›';
+  margin-right: 8px;
+  color: #999;
+}
+
+.competency-content {
+  margin-bottom: 16px;
+}
+
+.competency-title {
+  margin: 0 0 12px;
+  color: #333;
+  line-height: 1.5;
+}
+
+.competency-indicators {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.competency-indicators summary {
+  cursor: pointer;
+  color: #004A91;
+  font-weight: 500;
+  padding: 8px 0;
+}
+
+.competency-indicators summary:hover {
+  text-decoration: underline;
+}
+
+.competency-indicators ul {
+  margin: 8px 0 0 20px;
+  padding: 0;
+}
+
+.competency-indicators li {
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+
+.competency-scoring {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.score-label {
+  font-weight: 500;
+  color: #333;
+}
+
+.score-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.score-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 2px solid #ddd;
+  border-radius: 50%;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.score-button:hover {
+  border-color: #004A91;
+  color: #004A91;
+}
+
+.score-button.selected {
+  background: #004A91;
+  border-color: #004A91;
+  color: white;
+}
+
+.score-button.selected.veto {
+  background: #DC3545;
+  border-color: #DC3545;
+}
+
+.score-description {
+  font-size: 0.875rem;
+  color: #666;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .level-info {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .competency-scoring {
+    flex-wrap: wrap;
+  }
+}

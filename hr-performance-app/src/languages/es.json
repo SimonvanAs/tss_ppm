@@ -1,0 +1,98 @@
+{
+  "app": {
+    "title": "Evaluación de Desempeño",
+    "progress": "Completo",
+    "sessionCode": "Código de sesión",
+    "copyCode": "Copiar",
+    "emailCode": "Correo",
+    "resumeSession": "Reanudar sesión",
+    "enterCode": "Ingrese código de sesión",
+    "resume": "Reanudar",
+    "cancel": "Cancelar",
+    "codeCopied": "¡Código copiado!",
+    "invalidCode": "Código de sesión inválido o expirado",
+    "sessionExpired": "Sesión expirada"
+  },
+  "employee": {
+    "title": "Información del Empleado",
+    "name": "Nombre del empleado",
+    "namePlaceholder": "Ingrese nombre del empleado",
+    "role": "Título de función / Rol",
+    "rolePlaceholder": "Ingrese título de función",
+    "businessUnit": "Unidad de Negocio",
+    "businessUnitPlaceholder": "Ingrese unidad de negocio",
+    "tovLevel": "Nivel TOV",
+    "selectLevel": "Seleccione nivel",
+    "reviewDate": "Fecha de evaluación",
+    "managerName": "Nombre del gerente",
+    "managerPlaceholder": "Ingrese nombre del gerente"
+  },
+  "summary": {
+    "title": "Resumen Ejecutivo",
+    "placeholder": "Ingrese resumen ejecutivo del desempeño..."
+  },
+  "whatAxis": {
+    "title": "Eje QUÉ: Objetivos y Resultados",
+    "addGoal": "Agregar objetivo",
+    "goalTitle": "Título del objetivo",
+    "goalTitlePlaceholder": "Objetivo formulado SMART",
+    "description": "Descripción",
+    "descriptionPlaceholder": "Describa el objetivo...",
+    "score": "Puntuación",
+    "weight": "Peso",
+    "totalWeight": "Peso total",
+    "weightError": "Los pesos deben sumar 100%",
+    "maxGoals": "Máximo de 9 objetivos alcanzado",
+    "removeGoal": "Eliminar objetivo",
+    "dragToReorder": "Arrastre para reordenar"
+  },
+  "howAxis": {
+    "title": "Eje CÓMO: Competencias",
+    "selectedLevel": "Nivel seleccionado",
+    "competencies": "Competencias para nivel",
+    "vetoWarning": "VETO: Cualquier puntuación de 1 establecerá la puntuación CÓMO en 1.00"
+  },
+  "grid": {
+    "title": "Matriz de Desempeño",
+    "whatScore": "Puntuación QUÉ",
+    "howScore": "Puntuación CÓMO",
+    "position": "Su posición"
+  },
+  "selfAssessment": {
+    "title": "Autoevaluación del Empleado",
+    "placeholder": "Ingrese la autoevaluación del empleado según lo discutido durante la reunión de evaluación..."
+  },
+  "comments": {
+    "title": "Comentarios Adicionales",
+    "placeholder": "Ingrese notas adicionales, áreas de desarrollo, elementos de acción..."
+  },
+  "actions": {
+    "preview": "Vista previa del informe",
+    "saveDraft": "Guardar como borrador",
+    "download": "Descargar informe final",
+    "clearSession": "Limpiar sesión",
+    "confirmClear": "¿Está seguro de que desea limpiar esta sesión? Todos los datos se perderán."
+  },
+  "validation": {
+    "required": "Este campo es obligatorio",
+    "weightsSum": "Los pesos deben sumar exactamente 100%",
+    "allGoalsScored": "Todos los objetivos deben ser puntuados",
+    "allGoalsWeighted": "Todos los objetivos con contenido deben tener un peso",
+    "selectTovLevel": "Por favor seleccione un Nivel TOV",
+    "formIncomplete": "Por favor complete todos los campos obligatorios antes de descargar"
+  },
+  "scores": {
+    "1": "Por debajo de las expectativas",
+    "2": "Cumple las expectativas",
+    "3": "Supera las expectativas"
+  },
+  "voice": {
+    "start": "Iniciar entrada de voz",
+    "stop": "Detener entrada de voz",
+    "listening": "Escuchando...",
+    "processing": "Procesando...",
+    "holdToSpeak": "Mantener presionado para hablar",
+    "notSupported": "Entrada de voz no soportada en este navegador",
+    "error": "Dictado no disponible. Por favor escriba o pruebe con otro navegador."
+  }
+}

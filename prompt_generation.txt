@@ -1,0 +1,320 @@
+I want to build an extensive prompt to build a webapp for my HR department.
+
+We have a yearly scoring process and that is now donw in Excel. I want to build an web-app where managers can talk to the browser to fill all the required fields and it outputs a downloadable file that can be altered but has great markup
+
+The items to score on should be flexible as they change yearly
+
+Scoring is done giving a 1, 2 or 3, there should be an automated calculator for the scores. There are two axis for the scores: WHAT-ax and HOW-ax (so in essence a nine grid)
+
+For the WHAT-ax scoring there should be open fields, maximum 9, where text can be entered by a manager, the HOW-ax is pre-filled based on 4 levels: I have the texts for those
+
+Also the app should support three languages (both in speech input and text): Spanish, English and Dutch
+
+Changes should be saved automatically, and when not finished a code should be displayed to continue where left off
+
+The website should have a clean look, with magenta and navy blue accents
+
+1. WHAT-axis Criteria
+
+
+
+
+
+Should there be default/template criteria that managers can start with, or completely blank? > Blank, with in lightgrey as placeholder: 'SMART formulated goal'
+
+
+
+Can managers reorder the criteria by dragging? > yes, and they should be able to enter a % for weighing the scoring. They can never exceed 100% over all 9 goals. But it can be 5 goals with each 20% for example
+
+
+
+Should there be character limits on the label and description fields? > No, but prevent any XSS and SQL injection
+
+
+
+Do criteria need weighting (e.g., some worth more than others), or are all equal? > need weighing. Obliged to put a weight in for every goal where there is text in the field. Cannot exceed 100%, before generating the report, weighing should accumulate to 100% too
+
+2. HOW-axis Competency Levels
+
+
+
+
+
+You mentioned you have the 4 level texts - could you share them now so I can include them? > Depending on an A-B-C-D ranking, should be a dropdown at the top, next to name and function title
+
+
+
+Are these texts the same every year, or do they also change? > Small changes, so can be hardcoded
+
+
+
+Should the app show all 4 descriptions before selection, or only the selected one? > only the selected one should be visible and in the final report
+
+3. Scoring Logic
+
+
+
+
+
+In the 9-grid: is it 3×3 (WHAT: 1-3, HOW: converted to 1-3 scale) or 3×4 (WHAT: 1-3, HOW: 1-4)? > 3x3
+
+
+
+How should the final grid position be displayed? (e.g., "High Performer", "Needs Development", etc.) > No names, just colors; 1.1 red, 1.2/1.3/2.1/3.1 orange, 2.3/2.2/3.2 green, 3.3 dark green
+
+
+
+Should there be visual grid representation showing where the employee falls? > see above
+
+
+
+What if not all WHAT items are scored - skip them or require completion? > require completion
+
+4. Voice Input Specifics
+
+
+
+
+
+Should voice input append to existing text or replace it? > append
+
+
+
+Do you want a "dictation mode" where managers can fill multiple fields continuously? > yes
+
+
+
+Should there be voice commands (e.g., "score 3", "next field")? > no
+
+
+
+Any accent/dialect considerations for the three languages? > not at the moment
+
+5. File Output Format
+
+
+
+
+
+You mentioned "downloadable file that can be altered but has great markup" - do you prefer:
+
+
+
+
+
+DOCX (native Word format, fully editable)?
+
+
+
+Should the output include:
+
+
+
+
+
+Company logo/branding? > Yes, I have one
+
+
+
+Signatures sections (employee, manager, HR)? > Not at the moment
+
+
+
+Development plan section for next steps? > Not at the moment
+
+
+
+Comments section for additional notes? > Yes, at the end of the form and a summary at the start
+
+🎨 Design & UX Questions
+
+6. Visual Design
+
+
+
+
+
+Magenta & navy blue - should these be:
+
+
+
+
+
+Primary brand colors throughout, or just accent colors? > they are primary brand colors but should be used as accent since otherwise it would be too much
+
+
+
+Any specific hex codes you prefer? > yes : #CC0E70, #004A91
+
+
+
+What design style: Modern/minimal, Corporate/professional, Friendly/approachable, Bold/striking? > Corporate/professional
+
+
+
+Any font preferences or should I choose distinctive ones? > Tahoma
+
+
+
+Should there be a company logo upload feature? > yes
+
+7. User Experience Flow
+
+
+
+
+
+Should the app be multi-page/stepper (Employee Info → WHAT-axis → HOW-axis → Summary) or single-page scroll? > Single page
+
+
+
+Do you want progress indicators (e.g., "60% complete")? > yes, at the top, and sticking to the top
+
+
+
+Should there be validation (e.g., "You must fill employee name") or just warnings? > validation
+
+
+
+Mobile responsive - is this needed? (Will managers use on tablets/phones?) > yes, tablets and laptops
+
+8. Session Management
+
+
+
+
+
+How long should sessions persist (until browser close, 30 days, forever)? > max 14 days, preffered not in a database (but local cache?)
+
+
+
+Should there be a "My Saved Reviews" list to see all in-progress reviews? > no, not at the moment
+
+
+
+Can managers email themselves the session code? > yes
+
+
+
+Should there be an "Export as Draft" option separate from final download? > yes
+
+📊 Data & Configuration Questions
+
+9. Yearly Flexibility
+
+
+
+
+
+How do managers update the WHAT-axis criteria each year:
+
+
+
+
+
+Admin sets templates that managers select from? > no
+
+
+
+Completely free-form every time? > yes
+
+
+
+Import from previous year and modify? > no
+
+
+
+Should there be year/version tracking in the file? > yes
+
+10. Employee Information
+
+
+
+
+
+What fields are required vs optional? > name, role, Business unit and TOV-level (A-b-c-d)
+
+
+
+Any additional fields needed:
+
+
+
+
+
+Department/Division?
+
+
+
+Position/Title?
+
+
+
+Tenure/Start Date?
+
+
+
+Reviewer Date? > yes
+
+
+
+HR approval signature? > no
+
+11. Additional Features
+
+
+
+
+
+Comments/Notes section for qualitative feedback? > yes, a summary section at the top and a generic at the bottom
+
+
+
+Goals for next period section? > no
+
+
+
+Employee self-assessment that can be compared to manager's? > yes, but input at the moment only by the manager. So he should be able to input this
+
+
+
+Print-friendly view before download? >  yes
+
+
+
+Comparison to previous years if re-reviewing same employee? > no
+
+🔧 Technical Questions
+
+12. Integration & Data
+
+
+
+
+
+Does this need to integrate with HRIS systems (export data, import employee info)? > not yet, but will be AFAS in the future
+
+
+
+Should it generate analytics (team averages, distribution charts)? > yes
+
+
+
+Data privacy - any special requirements (GDPR, data encryption)? > as little as possible to start with
+
+13. Access & Security
+
+
+
+
+
+Is this for single manager use or does it need multi-user accounts? > multi-user
+
+
+
+Should there be admin controls to set company-wide settings? > yes
+
+
+
+Any audit trail requirements (who changed what when)? > not at the moment
+

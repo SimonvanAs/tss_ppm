@@ -1,0 +1,167 @@
+.performance-grid-section .grid-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.grid-wrapper {
+  display: grid;
+  grid-template-areas:
+    ". ylabel yaxis grid ."
+    ". . . xaxis ."
+    ". . . xlabel .";
+  grid-template-columns: 20px 20px 30px 180px 20px;
+  grid-template-rows: 180px 30px 20px;
+  gap: 4px;
+  align-items: center;
+  justify-items: center;
+}
+
+.axis-label {
+  font-weight: 600;
+  color: #004A91;
+  font-size: 0.875rem;
+}
+
+.y-axis-label {
+  grid-area: ylabel;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+
+.x-axis-label {
+  grid-area: xlabel;
+}
+
+.y-axis {
+  grid-area: yaxis;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 100%;
+  text-align: right;
+  font-weight: 500;
+  color: #666;
+}
+
+.x-axis {
+  grid-area: xaxis;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  font-weight: 500;
+  color: #666;
+}
+
+.grid {
+  grid-area: grid;
+  display: grid;
+  grid-template-columns: repeat(3, 60px);
+  grid-template-rows: repeat(3, 60px);
+  gap: 2px;
+  background: #333;
+  padding: 2px;
+  border-radius: 4px;
+}
+
+.grid-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.grid-cell.position {
+  box-shadow: inset 0 0 0 3px white;
+}
+
+.position-marker {
+  color: white;
+  font-size: 24px;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  animation: pulse-marker 2s ease-in-out infinite;
+}
+
+@keyframes pulse-marker {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+}
+
+.scores-display {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+  min-width: 200px;
+}
+
+.score-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.score-name {
+  font-weight: 500;
+  color: #666;
+}
+
+.score-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #004A91;
+}
+
+.position-info {
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+  color: #333;
+  font-weight: 500;
+}
+
+.grid-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .performance-grid-section .grid-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .scores-display {
+    width: 100%;
+    max-width: 300px;
+  }
+}

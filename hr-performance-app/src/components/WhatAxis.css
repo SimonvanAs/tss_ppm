@@ -1,0 +1,183 @@
+.what-axis .goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.goal-item {
+  background: #f8f9fa;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 16px;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.goal-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.goal-item.dragging {
+  opacity: 0.5;
+  transform: scale(1.02);
+}
+
+.goal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.drag-handle {
+  cursor: grab;
+  color: #999;
+  font-size: 1.25rem;
+  user-select: none;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+.goal-number {
+  font-weight: 600;
+  color: #004A91;
+}
+
+.remove-goal {
+  margin-left: auto;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid #ddd;
+  border-radius: 50%;
+  color: #999;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-goal:hover {
+  background: #DC3545;
+  border-color: #DC3545;
+  color: white;
+}
+
+.goal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.goal-content .input-with-voice,
+.goal-content .textarea-with-voice {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
+.goal-content .input-with-voice input,
+.goal-content .textarea-with-voice textarea {
+  flex: 1;
+}
+
+.goal-content textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.goal-scoring {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.score-group {
+  flex: 1;
+  max-width: 250px;
+}
+
+.weight-group {
+  flex: 0 0 120px;
+}
+
+.weight-group input {
+  text-align: center;
+}
+
+.needs-input {
+  border-color: #FFA500 !important;
+  background-color: #fff8e6 !important;
+}
+
+.goals-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e5e5;
+}
+
+.weight-total {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.total-label {
+  font-weight: 600;
+  color: #333;
+}
+
+.total-label.error {
+  color: #DC3545;
+}
+
+.weight-error {
+  color: #DC3545;
+  font-size: 0.875rem;
+}
+
+.weight-valid {
+  color: #28A745;
+  font-weight: bold;
+}
+
+.add-goal-button {
+  padding: 10px 20px;
+  background: #004A91;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.add-goal-button:hover {
+  background: #003670;
+}
+
+.max-goals {
+  color: #666;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .goal-scoring {
+    flex-direction: column;
+  }
+
+  .score-group,
+  .weight-group {
+    max-width: none;
+    flex: 1;
+  }
+}

@@ -120,10 +120,22 @@ First-time transcription may be slow as the model loads (~500MB).
 
 ## Session Management
 
+> **⚠️ IMPORTANT: Browser-Based Storage**
+>
+> Session data is stored in the **browser's localStorage**, not on the server.
+>
+> - ✅ Data survives browser refreshes and container restarts
+> - ✅ Data persists for 14 days
+> - ❌ Data is **lost** if user clears browser data
+> - ❌ Data is **not shared** between browsers or devices
+> - ❌ Data is **not backed up** on the server
+>
+> **Recommendation:** Users should download their report (DOCX) before clearing browser data or switching devices.
+
 - Sessions are saved automatically every 2.5 seconds
 - Each session has a unique 10-character code
 - Sessions expire after 14 days
-- Users can resume sessions using the session code
+- Users can resume sessions using the session code (same browser only)
 
 ## Building for Production
 

@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+hr-performance-app/node_modules/
+
+# Build outputs
+dist/
+hr-performance-app/dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+hr-performance-app/server/venv/
+hr-performance-app/server/uploads/
+*.egg-info/
+
+# Whisper model cache (will be downloaded in container)
+.cache/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log
+npm-debug.log*
+
+# Documentation (not needed in container)
+*.md
+!README.md
+
+# Local development
+*.local
+.claude/

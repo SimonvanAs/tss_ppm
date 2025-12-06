@@ -134,6 +134,103 @@ npm run build
 
 Output will be in the `dist/` folder.
 
+## Docker Deployment
+
+Deploy the full stack with Docker Compose:
+
+### Prerequisites
+- Docker and Docker Compose
+- At least 4GB RAM (Whisper model requires ~2GB)
+
+### Quick Deploy
+
+```bash
+# Clone and deploy
+git clone <repository-url>
+cd tss_ppm
+docker-compose up -d --build
+```
+
+The application will be available at `http://your-server:80`
+
+### Architecture
+
+```
+┌─────────────────────────────────────────────────┐
+│                   nginx (port 80)                │
+│  ┌─────────────────┐    ┌────────────────────┐  │
+│  │  Static Files   │    │  /transcribe proxy │  │
+│  │  (React App)    │    │  → whisper:3001    │  │
+│  └─────────────────┘    └────────────────────┘  │
+└─────────────────────────────────────────────────┘
+                           │
+                           ▼
+              ┌─────────────────────────┐
+              │   Whisper Container     │
+              │   (Python + AI Model)   │
+              │   Internal port: 3001   │
+              └─────────────────────────┘
+```
+
+### Docker Commands
+
+```bash
+# Start services
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Rebuild after changes
+docker-compose up -d --build
+```
+
+### GPU Support (Optional)
+
+For faster transcription with NVIDIA GPU:
+
+1. Install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
+2. Uncomment the GPU section in `docker-compose.yml`
+3. Rebuild and restart
+
+### GitHub Actions Auto-Deploy
+
+The repository includes a GitHub Actions workflow for automatic deployment on push to `master`/`main`.
+
+**Setup required secrets in GitHub repository settings:**
+
+| Secret | Description |
+|--------|-------------|
+| `VPS_HOST` | Your VPS IP address or hostname |
+| `VPS_USER` | SSH username (e.g., `root` or `deploy`) |
+| `VPS_SSH_KEY` | Private SSH key for authentication |
+| `VPS_PORT` | SSH port (optional, defaults to 22) |
+
+**VPS prerequisites:**
+```bash
+# Install Docker and Docker Compose on your VPS
+curl -fsSL https://get.docker.com | sh
+sudo usermod -aG docker $USER
+
+# Install Git
+sudo apt-get install git
+```
+
+**Generate SSH key for deployment:**
+```bash
+# On your local machine
+ssh-keygen -t ed25519 -C "github-deploy" -f ~/.ssh/github_deploy
+
+# Copy public key to VPS
+ssh-copy-id -i ~/.ssh/github_deploy.pub user@your-vps
+
+# Add private key content to GitHub secret VPS_SSH_KEY
+cat ~/.ssh/github_deploy
+```
+
 ## Version
 
 Current version: **1.0.0**

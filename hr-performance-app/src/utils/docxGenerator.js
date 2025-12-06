@@ -10,6 +10,8 @@ import {
   HeadingLevel,
   BorderStyle,
   ShadingType,
+  VerticalAlign,
+  TableLayoutType,
   Packer
 } from 'docx';
 import { saveAs } from 'file-saver';
@@ -177,18 +179,41 @@ function createGridVisualization(formData, language) {
   const howPosition = howScore ? roundToGridPosition(howScore) : mapLevelToGrid(formData.tovLevel);
 
   const title = language === 'nl' ? 'Prestatiematrix' : language === 'es' ? 'Matriz de Desempeño' : 'Performance Grid';
+  const whatAxisLabel = language === 'nl' ? 'WAT' : language === 'es' ? 'QUÉ' : 'WHAT';
+  const howAxisLabel = language === 'nl' ? 'HOE' : language === 'es' ? 'CÓMO' : 'HOW';
 
   const rows = [];
+
+  // Header row with HOW axis label
+  rows.push(new TableRow({
+    children: [
+      new TableCell({
+        children: [new Paragraph('')],
+        width: { size: 15, type: WidthType.PERCENTAGE },
+        borders: { top: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } }
+      }),
+      new TableCell({
+        children: [new Paragraph({
+          children: [new TextRun({ text: `${howAxisLabel} →`, bold: true, size: 20 })],
+          alignment: AlignmentType.CENTER
+        })],
+        columnSpan: 3,
+        borders: { top: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } }
+      })
+    ]
+  }));
 
   // Build grid rows (from top to bottom: 3, 2, 1)
   for (let what = 3; what >= 1; what--) {
     const cells = [
       new TableCell({
         children: [new Paragraph({
-          children: [new TextRun({ text: String(what), bold: true })],
-          alignment: AlignmentType.CENTER
+          children: [new TextRun({ text: what === 2 ? `${whatAxisLabel} ↑  ${what}` : `        ${what}`, bold: true, size: 20 })],
+          alignment: AlignmentType.RIGHT
         })],
-        width: { size: 10, type: WidthType.PERCENTAGE }
+        width: { size: 15, type: WidthType.PERCENTAGE },
+        verticalAlign: VerticalAlign.CENTER,
+        borders: { top: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } }
       })
     ];
 
@@ -199,25 +224,52 @@ function createGridVisualization(formData, language) {
       cells.push(
         new TableCell({
           children: [new Paragraph({
-            children: [new TextRun({ text: isPosition ? '●' : '', size: 36, color: 'FFFFFF' })],
+            children: [new TextRun({
+              text: isPosition ? '●' : ' ',
+              size: 48,
+              bold: true,
+              color: 'FFFFFF'
+            })],
             alignment: AlignmentType.CENTER
           })],
-          width: { size: 30, type: WidthType.PERCENTAGE },
-          shading: { fill: color, type: ShadingType.SOLID }
+          width: { size: 28, type: WidthType.PERCENTAGE },
+          shading: { fill: color, type: ShadingType.SOLID, color: color },
+          verticalAlign: VerticalAlign.CENTER,
+          borders: {
+            top: { style: BorderStyle.SINGLE, size: 4, color: 'FFFFFF' },
+            bottom: { style: BorderStyle.SINGLE, size: 4, color: 'FFFFFF' },
+            left: { style: BorderStyle.SINGLE, size: 4, color: 'FFFFFF' },
+            right: { style: BorderStyle.SINGLE, size: 4, color: 'FFFFFF' }
+          }
         })
       );
     }
 
-    rows.push(new TableRow({ children: cells }));
+    rows.push(new TableRow({
+      children: cells,
+      height: { value: 600, rule: 'exact' }
+    }));
   }
 
   // Add X-axis labels
   rows.push(new TableRow({
     children: [
-      new TableCell({ children: [new Paragraph('')] }),
-      new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: '1' })], alignment: AlignmentType.CENTER })] }),
-      new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: '2' })], alignment: AlignmentType.CENTER })] }),
-      new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: '3' })], alignment: AlignmentType.CENTER })] })
+      new TableCell({
+        children: [new Paragraph('')],
+        borders: { top: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } }
+      }),
+      new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: '1', bold: true, size: 20 })], alignment: AlignmentType.CENTER })],
+        borders: { top: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } }
+      }),
+      new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: '2', bold: true, size: 20 })], alignment: AlignmentType.CENTER })],
+        borders: { top: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } }
+      }),
+      new TableCell({
+        children: [new Paragraph({ children: [new TextRun({ text: '3', bold: true, size: 20 })], alignment: AlignmentType.CENTER })],
+        borders: { top: { style: BorderStyle.NONE }, left: { style: BorderStyle.NONE }, bottom: { style: BorderStyle.NONE }, right: { style: BorderStyle.NONE } }
+      })
     ]
   }));
 
@@ -227,13 +279,14 @@ function createGridVisualization(formData, language) {
   return [
     createSectionTitle(title),
     new Table({
-      width: { size: 50, type: WidthType.PERCENTAGE },
-      rows
+      width: { size: 60, type: WidthType.PERCENTAGE },
+      rows,
+      layout: TableLayoutType.FIXED
     }),
     new Paragraph({
       children: [
         new TextRun({ text: `${whatLabel}: ${whatScore ? whatScore.toFixed(2) : '-'}`, bold: true }),
-        new TextRun({ text: '     ' }),
+        new TextRun({ text: '     |     ' }),
         new TextRun({ text: `${howLabel}: ${howScore ? howScore.toFixed(2) : '-'}`, bold: true })
       ],
       spacing: { before: 200, after: 200 }

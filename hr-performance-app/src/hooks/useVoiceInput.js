@@ -1,6 +1,8 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 
-const SPEECH_SERVER_URL = 'http://localhost:3001';
+// In production (Docker), nginx proxies /transcribe to the whisper container
+// In development, we connect directly to localhost:3001
+const SPEECH_SERVER_URL = import.meta.env.PROD ? '' : 'http://localhost:3001';
 
 /**
  * Convert audio blob to WAV format in the browser

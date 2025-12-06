@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - whisper
+    restart: unless-stopped
+    networks:
+      - tss-ppm
+
+  whisper:
+    build:
+      context: .
+      dockerfile: Dockerfile.whisper
+    restart: unless-stopped
+    networks:
+      - tss-ppm
+    volumes:
+      # Cache the model to avoid re-downloading
+      - whisper-cache:/root/.cache/huggingface
+    environment:
+      - FLASK_ENV=production
+    # Optional: uncomment for GPU support (requires nvidia-docker)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+networks:
+  tss-ppm:
+    driver: bridge
+
+volumes:
+  whisper-cache:

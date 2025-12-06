@@ -2,33 +2,34 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import './StorageWarning.css';
 
-const STORAGE_WARNING_KEY = 'tss_ppm_storage_warning_dismissed';
+const STORAGE_WARNING_KEY = 'tss_ppm_storage_warning_state';
 
 export function StorageWarning() {
   const { t } = useLanguage();
-  const [isVisible, setIsVisible] = useState(false);
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Check if warning was previously dismissed (stored in sessionStorage so it resets on browser close)
-    const dismissed = sessionStorage.getItem(STORAGE_WARNING_KEY);
-    if (!dismissed) {
-      setIsVisible(true);
+    // Load saved state from localStorage
+    const savedState = localStorage.getItem(STORAGE_WARNING_KEY);
+    if (savedState === 'collapsed') {
+      setIsExpanded(false);
     }
+    setIsLoaded(true);
   }, []);
 
   const handleDismiss = () => {
     setIsExpanded(false);
-    // Store dismissal in sessionStorage (clears when browser closes)
-    sessionStorage.setItem(STORAGE_WARNING_KEY, 'true');
+    localStorage.setItem(STORAGE_WARNING_KEY, 'collapsed');
   };
 
   const handleExpand = () => {
     setIsExpanded(true);
-    sessionStorage.removeItem(STORAGE_WARNING_KEY);
+    localStorage.setItem(STORAGE_WARNING_KEY, 'expanded');
   };
 
-  if (!isVisible) {
+  // Don't render until we've loaded the saved state to prevent flicker
+  if (!isLoaded) {
     return null;
   }
 

@@ -134,24 +134,82 @@ npm run build
 
 Output will be in the `dist/` folder.
 
-## Docker Deployment
+## VPS Deployment with Docker
 
-Deploy the full stack with Docker Compose:
+Step-by-step guide to deploy the application on a VPS using Docker.
 
 ### Prerequisites
-- Docker and Docker Compose
-- At least 4GB RAM (Whisper model requires ~2GB)
 
-### Quick Deploy
+- A VPS with Ubuntu 20.04+ (or similar Linux distribution)
+- At least 4GB RAM (Whisper model requires ~2GB)
+- SSH access to your VPS
+
+### Step 1: Install Docker on your VPS
+
+SSH into your VPS and run:
 
 ```bash
-# Clone and deploy
-git clone <repository-url>
-cd tss_ppm
-docker-compose up -d --build
+# Update system packages
+sudo apt update && sudo apt upgrade -y
+
+# Install Docker
+curl -fsSL https://get.docker.com | sh
+
+# Add your user to the docker group (avoids needing sudo)
+sudo usermod -aG docker $USER
+
+# Log out and back in for group changes to take effect
+exit
 ```
 
-The application will be available at `http://your-server:80`
+SSH back in and verify Docker is working:
+
+```bash
+docker --version
+docker compose version
+```
+
+### Step 2: Clone the repository
+
+```bash
+# Create a directory for the app
+mkdir -p ~/apps
+cd ~/apps
+
+# Clone the repository
+git clone https://github.com/SimonvanAs/tss_ppm.git
+cd tss_ppm
+```
+
+### Step 3: Build and start the containers
+
+```bash
+# Build and start in detached mode
+docker compose up -d --build
+```
+
+This will:
+1. Build the frontend container (React app served by nginx)
+2. Build the Whisper container (Python speech-to-text server)
+3. Download the Whisper AI model (~500MB, first time only)
+4. Start both services
+
+**Note:** First build takes 5-10 minutes. The Whisper model download happens during the build.
+
+### Step 4: Verify deployment
+
+```bash
+# Check container status
+docker compose ps
+
+# View logs (Ctrl+C to exit)
+docker compose logs -f
+
+# Test the application
+curl http://localhost
+```
+
+The application is now available at `http://your-vps-ip`
 
 ### Architecture
 
@@ -172,21 +230,80 @@ The application will be available at `http://your-server:80`
               └─────────────────────────┘
 ```
 
-### Docker Commands
+### Useful Docker Commands
 
 ```bash
 # Start services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
+docker compose up -d
 
 # Stop services
-docker-compose down
+docker compose down
 
-# Rebuild after changes
-docker-compose up -d --build
+# View logs
+docker compose logs -f
+
+# View logs for specific service
+docker compose logs -f frontend
+docker compose logs -f whisper
+
+# Rebuild after code changes
+docker compose up -d --build
+
+# Restart a specific service
+docker compose restart frontend
+
+# Check resource usage
+docker stats
 ```
+
+### Updating the Application
+
+When you want to deploy a new version:
+
+```bash
+cd ~/apps/tss_ppm
+
+# Pull latest changes
+git pull origin master
+
+# Rebuild and restart
+docker compose up -d --build
+
+# Clean up old images (optional)
+docker image prune -f
+```
+
+### Setting up HTTPS (Optional)
+
+For production, you should use HTTPS. Here's a quick setup with Caddy as a reverse proxy:
+
+```bash
+# Install Caddy
+sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+sudo apt update
+sudo apt install caddy
+
+# Edit Caddyfile
+sudo nano /etc/caddy/Caddyfile
+```
+
+Add this configuration (replace `your-domain.com`):
+
+```
+your-domain.com {
+    reverse_proxy localhost:80
+}
+```
+
+Then restart Caddy:
+
+```bash
+sudo systemctl restart caddy
+```
+
+Caddy will automatically obtain and renew SSL certificates.
 
 ### GPU Support (Optional)
 
@@ -194,41 +311,45 @@ For faster transcription with NVIDIA GPU:
 
 1. Install [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html)
 2. Uncomment the GPU section in `docker-compose.yml`
-3. Rebuild and restart
+3. Rebuild: `docker compose up -d --build`
 
-### GitHub Actions Auto-Deploy
+### Troubleshooting
 
-The repository includes a GitHub Actions workflow for automatic deployment on push to `master`/`main`.
-
-**Setup required secrets in GitHub repository settings:**
-
-| Secret | Description |
-|--------|-------------|
-| `VPS_HOST` | Your VPS IP address or hostname |
-| `VPS_USER` | SSH username (e.g., `root` or `deploy`) |
-| `VPS_SSH_KEY` | Private SSH key for authentication |
-| `VPS_PORT` | SSH port (optional, defaults to 22) |
-
-**VPS prerequisites:**
+**Containers not starting:**
 ```bash
-# Install Docker and Docker Compose on your VPS
-curl -fsSL https://get.docker.com | sh
-sudo usermod -aG docker $USER
-
-# Install Git
-sudo apt-get install git
+docker compose logs
 ```
 
-**Generate SSH key for deployment:**
+**Out of memory:**
+- Ensure your VPS has at least 4GB RAM
+- The Whisper model needs ~2GB RAM
+
+**Port 80 already in use:**
 ```bash
-# On your local machine
-ssh-keygen -t ed25519 -C "github-deploy" -f ~/.ssh/github_deploy
+sudo lsof -i :80
+# Stop the conflicting service or change the port in docker-compose.yml
+```
 
-# Copy public key to VPS
-ssh-copy-id -i ~/.ssh/github_deploy.pub user@your-vps
+**Permission denied:**
+```bash
+# Make sure your user is in the docker group
+groups $USER
+# Should show: ... docker ...
+```
 
-# Add private key content to GitHub secret VPS_SSH_KEY
-cat ~/.ssh/github_deploy
+## Testing
+
+Run tests locally before deploying:
+
+```bash
+cd hr-performance-app
+
+# Unit tests
+npm run test:run
+
+# E2E tests (requires Playwright browsers)
+npx playwright install
+npm run test:e2e
 ```
 
 ## Version

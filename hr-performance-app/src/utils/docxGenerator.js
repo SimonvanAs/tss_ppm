@@ -438,6 +438,16 @@ export async function generateReport(formData, sessionCode, isDraft = false) {
     creator: 'HR Performance App',
     title: `Performance Review - ${formData.employeeName || 'Employee'}`,
     description: 'Performance Review Report',
+    styles: {
+      default: {
+        document: {
+          run: {
+            font: 'Verdana',
+            size: 18 // 9pt = 18 half-points
+          }
+        }
+      }
+    },
     sections: [{
       properties: {},
       children: [

@@ -1,3 +1,5 @@
+# Use environment variable DOMAIN for the site address
+# For localhost, Caddy will use HTTP. For a real domain, it auto-enables HTTPS.
 {$DOMAIN:localhost} {
     # Reverse proxy to frontend nginx
     reverse_proxy frontend:80

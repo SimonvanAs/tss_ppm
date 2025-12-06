@@ -94,5 +94,12 @@
     "holdToSpeak": "Hold to speak",
     "notSupported": "Voice input requires HTTPS. Please use a secure connection.",
     "error": "Dictation unavailable. Please type instead or try a different browser."
+  },
+  "storageWarning": {
+    "title": "Browser Storage Only",
+    "message": "Your data is stored locally in this browser only. Use your Session Code to resume on this device. Data cannot be transferred to other browsers or devices.",
+    "dismiss": "Dismiss",
+    "expand": "Show storage warning",
+    "collapsed": "Browser storage info"
   }
 }

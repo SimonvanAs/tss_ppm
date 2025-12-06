@@ -94,5 +94,12 @@
     "holdToSpeak": "Mantener presionado para hablar",
     "notSupported": "La entrada de voz requiere HTTPS. Use una conexión segura.",
     "error": "Dictado no disponible. Por favor escriba o pruebe con otro navegador."
+  },
+  "storageWarning": {
+    "title": "Solo almacenamiento del navegador",
+    "message": "Sus datos se almacenan localmente solo en este navegador. Use su código de sesión para continuar en este dispositivo. Los datos no se pueden transferir a otros navegadores o dispositivos.",
+    "dismiss": "Cerrar",
+    "expand": "Mostrar advertencia de almacenamiento",
+    "collapsed": "Info de almacenamiento"
   }
 }

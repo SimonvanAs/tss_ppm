@@ -1,6 +1,7 @@
 import { LanguageProvider } from './contexts/LanguageContext';
 import { FormProvider } from './contexts/FormContext';
 import { Header } from './components/Header';
+import { StorageWarning } from './components/StorageWarning';
 import { EmployeeInfo } from './components/EmployeeInfo';
 import { SummarySection } from './components/SummarySection';
 import { WhatAxis } from './components/WhatAxis';
@@ -16,6 +17,7 @@ function App() {
     <LanguageProvider>
       <FormProvider>
         <div className="app">
+          <StorageWarning />
           <Header />
           <main className="main-content">
             <EmployeeInfo />

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useForm } from '../contexts/FormContext';
 import './Header.css';
@@ -10,6 +10,31 @@ export function Header() {
   const [resumeCode, setResumeCode] = useState('');
   const [resumeError, setResumeError] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
+  const [sessionBarHidden, setSessionBarHidden] = useState(false);
+  const lastScrollY = useRef(0);
+
+  // Hide session bar on scroll down (mobile only)
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      const isMobile = window.innerWidth <= 768;
+
+      if (isMobile) {
+        if (currentScrollY > lastScrollY.current && currentScrollY > 50) {
+          setSessionBarHidden(true);
+        } else {
+          setSessionBarHidden(false);
+        }
+      } else {
+        setSessionBarHidden(false);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleCopyCode = async () => {
     try {
@@ -123,12 +148,12 @@ export function Header() {
                   </button>
                 ))}
               </div>
-              <span className="version-label">TSS PPM generator v1.0.3</span>
+              <span className="version-label">TSS PPM generator v1.0.4</span>
             </div>
           </div>
         </div>
 
-        <div className="session-bar">
+        <div className={`session-bar ${sessionBarHidden ? 'session-bar-hidden' : ''}`}>
           <div className="session-code">
             <span className="session-label">{t('app.sessionCode')}:</span>
             <span className="session-value">{sessionCode}</span>

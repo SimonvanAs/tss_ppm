@@ -50,7 +50,8 @@
     "title": "HOE-As: Competenties",
     "selectedLevel": "Geselecteerd niveau",
     "competencies": "Competenties voor niveau",
-    "vetoWarning": "VETO: Elke score van 1 zet de HOE-score op 1.00"
+    "vetoWarning": "VETO: Elke score van 1 zet de HOE-score op 1.00",
+    "notePlaceholder": "Aanvullende notities (optioneel)..."
   },
   "grid": {
     "title": "Prestatiematrix",

@@ -144,6 +144,7 @@ export function createInitialFormData() {
       { id: uuidv4(), title: '', description: '', score: '', weight: '' }
     ],
     competencyScores: {},
+    competencyNotes: {},
     selfAssessment: '',
     comments: '',
     language: 'en'

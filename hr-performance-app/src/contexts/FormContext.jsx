@@ -138,6 +138,18 @@ export function FormProvider({ children }) {
     setIsDirty(true);
   }, []);
 
+  // Update competency note
+  const updateCompetencyNote = useCallback((competencyId, note) => {
+    setFormData(prev => ({
+      ...prev,
+      competencyNotes: {
+        ...prev.competencyNotes,
+        [competencyId]: note
+      }
+    }));
+    setIsDirty(true);
+  }, []);
+
   // Resume a session
   const resumeSession = useCallback((code) => {
     const session = loadSession(code);
@@ -185,6 +197,7 @@ export function FormProvider({ children }) {
     removeGoal,
     reorderGoals,
     updateCompetencyScore,
+    updateCompetencyNote,
     resumeSession,
     startNewSession,
     clearSession,

@@ -5,7 +5,7 @@ import './HowAxis.css';
 
 export function HowAxis() {
   const { t, language } = useLanguage();
-  const { formData, updateCompetencyScore, validationErrors } = useForm();
+  const { formData, updateCompetencyScore, updateCompetencyNote, validationErrors } = useForm();
 
   const selectedLevel = formData.tovLevel;
   const levelCompetencies = selectedLevel ? competencies[selectedLevel] : [];
@@ -83,6 +83,16 @@ export function HowAxis() {
               <span className="score-description">
                 {formData.competencyScores?.[comp.id] && t(`scores.${formData.competencyScores[comp.id]}`)}
               </span>
+            </div>
+
+            <div className="competency-notes">
+              <textarea
+                className="competency-note-input"
+                placeholder={t('howAxis.notePlaceholder')}
+                value={formData.competencyNotes?.[comp.id] || ''}
+                onChange={(e) => updateCompetencyNote(comp.id, e.target.value)}
+                rows={2}
+              />
             </div>
           </div>
         ))}

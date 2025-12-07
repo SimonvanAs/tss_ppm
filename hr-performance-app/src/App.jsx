@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { FormProvider } from './contexts/FormContext';
 import { Header } from './components/Header';
@@ -10,9 +11,20 @@ import { PerformanceGrid } from './components/PerformanceGrid';
 import { SelfAssessment } from './components/SelfAssessment';
 import { Comments } from './components/Comments';
 import { Actions } from './components/Actions';
+import { PrivacyPolicy } from './components/PrivacyPolicy';
 import './App.css';
 
 function App() {
+  const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
+
+  if (showPrivacyPolicy) {
+    return (
+      <LanguageProvider>
+        <PrivacyPolicy onBack={() => setShowPrivacyPolicy(false)} />
+      </LanguageProvider>
+    );
+  }
+
   return (
     <LanguageProvider>
       <FormProvider>
@@ -31,14 +43,23 @@ function App() {
           </main>
           <footer className="app-footer">
             <span className="app-footer-ai">🤖 Made with AI assistance</span>
-            <a
-              href="https://github.com/SimonvanAs/tss_ppm"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="app-footer-link"
-            >
-              View source code on GitHub
-            </a>
+            <div className="app-footer-links">
+              <button
+                className="app-footer-link privacy-link"
+                onClick={() => setShowPrivacyPolicy(true)}
+              >
+                Privacy Policy
+              </button>
+              <span className="app-footer-separator">|</span>
+              <a
+                href="https://github.com/SimonvanAs/tss_ppm"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="app-footer-link"
+              >
+                View source code on GitHub
+              </a>
+            </div>
           </footer>
         </div>
       </FormProvider>

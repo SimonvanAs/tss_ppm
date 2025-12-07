@@ -7,7 +7,7 @@ export function PrivacyPolicy({ onBack }) {
   const content = {
     en: {
       title: 'Privacy Policy',
-      lastUpdated: 'Last updated: December 2024',
+      lastUpdated: 'Last updated: December 2025',
       backButton: '← Back to Application',
       sections: [
         {
@@ -98,7 +98,7 @@ export function PrivacyPolicy({ onBack }) {
     },
     nl: {
       title: 'Privacybeleid',
-      lastUpdated: 'Laatst bijgewerkt: december 2024',
+      lastUpdated: 'Laatst bijgewerkt: december 2025',
       backButton: '← Terug naar applicatie',
       sections: [
         {
@@ -189,7 +189,7 @@ export function PrivacyPolicy({ onBack }) {
     },
     es: {
       title: 'Política de Privacidad',
-      lastUpdated: 'Última actualización: diciembre 2024',
+      lastUpdated: 'Última actualización: diciembre 2025',
       backButton: '← Volver a la aplicación',
       sections: [
         {

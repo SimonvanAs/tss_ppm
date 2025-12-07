@@ -1,0 +1,21 @@
+# Security Policy for TSS PPM Generator
+# https://securitytxt.org/
+
+# Contact for reporting security vulnerabilities
+Contact: https://github.com/SimonvanAs/tss_ppm/security/advisories/new
+Contact: https://github.com/SimonvanAs/tss_ppm/issues
+
+# When this security.txt expires (1 year from creation)
+Expires: 2026-12-07T00:00:00.000Z
+
+# Link to our security policy
+Policy: https://github.com/SimonvanAs/tss_ppm#security
+
+# Preferred languages for communication
+Preferred-Languages: en, nl
+
+# Canonical location of this file
+Canonical: https://ppm.totalsoftwareservices.com/.well-known/security.txt
+
+# Acknowledgments page (GitHub Security tab)
+Acknowledgments: https://github.com/SimonvanAs/tss_ppm/security

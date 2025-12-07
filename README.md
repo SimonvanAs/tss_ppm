@@ -408,9 +408,82 @@ npm run test:e2e
 
 ## Version
 
-Current version: **1.0.0**
+Current version: **1.0.14**
 
 See the version label in the top-right corner of the application.
+
+## Changelog
+
+### v1.0.14
+- Add Dependabot for automated dependency updates (npm, pip, docker, actions)
+- Add GitHub Actions security audit workflow (runs on push, PR, and weekly)
+- Dependency review on PRs with license checking
+
+### v1.0.13
+- Add `security.txt` for responsible disclosure (RFC 9116)
+- Contact via GitHub Security Advisories
+- Expires December 2026
+
+### v1.0.12
+- Apply `sanitizeInput()` to all form data before localStorage save
+- Add comprehensive Security section to README
+- Document OWASP Top 10 compliance
+
+### v1.0.11
+- Add disclaimer and limitation of liability to Privacy Policy
+- Add issue reporting section (GitHub Issues)
+- Translations in EN, NL, ES
+
+### v1.0.10
+- Fix Privacy Policy date from 2024 to 2025
+
+### v1.0.9
+- Add E2E tests for Plausible analytics script
+- Add E2E tests for Privacy Policy page
+
+### v1.0.8
+- Add Privacy Policy page with full translations (EN, NL, ES)
+- Covers: local storage, session codes, voice input, Plausible analytics
+- Link in footer next to GitHub link
+
+### v1.0.7
+- Rename "Notes" to "Explanation" for competency fields
+- Updated labels in all languages and DOCX export
+
+### v1.0.6
+- Include competency explanation notes in DOCX export
+
+### v1.0.5
+- Add optional explanation text boxes for all 6 HOW-Axis competencies
+- Store notes per competency in session data
+
+### v1.0.4
+- Hide session bar on scroll down (mobile only, ≤768px)
+- Reappears when scrolling up
+
+### v1.0.3
+- Add cache clearing warning to storage message
+- Warns users that clearing browser data removes all sessions
+
+### v1.0.2
+- Rename "Resume Session" button to "Resume Another Session"
+
+### v1.0.1
+- Add AI attribution footer with robot icon
+- Add GitHub repository link in footer
+- Rename draft button and add autosave indicator
+- Set DOCX export font to Verdana 9pt
+- Remove gray fill from employee info table in DOCX
+- Fix storage warning state persistence on page refresh
+
+### v1.0.0
+- Initial release
+- 9-grid performance scoring (WHAT × HOW)
+- Multi-language support (EN, NL, ES)
+- Voice input with local Whisper AI
+- DOCX report generation
+- Session-based auto-save (14-day retention)
+- Drag-and-drop goal reordering
 
 ## License
 

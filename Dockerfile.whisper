@@ -6,12 +6,15 @@ FROM python:3.13-slim
 WORKDIR /app
 
 # Install system dependencies for audio processing
-# Including all FFmpeg dev libraries needed to build PyAV (av package)
+# Including all FFmpeg dev libraries and build tools needed to compile PyAV (av package)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     libsndfile1 \
     curl \
     pkg-config \
+    gcc \
+    g++ \
+    python3-dev \
     libavcodec-dev \
     libavformat-dev \
     libavdevice-dev \

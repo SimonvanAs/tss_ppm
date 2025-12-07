@@ -341,10 +341,16 @@ function createCompetenciesSection(formData, language) {
 
   const levelComps = competencies[selectedLevel] || [];
   const scores = formData.competencyScores || {};
+  const notes = formData.competencyNotes || {};
   const scoreLabels = {
     en: { 1: 'Below expectations', 2: 'Meets expectations', 3: 'Exceeds expectations' },
     nl: { 1: 'Onder verwachting', 2: 'Voldoet aan verwachting', 3: 'Overtreft verwachting' },
     es: { 1: 'Por debajo', 2: 'Cumple', 3: 'Supera' }
+  };
+  const notesLabel = {
+    en: 'Notes',
+    nl: 'Notities',
+    es: 'Notas'
   };
   const labels = scoreLabels[language] || scoreLabels.en;
 
@@ -361,6 +367,7 @@ function createCompetenciesSection(formData, language) {
 
   levelComps.forEach((comp) => {
     const score = scores[comp.id];
+    const note = notes[comp.id];
     elements.push(
       new Paragraph({
         children: [
@@ -379,9 +386,22 @@ function createCompetenciesSection(formData, language) {
             color: score === 1 ? COLORS.red : COLORS.accent
           })
         ],
-        spacing: { after: 100 }
+        spacing: { after: note ? 50 : 100 }
       })
     );
+
+    // Add note if present
+    if (note && note.trim()) {
+      elements.push(
+        new Paragraph({
+          children: [
+            new TextRun({ text: `${notesLabel[language] || notesLabel.en}: `, bold: true, size: 20 }),
+            new TextRun({ text: note, size: 20, color: '666666' })
+          ],
+          spacing: { after: 100 }
+        })
+      );
+    }
   });
 
   return elements;

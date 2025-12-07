@@ -32,7 +32,7 @@ test.describe('TSS PPM Generator', () => {
   });
 
   test('should display version number', async ({ page }) => {
-    await expect(page.getByText('TSS PPM generator v1.0.1')).toBeVisible();
+    await expect(page.getByText('TSS PPM generator v1.0.2')).toBeVisible();
   });
 });
 
@@ -179,7 +179,7 @@ test.describe('Session Management', () => {
   test('should open resume session modal', async ({ page }) => {
     await page.goto('/');
 
-    await page.click('button:has-text("Resume Session")');
+    await page.click('button:has-text("Resume Another Session")');
 
     await expect(page.locator('.modal')).toBeVisible();
     await expect(page.locator('.modal-input')).toBeVisible();
@@ -188,7 +188,7 @@ test.describe('Session Management', () => {
   test('should show error for invalid session code', async ({ page }) => {
     await page.goto('/');
 
-    await page.click('button:has-text("Resume Session")');
+    await page.click('button:has-text("Resume Another Session")');
     await page.fill('.modal-input', 'INVALID123');
     await page.click('.modal-button.primary');
 
@@ -198,7 +198,7 @@ test.describe('Session Management', () => {
   test('should close modal on cancel', async ({ page }) => {
     await page.goto('/');
 
-    await page.click('button:has-text("Resume Session")');
+    await page.click('button:has-text("Resume Another Session")');
     await expect(page.locator('.modal')).toBeVisible();
 
     await page.click('.modal-button.cancel');

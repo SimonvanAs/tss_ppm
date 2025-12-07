@@ -68,10 +68,11 @@
   },
   "actions": {
     "preview": "Vista previa del informe",
-    "saveDraft": "Guardar como borrador",
+    "saveDraft": "Descargar borrador",
     "download": "Descargar informe final",
     "clearSession": "Limpiar sesión",
-    "confirmClear": "¿Está seguro de que desea limpiar esta sesión? Todos los datos se perderán."
+    "confirmClear": "¿Está seguro de que desea limpiar esta sesión? Todos los datos se perderán.",
+    "saved": "Guardado"
   },
   "validation": {
     "required": "Este campo es obligatorio",

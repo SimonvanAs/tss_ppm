@@ -18,11 +18,24 @@ export function FormProvider({ children }) {
   const [isDirty, setIsDirty] = useState(false);
   const [lastSaved, setLastSaved] = useState(null);
   const [validationErrors, setValidationErrors] = useState([]);
+  const [showSaveIndicator, setShowSaveIndicator] = useState(false);
   const saveTimeoutRef = useRef(null);
+  const indicatorTimeoutRef = useRef(null);
 
   // Cleanup expired sessions on mount
   useEffect(() => {
     cleanupExpiredSessions();
+  }, []);
+
+  // Helper to show save indicator briefly
+  const triggerSaveIndicator = useCallback(() => {
+    setShowSaveIndicator(true);
+    if (indicatorTimeoutRef.current) {
+      clearTimeout(indicatorTimeoutRef.current);
+    }
+    indicatorTimeoutRef.current = setTimeout(() => {
+      setShowSaveIndicator(false);
+    }, 2000);
   }, []);
 
   // Auto-save after 2-3 seconds of inactivity
@@ -37,6 +50,7 @@ export function FormProvider({ children }) {
       saveSession(sessionCode, formData);
       setLastSaved(new Date());
       setIsDirty(false);
+      triggerSaveIndicator();
     }, 2500);
 
     return () => {
@@ -44,7 +58,18 @@ export function FormProvider({ children }) {
         clearTimeout(saveTimeoutRef.current);
       }
     };
-  }, [formData, isDirty, sessionCode]);
+  }, [formData, isDirty, sessionCode, triggerSaveIndicator]);
+
+  // Manual save function (for Ctrl+S)
+  const manualSave = useCallback(() => {
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    saveSession(sessionCode, formData);
+    setLastSaved(new Date());
+    setIsDirty(false);
+    triggerSaveIndicator();
+  }, [sessionCode, formData, triggerSaveIndicator]);
 
   // Update form data
   const updateFormData = useCallback((updates) => {
@@ -167,7 +192,9 @@ export function FormProvider({ children }) {
     validationErrors,
     progress,
     lastSaved,
-    isDirty
+    isDirty,
+    showSaveIndicator,
+    manualSave
   };
 
   return (

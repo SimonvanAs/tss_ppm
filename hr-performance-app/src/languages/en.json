@@ -68,10 +68,11 @@
   },
   "actions": {
     "preview": "Preview Report",
-    "saveDraft": "Save as Draft",
+    "saveDraft": "Download Draft Report",
     "download": "Download Final Report",
     "clearSession": "Clear Session",
-    "confirmClear": "Are you sure you want to clear this session? All data will be lost."
+    "confirmClear": "Are you sure you want to clear this session? All data will be lost.",
+    "saved": "Saved"
   },
   "validation": {
     "required": "This field is required",

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useForm } from '../contexts/FormContext';
 import { generateReport } from '../utils/docxGenerator';
@@ -6,9 +6,22 @@ import './Actions.css';
 
 export function Actions() {
   const { t } = useLanguage();
-  const { formData, sessionCode, validate, clearSession } = useForm();
+  const { formData, sessionCode, validate, clearSession, showSaveIndicator, manualSave } = useForm();
   const [isGenerating, setIsGenerating] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
+
+  // Handle Ctrl+S to save
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        manualSave();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [manualSave]);
 
   const handleDownload = async (isDraft = false) => {
     if (!isDraft) {
@@ -73,6 +86,13 @@ export function Actions() {
           >
             {t('actions.clearSession')}
           </button>
+
+          {showSaveIndicator && (
+            <div className="save-indicator">
+              <span className="save-indicator-icon">✓</span>
+              <span className="save-indicator-text">{t('actions.saved')}</span>
+            </div>
+          )}
         </div>
       </section>
 

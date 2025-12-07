@@ -68,10 +68,11 @@
   },
   "actions": {
     "preview": "Voorbeeld rapport",
-    "saveDraft": "Opslaan als concept",
+    "saveDraft": "Conceptrapport downloaden",
     "download": "Definitief rapport downloaden",
     "clearSession": "Sessie wissen",
-    "confirmClear": "Weet u zeker dat u deze sessie wilt wissen? Alle gegevens gaan verloren."
+    "confirmClear": "Weet u zeker dat u deze sessie wilt wissen? Alle gegevens gaan verloren.",
+    "saved": "Opgeslagen"
   },
   "validation": {
     "required": "Dit veld is verplicht",

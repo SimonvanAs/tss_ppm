@@ -28,7 +28,7 @@ test.describe('TSS PPM Generator', () => {
     await page.locator('.language-flag-button').nth(1).click();
 
     // Check that some Dutch text appears (e.g., in section titles)
-    await expect(page.getByText('Medewerkergegevens')).toBeVisible();
+    await expect(page.getByText('Medewerkersinformatie')).toBeVisible();
   });
 
   test('should display version number', async ({ page }) => {
@@ -107,7 +107,7 @@ test.describe('Goals Section (WHAT-Axis)', () => {
 
   test('should add a new goal', async ({ page }) => {
     // Initially there should be 1 goal
-    const goalCards = page.locator('.goal-card');
+    const goalCards = page.locator('.goal-item');
     await expect(goalCards).toHaveCount(1);
 
     // Click add goal button
@@ -118,14 +118,14 @@ test.describe('Goals Section (WHAT-Axis)', () => {
   });
 
   test('should fill goal information', async ({ page }) => {
-    const goalTitle = page.locator('.goal-card').first().locator('input[type="text"]').first();
+    const goalTitle = page.locator('.goal-item').first().locator('input[type="text"]').first();
     await goalTitle.fill('Complete project milestone');
 
     await expect(goalTitle).toHaveValue('Complete project milestone');
   });
 
   test('should set goal weight', async ({ page }) => {
-    const weightInput = page.locator('.goal-card').first().locator('input[type="number"]');
+    const weightInput = page.locator('.goal-item').first().locator('input[type="number"]');
     await weightInput.fill('50');
 
     await expect(weightInput).toHaveValue('50');
@@ -133,24 +133,24 @@ test.describe('Goals Section (WHAT-Axis)', () => {
 
   test('should show weight validation', async ({ page }) => {
     // Fill one goal with 50% weight
-    const goalCard = page.locator('.goal-card').first();
+    const goalCard = page.locator('.goal-item').first();
     await goalCard.locator('input[type="text"]').first().fill('Goal 1');
     await goalCard.locator('input[type="number"]').fill('50');
 
-    // Weight indicator should show warning (not 100%)
-    const weightIndicator = page.locator('.weight-indicator');
-    await expect(weightIndicator).toContainText('50%');
+    // Weight total should show the percentage
+    const weightTotal = page.locator('.weight-total');
+    await expect(weightTotal).toContainText('50%');
   });
 
   test('should delete a goal', async ({ page }) => {
     // Add a second goal first
     await page.click('button:has-text("Add Goal")');
-    await expect(page.locator('.goal-card')).toHaveCount(2);
+    await expect(page.locator('.goal-item')).toHaveCount(2);
 
     // Delete the first goal
-    await page.locator('.goal-card').first().locator('button.delete-button').click();
+    await page.locator('.goal-item').first().locator('button.remove-goal').click();
 
-    await expect(page.locator('.goal-card')).toHaveCount(1);
+    await expect(page.locator('.goal-item')).toHaveCount(1);
   });
 });
 
@@ -184,11 +184,11 @@ test.describe('Performance Grid', () => {
     await page.selectOption('#tovLevel', 'B');
 
     // Fill goal with score and weight
-    const goalCard = page.locator('.goal-card').first();
+    const goalCard = page.locator('.goal-item').first();
     await goalCard.locator('input[type="text"]').first().fill('Goal 1');
 
-    // Select score 2 for the goal
-    await goalCard.locator('button:has-text("2")').click();
+    // Select score 2 for the goal (it's a select dropdown)
+    await goalCard.locator('select').first().selectOption('2');
 
     // Set weight to 100%
     await goalCard.locator('input[type="number"]').fill('100');
@@ -200,7 +200,10 @@ test.describe('Performance Grid', () => {
 });
 
 test.describe('Session Management', () => {
-  test('should copy session code to clipboard', async ({ page, context }) => {
+  test('should copy session code to clipboard', async ({ page, context, browserName }) => {
+    // Skip clipboard test on Firefox as it doesn't support clipboard permissions
+    test.skip(browserName === 'firefox', 'Firefox does not support clipboard permissions');
+
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await page.goto('/');
 
@@ -243,12 +246,17 @@ test.describe('Session Management', () => {
 
 test.describe('Progress Tracking', () => {
   test.beforeEach(async ({ page }) => {
+    // Clear localStorage to ensure clean state for progress tests
     await page.goto('/');
+    await page.evaluate(() => localStorage.clear());
+    await page.reload();
   });
 
-  test('should start with 0% progress', async ({ page }) => {
+  test('should start with 6% progress (reviewDate auto-filled)', async ({ page }) => {
+    // Initial progress is 6% because reviewDate is auto-populated
+    // (1/5 employee fields filled = 20% × 30% weight = 6%)
     const progressText = page.locator('.progress-text');
-    await expect(progressText).toContainText('0%');
+    await expect(progressText).toContainText('6%');
   });
 
   test('should increase progress when filling form', async ({ page }) => {
@@ -270,7 +278,7 @@ test.describe('Form Validation', () => {
 
   test('should show validation errors on download attempt with incomplete form', async ({ page }) => {
     // Try to download without filling required fields
-    await page.click('button:has-text("Download Report")');
+    await page.click('button:has-text("Download Final Report")');
 
     // Should show validation errors
     const errorFields = page.locator('.has-error');

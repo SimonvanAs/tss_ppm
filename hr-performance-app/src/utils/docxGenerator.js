@@ -129,8 +129,7 @@ function createEmployeeInfoTable(formData, language) {
         children: [
           new TableCell({
             children: [new Paragraph({ children: [new TextRun({ text: label, bold: true })] })],
-            width: { size: 30, type: WidthType.PERCENTAGE },
-            shading: { fill: COLORS.lightGray, type: ShadingType.SOLID }
+            width: { size: 30, type: WidthType.PERCENTAGE }
           }),
           new TableCell({
             children: [new Paragraph({ children: [new TextRun({ text: value })] })],

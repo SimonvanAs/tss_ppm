@@ -98,7 +98,7 @@
   },
   "storageWarning": {
     "title": "Browser Storage Only",
-    "message": "Your data is stored locally in this browser only. Use your Session Code to resume on this device. Data cannot be transferred to other browsers or devices.",
+    "message": "Your data is stored locally in this browser only. Use your Session Code to resume on this device. Data cannot be transferred to other browsers or devices. Clearing your browser cache will delete all saved forms.",
     "dismiss": "Dismiss",
     "expand": "Show storage warning",
     "collapsed": "Browser storage info"

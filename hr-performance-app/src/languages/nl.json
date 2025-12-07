@@ -98,7 +98,7 @@
   },
   "storageWarning": {
     "title": "Alleen browseropslag",
-    "message": "Uw gegevens worden alleen lokaal in deze browser opgeslagen. Gebruik uw sessiecode om op dit apparaat verder te gaan. Gegevens kunnen niet worden overgedragen naar andere browsers of apparaten.",
+    "message": "Uw gegevens worden alleen lokaal in deze browser opgeslagen. Gebruik uw sessiecode om op dit apparaat verder te gaan. Gegevens kunnen niet worden overgedragen naar andere browsers of apparaten. Het wissen van uw browsercache verwijdert alle opgeslagen formulieren.",
     "dismiss": "Sluiten",
     "expand": "Toon opslagwaarschuwing",
     "collapsed": "Browseropslag info"

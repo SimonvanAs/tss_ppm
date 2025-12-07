@@ -30,7 +30,15 @@ function App() {
             <Actions />
           </main>
           <footer className="app-footer">
-            <span>Made with AI assistance</span>
+            <span className="app-footer-ai">🤖 Made with AI assistance</span>
+            <a
+              href="https://github.com/SimonvanAs/tss_ppm"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="app-footer-link"
+            >
+              View source code on GitHub
+            </a>
           </footer>
         </div>
       </FormProvider>

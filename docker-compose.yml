@@ -37,7 +37,16 @@ services:
       # Cache the model to avoid re-downloading
       - whisper-cache:/root/.cache/huggingface
     environment:
-      - FLASK_ENV=production
+      - WHISPER_MODEL=small
+      - WHISPER_COMPUTE_TYPE=int8
+      - WHISPER_WORKERS=2
+    # Resource limits (adjust based on VPS specs)
+    deploy:
+      resources:
+        limits:
+          memory: 3G
+        reservations:
+          memory: 1G
     # Optional: uncomment for GPU support (requires nvidia-docker)
     # deploy:
     #   resources:

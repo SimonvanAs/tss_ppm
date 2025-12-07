@@ -6,6 +6,7 @@ FROM python:3.14-slim
 WORKDIR /app
 
 # Install system dependencies for audio processing
+# Including all FFmpeg dev libraries needed to build PyAV (av package)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
     libsndfile1 \
@@ -13,7 +14,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     pkg-config \
     libavcodec-dev \
     libavformat-dev \
+    libavdevice-dev \
     libavutil-dev \
+    libavfilter-dev \
+    libswscale-dev \
     libswresample-dev \
     && rm -rf /var/lib/apt/lists/*
 

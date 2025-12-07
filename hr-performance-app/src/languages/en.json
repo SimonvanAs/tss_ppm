@@ -51,7 +51,7 @@
     "selectedLevel": "Selected Level",
     "competencies": "Competencies for Level",
     "vetoWarning": "VETO: Any score of 1 will set HOW score to 1.00",
-    "notePlaceholder": "Additional notes (optional)..."
+    "notePlaceholder": "Explanation (optional)..."
   },
   "grid": {
     "title": "Performance Grid",

@@ -51,7 +51,7 @@
     "selectedLevel": "Nivel seleccionado",
     "competencies": "Competencias para nivel",
     "vetoWarning": "VETO: Cualquier puntuación de 1 establecerá la puntuación CÓMO en 1.00",
-    "notePlaceholder": "Notas adicionales (opcional)..."
+    "notePlaceholder": "Explicación (opcional)..."
   },
   "grid": {
     "title": "Matriz de Desempeño",

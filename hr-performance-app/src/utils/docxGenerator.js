@@ -348,9 +348,9 @@ function createCompetenciesSection(formData, language) {
     es: { 1: 'Por debajo', 2: 'Cumple', 3: 'Supera' }
   };
   const notesLabel = {
-    en: 'Notes',
-    nl: 'Notities',
-    es: 'Notas'
+    en: 'Explanation',
+    nl: 'Toelichting',
+    es: 'Explicación'
   };
   const labels = scoreLabels[language] || scoreLabels.en;
 

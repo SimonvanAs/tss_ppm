@@ -32,7 +32,42 @@ test.describe('TSS PPM Generator', () => {
   });
 
   test('should display version number', async ({ page }) => {
-    await expect(page.getByText('TSS PPM generator v1.0.8')).toBeVisible();
+    await expect(page.getByText('TSS PPM generator v1.0.9')).toBeVisible();
+  });
+
+  test('should have Plausible analytics script', async ({ page }) => {
+    // Check that Plausible script is loaded
+    const plausibleScript = page.locator('script[src*="plausible.io"]');
+    await expect(plausibleScript).toHaveCount(1);
+  });
+
+  test('should have privacy policy link in footer', async ({ page }) => {
+    const privacyLink = page.locator('button.privacy-link');
+    await expect(privacyLink).toBeVisible();
+    await expect(privacyLink).toHaveText('Privacy Policy');
+  });
+
+  test('should open privacy policy page', async ({ page }) => {
+    await page.click('button.privacy-link');
+
+    // Should show privacy policy content
+    await expect(page.locator('.privacy-policy')).toBeVisible();
+    await expect(page.locator('.privacy-header h1')).toBeVisible();
+
+    // Should have back button
+    await expect(page.locator('.back-button')).toBeVisible();
+  });
+
+  test('should return from privacy policy to main app', async ({ page }) => {
+    await page.click('button.privacy-link');
+    await expect(page.locator('.privacy-policy')).toBeVisible();
+
+    // Click back button
+    await page.click('.back-button');
+
+    // Should be back to main app
+    await expect(page.locator('.header')).toBeVisible();
+    await expect(page.locator('.privacy-policy')).not.toBeVisible();
   });
 });
 

@@ -29,6 +29,9 @@ function App() {
             <Comments />
             <Actions />
           </main>
+          <footer className="app-footer">
+            <span>Made with AI assistance</span>
+          </footer>
         </div>
       </FormProvider>
     </LanguageProvider>

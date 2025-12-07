@@ -32,7 +32,7 @@ test.describe('TSS PPM Generator', () => {
   });
 
   test('should display version number', async ({ page }) => {
-    await expect(page.getByText('TSS PPM generator v1.0.11')).toBeVisible();
+    await expect(page.getByText('TSS PPM generator v1.0.12')).toBeVisible();
   });
 
   test('should have Plausible analytics script', async ({ page }) => {

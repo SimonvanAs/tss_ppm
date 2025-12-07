@@ -336,6 +336,61 @@ groups $USER
 # Should show: ... docker ...
 ```
 
+## Security
+
+The application implements defense-in-depth security measures appropriate for a client-side HR tool.
+
+### Data Protection
+
+| Aspect | Implementation |
+|--------|----------------|
+| **Storage** | Browser localStorage only - data never leaves user's device |
+| **Encryption** | Not encrypted at rest (documented in Privacy Policy) |
+| **Retention** | Automatic 14-day expiration with cleanup |
+| **Session codes** | 10-character alphanumeric, not guessable |
+
+### OWASP Top 10 Compliance
+
+| Vulnerability | Status | Notes |
+|---------------|--------|-------|
+| A01 Broken Access Control | N/A | No server-side auth, client-only |
+| A02 Cryptographic Failures | Documented | No encryption, disclosed in Privacy Policy |
+| A03 Injection (XSS) | ✅ Protected | React escapes output + `sanitizeInput()` on save |
+| A04 Insecure Design | ✅ Safe | Simple client-side app, minimal attack surface |
+| A05 Security Misconfiguration | ✅ Safe | Secure Vite/React defaults |
+| A06 Vulnerable Components | ✅ Monitored | Regular `npm audit` checks |
+| A07 Auth Failures | N/A | No authentication system |
+| A08 Data Integrity Failures | ✅ Safe | No deserialization of untrusted data |
+| A09 Logging Failures | N/A | Client-side only |
+| A10 SSRF | N/A | Only local Whisper server call |
+
+### XSS Prevention
+
+- **React's default escaping**: All JSX content is automatically escaped
+- **Input sanitization**: All form data is sanitized before localStorage save
+- **No `dangerouslySetInnerHTML`**: Codebase does not use unsafe HTML injection
+- **DOCX generation**: Uses `docx` library which doesn't interpret HTML
+
+### Dependencies
+
+- All dependencies are regularly audited with `npm audit`
+- No known vulnerabilities as of the current version
+- Dev dependencies are not included in production builds
+
+### Privacy Features
+
+- No external data transmission (except optional Plausible analytics)
+- Plausible analytics is cookie-free and GDPR compliant
+- Voice input processed locally via Whisper AI
+- Users can use incognito mode for sessions that leave no trace
+
+### Recommendations for Users
+
+- Download DOCX reports before clearing browser data
+- Use incognito mode for sensitive reviews
+- Don't share session codes via insecure channels
+- Clear browser data after completing reviews on shared computers
+
 ## Testing
 
 Run tests locally before deploying:

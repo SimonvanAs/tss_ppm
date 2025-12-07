@@ -6,11 +6,34 @@ import {
   loadSession,
   deleteSession,
   createInitialFormData,
-  cleanupExpiredSessions
+  cleanupExpiredSessions,
+  sanitizeInput
 } from '../utils/session';
 import { calculateProgress, validateForm } from '../utils/scoring';
 
 const FormContext = createContext();
+
+/**
+ * Recursively sanitize all string values in an object
+ * @param {any} data - Data to sanitize
+ * @returns {any} Sanitized data
+ */
+function sanitizeFormData(data) {
+  if (typeof data === 'string') {
+    return sanitizeInput(data);
+  }
+  if (Array.isArray(data)) {
+    return data.map(item => sanitizeFormData(item));
+  }
+  if (data !== null && typeof data === 'object') {
+    const sanitized = {};
+    for (const [key, value] of Object.entries(data)) {
+      sanitized[key] = sanitizeFormData(value);
+    }
+    return sanitized;
+  }
+  return data;
+}
 
 export function FormProvider({ children }) {
   const [sessionCode, setSessionCode] = useState(() => generateSessionCode());
@@ -47,7 +70,9 @@ export function FormProvider({ children }) {
     }
 
     saveTimeoutRef.current = setTimeout(() => {
-      saveSession(sessionCode, formData);
+      // Sanitize all string data before saving to prevent XSS
+      const sanitizedData = sanitizeFormData(formData);
+      saveSession(sessionCode, sanitizedData);
       setLastSaved(new Date());
       setIsDirty(false);
       triggerSaveIndicator();
@@ -65,7 +90,9 @@ export function FormProvider({ children }) {
     if (saveTimeoutRef.current) {
       clearTimeout(saveTimeoutRef.current);
     }
-    saveSession(sessionCode, formData);
+    // Sanitize all string data before saving to prevent XSS
+    const sanitizedData = sanitizeFormData(formData);
+    saveSession(sessionCode, sanitizedData);
     setLastSaved(new Date());
     setIsDirty(false);
     triggerSaveIndicator();

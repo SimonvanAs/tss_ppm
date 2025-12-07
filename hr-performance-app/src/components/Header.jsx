@@ -148,7 +148,7 @@ export function Header() {
                   </button>
                 ))}
               </div>
-              <span className="version-label">TSS PPM generator v1.0.11</span>
+              <span className="version-label">TSS PPM generator v1.0.12</span>
             </div>
           </div>
         </div>

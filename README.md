@@ -414,11 +414,14 @@ npm run test:e2e
 
 ## Version
 
-Current version: **1.1.0**
+Current version: **1.1.1**
 
 See the version label in the top-right corner of the application.
 
 ## Changelog
+
+### v1.1.1
+- Replace Vite favicon with TSS favicon from totalspecificsolutions.com
 
 ### v1.1.0
 - **Major upgrade: Faster-Whisper** - Replace PyTorch/Transformers with CTranslate2 backend

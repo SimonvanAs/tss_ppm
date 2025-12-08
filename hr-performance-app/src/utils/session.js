@@ -184,3 +184,69 @@ export function decodeInput(input) {
     .replace(/&#x27;/g, "'")
     .replace(/&#x2F;/g, '/');
 }
+
+/**
+ * Get all sessions as a list with summary info
+ * @returns {Array} Array of session summaries sorted by last modified (newest first)
+ */
+export function getAllSessionsList() {
+  const sessions = getAllSessions();
+
+  return Object.entries(sessions)
+    .filter(([, session]) => !isSessionExpired(session))
+    .map(([code, session]) => ({
+      sessionCode: code,
+      employeeName: session.employeeName || '',
+      role: session.role || '',
+      reviewDate: session.reviewDate || '',
+      lastModified: session.lastModified || new Date(session.timestamp).toISOString(),
+      daysRemaining: getDaysRemaining(session),
+      progress: calculateSessionProgress(session)
+    }))
+    .sort((a, b) => new Date(b.lastModified) - new Date(a.lastModified));
+}
+
+/**
+ * Calculate progress percentage for a session
+ * @param {Object} session - Session data
+ * @returns {number} Progress percentage (0-100)
+ */
+function calculateSessionProgress(session) {
+  let completed = 0;
+  let total = 17; // Total fields to check
+
+  // Employee info fields (6)
+  if (session.employeeName) completed++;
+  if (session.role) completed++;
+  if (session.businessUnit) completed++;
+  if (session.tovLevel) completed++;
+  if (session.reviewDate) completed++;
+  if (session.managerName) completed++;
+
+  // Summary (1)
+  if (session.summary) completed++;
+
+  // Goals - check if at least one goal has content (3 points)
+  const goals = session.goals || [];
+  const goalsWithContent = goals.filter(g => g.title || g.description);
+  if (goalsWithContent.length > 0) {
+    completed++; // Has goals
+    if (goalsWithContent.every(g => g.score)) completed++; // All scored
+    if (goalsWithContent.every(g => g.weight)) completed++; // All weighted
+  }
+
+  // Competencies (3 points)
+  const competencyScores = session.competencyScores || {};
+  const scoreCount = Object.keys(competencyScores).length;
+  if (scoreCount > 0) completed++;
+  if (scoreCount >= 3) completed++;
+  if (scoreCount >= 6) completed++;
+
+  // Self assessment (1)
+  if (session.selfAssessment) completed++;
+
+  // Comments (1)
+  if (session.comments) completed++;
+
+  return Math.round((completed / total) * 100);
+}

@@ -3,7 +3,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useForm } from '../contexts/FormContext';
 import './Header.css';
 
-export function Header() {
+export function Header({ onShowSessions }) {
   const { t, language, setLanguage, languageNames, availableLanguages } = useLanguage();
   const { sessionCode, progress, lastSaved, resumeSession, updateFormData } = useForm();
   const [showResumeModal, setShowResumeModal] = useState(false);
@@ -44,16 +44,6 @@ export function Header() {
     } catch (err) {
       console.error('Failed to copy:', err);
     }
-  };
-
-  const handleEmailCode = () => {
-    const subject = encodeURIComponent('Performance Review Session Code');
-    const body = encodeURIComponent(
-      `Your performance review session code: ${sessionCode}\n\n` +
-      `This code will expire in 14 days.\n` +
-      `Resume your review at: ${window.location.origin}`
-    );
-    window.location.href = `mailto:?subject=${subject}&body=${body}`;
   };
 
   const handleResume = () => {
@@ -165,11 +155,11 @@ export function Header() {
               {copySuccess ? '✓' : t('app.copyCode')}
             </button>
             <button
-              className="session-button"
-              onClick={handleEmailCode}
-              title={t('app.emailCode')}
+              className="session-button sessions-link"
+              onClick={onShowSessions}
+              title={t('app.mySessions')}
             >
-              {t('app.emailCode')}
+              {t('app.mySessions')}
             </button>
           </div>
 

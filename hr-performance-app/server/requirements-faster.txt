@@ -1,0 +1,17 @@
+# Production Faster-Whisper requirements
+# Significantly smaller than PyTorch-based Whisper
+
+flask==3.1.2
+flask-cors==6.0.1
+gunicorn==23.0.0
+
+# Faster-Whisper (CTranslate2 backend - 4x faster than OpenAI Whisper)
+faster-whisper==1.2.1
+
+# Audio processing
+librosa==0.11.0
+soundfile==0.13.1
+pydub==0.25.1
+
+# Note: PyTorch, transformers, torchaudio are NOT needed
+# This reduces image size from ~4GB to ~1GB

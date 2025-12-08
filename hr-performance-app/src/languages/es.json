@@ -21,7 +21,7 @@
     "rolePlaceholder": "Ingrese título de función",
     "businessUnit": "Unidad de Negocio",
     "businessUnitPlaceholder": "Ingrese unidad de negocio",
-    "tovLevel": "Nivel TOV",
+    "tovLevel": "Nivel IDE",
     "selectLevel": "Seleccione nivel",
     "reviewDate": "Fecha de evaluación",
     "managerName": "Nombre del gerente",
@@ -80,7 +80,7 @@
     "weightsSum": "Los pesos deben sumar exactamente 100%",
     "allGoalsScored": "Todos los objetivos deben ser puntuados",
     "allGoalsWeighted": "Todos los objetivos con contenido deben tener un peso",
-    "selectTovLevel": "Por favor seleccione un Nivel TOV",
+    "selectTovLevel": "Por favor seleccione un Nivel IDE",
     "formIncomplete": "Por favor complete todos los campos obligatorios antes de descargar"
   },
   "scores": {
@@ -95,7 +95,10 @@
     "processing": "Procesando...",
     "holdToSpeak": "Mantener presionado para hablar",
     "notSupported": "La entrada de voz requiere HTTPS. Use una conexión segura.",
-    "error": "Dictado no disponible. Por favor escriba o pruebe con otro navegador."
+    "error": "Dictado no disponible. Por favor escriba o pruebe con otro navegador.",
+    "loadingModel": "Cargando modelo...",
+    "preparingDictation": "Preparando dictado...",
+    "oneTimeDownload": "Descarga única por navegador"
   },
   "storageWarning": {
     "title": "Solo almacenamiento del navegador",

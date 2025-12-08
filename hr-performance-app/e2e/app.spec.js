@@ -32,7 +32,7 @@ test.describe('TSS PPM Generator', () => {
   });
 
   test('should display version number', async ({ page }) => {
-    await expect(page.getByText('TSS PPM generator v1.0.14')).toBeVisible();
+    await expect(page.getByText('TSS PPM generator v1.2.0')).toBeVisible();
   });
 
   test('should have Plausible analytics script', async ({ page }) => {
@@ -89,7 +89,7 @@ test.describe('Employee Info Section', () => {
     await expect(page.locator('#tovLevel')).toHaveValue('B');
   });
 
-  test('should show all TOV-Level options', async ({ page }) => {
+  test('should show all IDE-Level options', async ({ page }) => {
     const options = page.locator('#tovLevel option');
     await expect(options).toHaveCount(5); // Including placeholder
 

@@ -1,6 +1,7 @@
 """
-Local Whisper Speech-to-Text Server
-Uses Hugging Face Transformers Whisper model running locally for privacy-focused transcription.
+Production Whisper Speech-to-Text Server using Faster-Whisper
+Uses CTranslate2 backend for 4x faster inference on CPU with lower RAM usage.
+Designed to run with Gunicorn for production deployments.
 """
 
 import os
@@ -8,55 +9,42 @@ import tempfile
 import subprocess
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import torch
-from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
+from faster_whisper import WhisperModel
 import librosa
 import numpy as np
 
 app = Flask(__name__)
 CORS(app)
 
-# Determine device and dtype
-device = "cuda:0" if torch.cuda.is_available() else "cpu"
-torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+# Configuration via environment variables
+MODEL_SIZE = os.environ.get('WHISPER_MODEL', 'small')
+COMPUTE_TYPE = os.environ.get('WHISPER_COMPUTE_TYPE', 'int8')  # int8 for CPU, float16 for GPU
+NUM_WORKERS = int(os.environ.get('WHISPER_WORKERS', '2'))
 
-print(f"Using device: {device}")
-print("Loading Whisper 'small' model... (this may take a moment on first run)")
+print(f"Loading Faster-Whisper '{MODEL_SIZE}' model (compute_type={COMPUTE_TYPE})...")
 
-# Load model and processor from Hugging Face
-model_id = "openai/whisper-small"
-
-model = AutoModelForSpeechSeq2Seq.from_pretrained(
-    model_id,
-    torch_dtype=torch_dtype,
-    low_cpu_mem_usage=True,
-    use_safetensors=True
-)
-model.to(device)
-
-processor = AutoProcessor.from_pretrained(model_id)
-
-# Create pipeline
-pipe = pipeline(
-    "automatic-speech-recognition",
-    model=model,
-    tokenizer=processor.tokenizer,
-    feature_extractor=processor.feature_extractor,
-    torch_dtype=torch_dtype,
-    device=device,
+# Load Faster-Whisper model
+# - int8 quantization reduces RAM usage and increases speed on CPU
+# - cpu_threads controls parallelism within a single transcription
+model = WhisperModel(
+    MODEL_SIZE,
+    device="cpu",
+    compute_type=COMPUTE_TYPE,
+    cpu_threads=2,  # Leave room for multiple Gunicorn workers
+    download_root=os.environ.get('WHISPER_MODEL_DIR', None)
 )
 
 print("Model loaded successfully!")
 
-# Language code mapping
+# Language code mapping (Faster-Whisper uses ISO codes)
 LANGUAGE_MAP = {
-    'en': 'english',
-    'en-US': 'english',
-    'en-GB': 'english',
-    'nl': 'dutch',
-    'nl-NL': 'dutch',
-    'es': 'spanish',
-    'es-ES': 'spanish',
+    'en': 'en',
+    'en-US': 'en',
+    'en-GB': 'en',
+    'nl': 'nl',
+    'nl-NL': 'nl',
+    'es': 'es',
+    'es-ES': 'es',
 }
 
 
@@ -88,7 +76,12 @@ def convert_audio_to_wav(input_path, output_path):
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint"""
-    return jsonify({'status': 'ok', 'model': 'whisper-small', 'device': device})
+    return jsonify({
+        'status': 'ok',
+        'model': f'faster-whisper-{MODEL_SIZE}',
+        'compute_type': COMPUTE_TYPE,
+        'device': 'cpu'
+    })
 
 
 @app.route('/transcribe', methods=['POST'])
@@ -106,7 +99,7 @@ def transcribe():
     language = request.form.get('language', 'en')
 
     # Map language code
-    whisper_language = LANGUAGE_MAP.get(language, 'english')
+    whisper_language = LANGUAGE_MAP.get(language, 'en')
 
     # Save to temporary file
     temp_path = None
@@ -141,15 +134,20 @@ def transcribe():
             else:
                 raise Exception("Could not load or convert audio file")
 
-        print(f"Transcribing audio ({whisper_language})...")
+        print(f"Transcribing audio (language={whisper_language})...")
 
-        # Transcribe with Whisper pipeline using audio array
-        result = pipe(
-            {"raw": audio_array, "sampling_rate": 16000},
-            generate_kwargs={"language": whisper_language}
+        # Transcribe with Faster-Whisper
+        # Pass audio as numpy array directly
+        segments, info = model.transcribe(
+            audio_array,
+            language=whisper_language,
+            beam_size=5,
+            vad_filter=True,  # Filter out silence for faster processing
+            vad_parameters=dict(min_silence_duration_ms=500)
         )
 
-        text = result['text'].strip()
+        # Combine all segments into single text
+        text = " ".join([segment.text.strip() for segment in segments])
         print(f"Transcription: {text}")
 
         return jsonify({'text': text})
@@ -172,12 +170,15 @@ def transcribe():
 
 if __name__ == '__main__':
     print("\n" + "="*50)
-    print("Local Whisper Speech-to-Text Server")
+    print("Faster-Whisper Speech-to-Text Server")
     print("="*50)
-    print(f"Model: whisper-small (~500MB)")
-    print(f"Device: {device}")
+    print(f"Model: {MODEL_SIZE} (compute_type={COMPUTE_TYPE})")
+    print("Device: CPU")
     print("Supported languages: English, Dutch, Spanish")
     print("Server running at: http://localhost:3001")
+    print("")
+    print("For production, use Gunicorn:")
+    print("  gunicorn -w 2 -b 0.0.0.0:3001 --timeout 120 whisper_server_faster:app")
     print("="*50 + "\n")
 
     app.run(host='0.0.0.0', port=3001, debug=False)

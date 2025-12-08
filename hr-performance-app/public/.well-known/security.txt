@@ -15,7 +15,7 @@ Policy: https://github.com/SimonvanAs/tss_ppm#security
 Preferred-Languages: en, nl
 
 # Canonical location of this file
-Canonical: https://ppm.totalsoftwareservices.com/.well-known/security.txt
+Canonical: https://tss-ppm.oranjeolifant.nl/.well-known/security.txt
 
 # Acknowledgments page (GitHub Security tab)
 Acknowledgments: https://github.com/SimonvanAs/tss_ppm/security

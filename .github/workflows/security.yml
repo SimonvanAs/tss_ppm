@@ -28,10 +28,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -67,7 +67,7 @@ jobs:
           fi
 
       - name: Upload audit report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         if: always()
         with:
           name: npm-audit-report
@@ -81,7 +81,7 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
@@ -101,10 +101,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
           cache: 'npm'
@@ -129,7 +129,7 @@ jobs:
           echo '```' >> security-report.md
 
       - name: Upload weekly report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: weekly-security-report-${{ github.run_number }}
           path: hr-performance-app/security-report.md

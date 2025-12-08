@@ -2,6 +2,8 @@
 
 # TSS PPM Generator
 
+> **Inspired by an idea from Graciela, Group Head HR at Groep Piek**
+
 A web-based HR Performance Review application for Total Specific Solutions. This tool replaces the Excel-based annual employee performance review process with a modern, user-friendly web interface.
 
 ## Features
@@ -68,10 +70,17 @@ tss_ppm/
 │   │   ├── languages/           # i18n translations (en, nl, es)
 │   │   └── utils/               # Utilities (scoring, session, docx)
 │   ├── server/                  # Python Whisper server
-│   │   ├── whisper_server.py    # Flask server
-│   │   ├── setup_whisper.bat    # One-time setup
-│   │   └── start_whisper.bat    # Start server
+│   │   ├── whisper_server_faster.py  # Production Faster-Whisper server
+│   │   ├── requirements-faster.txt   # Production dependencies
+│   │   ├── test_whisper.py      # Test script
+│   │   ├── setup_whisper.bat    # One-time setup (legacy)
+│   │   └── start_whisper.bat    # Start server (legacy)
 │   └── package.json
+├── docker-compose.yml           # Production deployment
+├── Dockerfile.whisper           # Faster-Whisper container
+├── Dockerfile.frontend          # React app container
+├── nginx.conf                   # Frontend nginx config
+├── Caddyfile                    # Reverse proxy config
 ├── HR-Scoring-App-Prompt.md     # Detailed requirements
 ├── IDE-Competency-Framework-Complete.md  # HOW-axis competencies
 ├── CLAUDE.md                    # Development guidelines
@@ -116,7 +125,7 @@ First-time transcription may be slow as the model loads (~500MB).
 - **Brand Colors**: Magenta `#CC0E70`, Navy Blue `#004A91`
 - **Storage**: Browser localStorage
 - **Reports**: DOCX via `docx` package
-- **Voice**: Python Flask + Hugging Face Whisper
+- **Voice**: Faster-Whisper + Gunicorn (4x faster than standard Whisper)
 
 ## Session Management
 
@@ -408,11 +417,25 @@ npm run test:e2e
 
 ## Version
 
-Current version: **1.0.14**
+Current version: **1.1.1**
 
 See the version label in the top-right corner of the application.
 
 ## Changelog
+
+### v1.1.1
+- Replace Vite favicon with TSS favicon from totalspecificsolutions.com
+
+### v1.1.0
+- **Major upgrade: Faster-Whisper** - Replace PyTorch/Transformers with CTranslate2 backend
+- 4x faster transcription on CPU
+- ~50% less RAM usage per worker
+- Add Gunicorn with 2 workers for concurrent request handling
+- Use int8 quantization for optimal CPU performance
+- Add VAD (Voice Activity Detection) filter to skip silence
+- Add memory limits in docker-compose (3G max, 1G reserved)
+- Add test script for local Whisper server verification
+- Support 8-12 simultaneous voice users (up from 1-2)
 
 ### v1.0.14
 - Add Dependabot for automated dependency updates (npm, pip, docker, actions)

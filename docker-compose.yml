@@ -37,7 +37,17 @@ services:
       # Cache the model to avoid re-downloading
       - whisper-cache:/root/.cache/huggingface
     environment:
-      - FLASK_ENV=production
+      - WHISPER_MODEL=small
+      - WHISPER_COMPUTE_TYPE=int8
+      - WHISPER_WORKERS=2
+    # Resource limits (adjust based on VPS specs)
+    # faster-whisper 1.2.1 with Silero-VAD V6 needs more memory
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
     # Optional: uncomment for GPU support (requires nvidia-docker)
     # deploy:
     #   resources:

@@ -89,7 +89,7 @@ function createEmployeeInfoTable(formData, language) {
       name: 'Employee Name',
       role: 'Function Title',
       businessUnit: 'Business Unit',
-      tovLevel: 'TOV-Level',
+      tovLevel: 'IDE-Level',
       reviewDate: 'Review Date',
       manager: 'Manager'
     },
@@ -105,7 +105,7 @@ function createEmployeeInfoTable(formData, language) {
       name: 'Nombre del empleado',
       role: 'Título de función',
       businessUnit: 'Unidad de Negocio',
-      tovLevel: 'Nivel TOV',
+      tovLevel: 'Nivel IDE',
       reviewDate: 'Fecha de evaluación',
       manager: 'Gerente'
     }

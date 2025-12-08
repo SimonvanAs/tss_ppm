@@ -9,15 +9,15 @@ describe('EmployeeInfo', () => {
     expect(screen.getByLabelText(/employee name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/function title/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/business unit/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/tov-level/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/ide-level/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/review date/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/manager/i)).toBeInTheDocument();
   });
 
-  it('should render TOV-Level dropdown with options', () => {
+  it('should render IDE-Level dropdown with options', () => {
     render(<EmployeeInfo />);
 
-    const select = screen.getByLabelText(/tov-level/i);
+    const select = screen.getByLabelText(/ide-level/i);
     expect(select).toBeInTheDocument();
 
     // Check options exist

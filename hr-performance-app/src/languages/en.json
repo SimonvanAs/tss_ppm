@@ -21,7 +21,7 @@
     "rolePlaceholder": "Enter function title",
     "businessUnit": "Business Unit",
     "businessUnitPlaceholder": "Enter business unit",
-    "tovLevel": "TOV-Level",
+    "tovLevel": "IDE-Level",
     "selectLevel": "Select level",
     "reviewDate": "Review Date",
     "managerName": "Manager Name",
@@ -80,7 +80,7 @@
     "weightsSum": "Weights must sum to exactly 100%",
     "allGoalsScored": "All goals must be scored",
     "allGoalsWeighted": "All goals with content must have a weight",
-    "selectTovLevel": "Please select a TOV-Level",
+    "selectTovLevel": "Please select an IDE-Level",
     "formIncomplete": "Please complete all required fields before downloading"
   },
   "scores": {

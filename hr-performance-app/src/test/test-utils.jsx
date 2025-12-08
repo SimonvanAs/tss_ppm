@@ -1,13 +1,16 @@
 import { render } from '@testing-library/react';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import { FormProvider } from '../contexts/FormContext';
+import { WhisperProvider } from '../contexts/WhisperContext';
 
 const AllTheProviders = ({ children }) => {
   return (
     <LanguageProvider>
-      <FormProvider>
-        {children}
-      </FormProvider>
+      <WhisperProvider>
+        <FormProvider>
+          {children}
+        </FormProvider>
+      </WhisperProvider>
     </LanguageProvider>
   );
 };

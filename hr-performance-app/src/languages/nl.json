@@ -95,7 +95,10 @@
     "processing": "Verwerken...",
     "holdToSpeak": "Houd ingedrukt om te spreken",
     "notSupported": "Spraakinvoer vereist HTTPS. Gebruik een beveiligde verbinding.",
-    "error": "Dictatie niet beschikbaar. Typ in plaats daarvan of probeer een andere browser."
+    "error": "Dictatie niet beschikbaar. Typ in plaats daarvan of probeer een andere browser.",
+    "loadingModel": "Model laden...",
+    "preparingDictation": "Dictatie voorbereiden...",
+    "oneTimeDownload": "Eenmalige download per browser"
   },
   "storageWarning": {
     "title": "Alleen browseropslag",

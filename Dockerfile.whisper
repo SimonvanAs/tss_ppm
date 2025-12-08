@@ -42,9 +42,11 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
 
 # Run with Gunicorn
 # --preload shares model memory between workers (important for RAM efficiency)
+# --graceful-timeout allows workers to finish processing before being killed
 CMD ["gunicorn", \
-     "--workers", "2", \
+     "--workers", "1", \
      "--bind", "0.0.0.0:3001", \
-     "--timeout", "120", \
+     "--timeout", "300", \
+     "--graceful-timeout", "300", \
      "--preload", \
      "app:app"]

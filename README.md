@@ -79,6 +79,7 @@ tss_ppm/
 ├── docker-compose.yml           # Production deployment
 ├── Dockerfile.whisper           # Faster-Whisper container
 ├── Dockerfile.frontend          # React app container
+├── nginx.conf                   # Frontend nginx config
 ├── Caddyfile                    # Reverse proxy config
 ├── HR-Scoring-App-Prompt.md     # Detailed requirements
 ├── IDE-Competency-Framework-Complete.md  # HOW-axis competencies

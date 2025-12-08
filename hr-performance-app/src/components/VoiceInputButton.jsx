@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useVoiceInput } from '../hooks/useVoiceInput';
+import { useWhisper } from '../hooks/useWhisper';
 import { useLanguage } from '../contexts/LanguageContext';
 import './VoiceInputButton.css';
 
@@ -20,7 +20,18 @@ export function VoiceInputButton({ onTranscript, disabled = false }) {
     setTimeout(() => setError(null), 5000);
   };
 
-  const { isListening, isSupported, isProcessing, startListening, stopListening } = useVoiceInput({
+  const {
+    isListening,
+    isSupported,
+    isProcessing,
+    startListening,
+    stopListening,
+    // Browser Whisper state (from shared context)
+    activeBackend,
+    isModelLoading,
+    isModelReady,
+    modelBackend
+  } = useWhisper({
     language: getVoiceLanguageCode(),
     onResult: handleResult,
     onError: handleError
@@ -63,7 +74,9 @@ export function VoiceInputButton({ onTranscript, disabled = false }) {
     stopListening();
   };
 
-  const buttonClass = `voice-input-button ${isListening ? 'listening' : ''} ${isProcessing ? 'processing' : ''} ${error ? 'has-error' : ''}`;
+  // Disable button while model is loading (central banner shows progress)
+  const isDisabledByLoading = isModelLoading && activeBackend === 'browser';
+  const buttonClass = `voice-input-button ${isListening ? 'listening' : ''} ${isProcessing ? 'processing' : ''} ${error ? 'has-error' : ''} ${isDisabledByLoading ? 'loading-model' : ''}`;
 
   return (
     <div className="voice-input-wrapper">
@@ -75,8 +88,8 @@ export function VoiceInputButton({ onTranscript, disabled = false }) {
         onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        disabled={disabled || isProcessing}
-        title={t('voice.holdToSpeak')}
+        disabled={disabled || isProcessing || isDisabledByLoading}
+        title={isDisabledByLoading ? t('voice.loadingModel') : t('voice.holdToSpeak')}
         aria-label={t('voice.holdToSpeak')}
       >
         <div className="voice-button-content">
@@ -115,6 +128,12 @@ export function VoiceInputButton({ onTranscript, disabled = false }) {
         {isListening && <span className="listening-label">{t('voice.listening')}</span>}
         {isProcessing && <span className="listening-label">{t('voice.processing')}</span>}
       </button>
+      {/* Backend indicator (shown when browser backend is active and ready) */}
+      {activeBackend === 'browser' && isModelReady && !isListening && !isProcessing && (
+        <div className="backend-indicator" title={`${modelBackend?.toUpperCase()} - Local processing`}>
+          <span className="backend-dot"></span>
+        </div>
+      )}
       {error && (
         <div className="voice-error-tooltip">
           <span className="voice-error-icon">!</span>

@@ -95,7 +95,10 @@
     "processing": "Processing...",
     "holdToSpeak": "Hold to speak",
     "notSupported": "Voice input requires HTTPS. Please use a secure connection.",
-    "error": "Dictation unavailable. Please type instead or try a different browser."
+    "error": "Dictation unavailable. Please type instead or try a different browser.",
+    "loadingModel": "Loading model...",
+    "preparingDictation": "Preparing dictation...",
+    "oneTimeDownload": "One-time download per browser"
   },
   "storageWarning": {
     "title": "Browser Storage Only",

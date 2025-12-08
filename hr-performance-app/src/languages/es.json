@@ -95,7 +95,10 @@
     "processing": "Procesando...",
     "holdToSpeak": "Mantener presionado para hablar",
     "notSupported": "La entrada de voz requiere HTTPS. Use una conexión segura.",
-    "error": "Dictado no disponible. Por favor escriba o pruebe con otro navegador."
+    "error": "Dictado no disponible. Por favor escriba o pruebe con otro navegador.",
+    "loadingModel": "Cargando modelo...",
+    "preparingDictation": "Preparando dictado...",
+    "oneTimeDownload": "Descarga única por navegador"
   },
   "storageWarning": {
     "title": "Solo almacenamiento del navegador",

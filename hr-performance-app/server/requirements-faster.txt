@@ -10,7 +10,7 @@ faster-whisper==1.0.3
 
 # Audio processing
 librosa==0.10.2
-soundfile==0.12.1
+soundfile==0.13.1
 pydub==0.25.1
 
 # Note: PyTorch, transformers, torchaudio are NOT needed

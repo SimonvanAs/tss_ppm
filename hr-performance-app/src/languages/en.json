@@ -118,7 +118,8 @@
     "error": "Dictation unavailable. Please type instead or try a different browser.",
     "loadingModel": "Loading model...",
     "preparingDictation": "Preparing dictation...",
-    "oneTimeDownload": "One-time download per browser"
+    "oneTimeDownload": "One-time download per browser",
+    "browserDictation": "Browser Dictation"
   },
   "storageWarning": {
     "title": "Browser Storage Only",

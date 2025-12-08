@@ -118,7 +118,8 @@
     "error": "Dictatie niet beschikbaar. Typ in plaats daarvan of probeer een andere browser.",
     "loadingModel": "Model laden...",
     "preparingDictation": "Dictatie voorbereiden...",
-    "oneTimeDownload": "Eenmalige download per browser"
+    "oneTimeDownload": "Eenmalige download per browser",
+    "browserDictation": "Browser Dictatie"
   },
   "storageWarning": {
     "title": "Alleen browseropslag",

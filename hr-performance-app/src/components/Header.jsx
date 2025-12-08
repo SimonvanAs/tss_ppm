@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useForm } from '../contexts/FormContext';
+import { useWhisperContext } from '../contexts/WhisperContext';
 import './Header.css';
 
 export function Header({ onShowSessions }) {
+  const { activeBackend, setActiveBackend, isModelLoading } = useWhisperContext();
   const { t, language, setLanguage, languageNames, availableLanguages } = useLanguage();
   const { sessionCode, progress, lastSaved, resumeSession, updateFormData } = useForm();
   const [showResumeModal, setShowResumeModal] = useState(false);
@@ -138,12 +140,27 @@ export function Header({ onShowSessions }) {
                   </button>
                 ))}
               </div>
-              <span className="version-label">TSS PPM generator v1.2.0</span>
+              <span className="version-label">TSS PPM generator v1.2.1</span>
             </div>
           </div>
         </div>
 
         <div className={`session-bar ${sessionBarHidden ? 'session-bar-hidden' : ''}`}>
+          <div className="dictation-toggle">
+            <label className="toggle-label">
+              <span className="toggle-text">{t('voice.browserDictation')}</span>
+              <div className="toggle-switch-wrapper">
+                <input
+                  type="checkbox"
+                  className="toggle-input"
+                  checked={activeBackend === 'browser'}
+                  onChange={(e) => setActiveBackend(e.target.checked ? 'browser' : 'server')}
+                  disabled={isModelLoading}
+                />
+                <span className={`toggle-switch ${isModelLoading ? 'loading' : ''}`}></span>
+              </div>
+            </label>
+          </div>
           <div className="session-code">
             <span className="session-label">{t('app.sessionCode')}:</span>
             <span className="session-value">{sessionCode}</span>

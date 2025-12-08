@@ -118,7 +118,8 @@
     "error": "Dictado no disponible. Por favor escriba o pruebe con otro navegador.",
     "loadingModel": "Cargando modelo...",
     "preparingDictation": "Preparando dictado...",
-    "oneTimeDownload": "Descarga única por navegador"
+    "oneTimeDownload": "Descarga única por navegador",
+    "browserDictation": "Dictado del Navegador"
   },
   "storageWarning": {
     "title": "Solo almacenamiento del navegador",

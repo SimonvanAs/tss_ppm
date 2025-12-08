@@ -6,7 +6,7 @@ flask-cors==6.0.1
 gunicorn==21.2.0
 
 # Faster-Whisper (CTranslate2 backend - 4x faster than OpenAI Whisper)
-faster-whisper==1.0.3
+faster-whisper==1.2.1
 
 # Audio processing
 librosa==0.10.2

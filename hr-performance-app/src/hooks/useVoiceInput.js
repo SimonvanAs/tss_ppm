@@ -178,14 +178,24 @@ export function useVoiceInput({ language = 'en-US', onResult, onError } = {}) {
           const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
           console.log('Recorded blob size:', audioBlob.size, 'bytes');
 
-          // Convert to WAV in the browser
-          console.log('Converting to WAV...');
-          const wavBlob = await convertToWav(audioBlob);
-          console.log('WAV blob size:', wavBlob.size, 'bytes');
+          // Try to convert to WAV in the browser, fall back to sending raw audio
+          let audioToSend = audioBlob;
+          let filename = 'recording.webm';
+
+          try {
+            console.log('Converting to WAV...');
+            const wavBlob = await convertToWav(audioBlob);
+            console.log('WAV blob size:', wavBlob.size, 'bytes');
+            audioToSend = wavBlob;
+            filename = 'recording.wav';
+          } catch (conversionError) {
+            console.warn('WAV conversion failed, sending raw audio:', conversionError.message);
+            // Server can handle webm/opus via pydub/ffmpeg
+          }
 
           // Send to server
           const formData = new FormData();
-          formData.append('audio', wavBlob, 'recording.wav');
+          formData.append('audio', audioToSend, filename);
           formData.append('language', languageRef.current);
 
           console.log('Sending audio to server for transcription...');

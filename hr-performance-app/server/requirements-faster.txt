@@ -9,7 +9,7 @@ gunicorn==23.0.0
 faster-whisper==1.2.1
 
 # Audio processing
-librosa==0.10.2
+librosa==0.11.0
 soundfile==0.13.1
 pydub==0.25.1
 

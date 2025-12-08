@@ -2,6 +2,8 @@
 
 # TSS PPM Generator
 
+> **Inspired by an idea from Graciela, Group Head HR at Groep Piek**
+
 A web-based HR Performance Review application for Total Specific Solutions. This tool replaces the Excel-based annual employee performance review process with a modern, user-friendly web interface.
 
 ## Features
@@ -77,6 +79,7 @@ tss_ppm/
 ├── docker-compose.yml           # Production deployment
 ├── Dockerfile.whisper           # Faster-Whisper container
 ├── Dockerfile.frontend          # React app container
+├── nginx.conf                   # Frontend nginx config
 ├── Caddyfile                    # Reverse proxy config
 ├── HR-Scoring-App-Prompt.md     # Detailed requirements
 ├── IDE-Competency-Framework-Complete.md  # HOW-axis competencies

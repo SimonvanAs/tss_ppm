@@ -12,7 +12,7 @@ env.useBrowserCache = true;
 const MODEL_ID = 'onnx-community/whisper-small';
 const FALLBACK_MODEL_ID = 'onnx-community/whisper-base';
 
-const WhisperContext = createContext(null);
+export const WhisperContext = createContext(null);
 
 export function WhisperProvider({ children }) {
   // Backend detection state

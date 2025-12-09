@@ -155,7 +155,6 @@ export function Header({ onShowSessions }) {
                   className="toggle-input"
                   checked={activeBackend === 'browser'}
                   onChange={(e) => setActiveBackend(e.target.checked ? 'browser' : 'server')}
-                  disabled={isModelLoading}
                 />
                 <span className={`toggle-switch ${isModelLoading ? 'loading' : ''}`}></span>
               </div>

@@ -106,6 +106,25 @@
   text-align: right;
 }
 
+.whisper-switch-button {
+  padding: 6px 12px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: #666;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.whisper-switch-button:hover {
+  background: #e8e8e8;
+  border-color: #CC0E70;
+  color: #CC0E70;
+}
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
   .whisper-loading-banner {

@@ -71,7 +71,8 @@
     "selectedLevel": "Geselecteerd niveau",
     "competencies": "Competenties voor niveau",
     "vetoWarning": "VETO: Elke score van 1 zet de HOE-score op 1.00",
-    "notePlaceholder": "Toelichting (optioneel)..."
+    "notePlaceholder": "Toelichting (optioneel)...",
+    "behavioralIndicators": "Gedragsindicatoren"
   },
   "grid": {
     "title": "Prestatiematrix",
@@ -119,7 +120,9 @@
     "loadingModel": "Model laden...",
     "preparingDictation": "Dictatie voorbereiden...",
     "oneTimeDownload": "Eenmalige download per browser",
-    "browserDictation": "Browser Dictatie"
+    "browserDictation": "Browser Dictatie",
+    "useServerInstead": "Gebruik server",
+    "switchToServer": "Schakel over naar server-dictatie"
   },
   "storageWarning": {
     "title": "Alleen browseropslag",

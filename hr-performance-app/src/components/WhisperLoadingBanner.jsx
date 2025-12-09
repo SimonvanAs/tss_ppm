@@ -6,11 +6,16 @@ export function WhisperLoadingBanner() {
   const { t } = useLanguage();
   const {
     activeBackend,
+    setActiveBackend,
     isModelLoading,
     modelLoadProgress,
     modelLoadStatus,
     isModelReady
   } = useWhisperContext();
+
+  const handleSwitchToServer = () => {
+    setActiveBackend('server');
+  };
 
   // Only show for browser backend while loading
   if (activeBackend !== 'browser' || isModelReady || !isModelLoading) {
@@ -40,6 +45,13 @@ export function WhisperLoadingBanner() {
           />
         </div>
         <span className="whisper-progress-text">{modelLoadProgress}%</span>
+        <button
+          className="whisper-switch-button"
+          onClick={handleSwitchToServer}
+          title={t('voice.switchToServer')}
+        >
+          {t('voice.useServerInstead')}
+        </button>
       </div>
     </div>
   );

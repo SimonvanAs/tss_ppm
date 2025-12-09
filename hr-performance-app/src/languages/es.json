@@ -71,7 +71,8 @@
     "selectedLevel": "Nivel seleccionado",
     "competencies": "Competencias para nivel",
     "vetoWarning": "VETO: Cualquier puntuación de 1 establecerá la puntuación CÓMO en 1.00",
-    "notePlaceholder": "Explicación (opcional)..."
+    "notePlaceholder": "Explicación (opcional)...",
+    "behavioralIndicators": "Indicadores de Comportamiento"
   },
   "grid": {
     "title": "Matriz de Desempeño",
@@ -119,7 +120,9 @@
     "loadingModel": "Cargando modelo...",
     "preparingDictation": "Preparando dictado...",
     "oneTimeDownload": "Descarga única por navegador",
-    "browserDictation": "Dictado del Navegador"
+    "browserDictation": "Dictado del Navegador",
+    "useServerInstead": "Usar servidor",
+    "switchToServer": "Cambiar a dictado del servidor"
   },
   "storageWarning": {
     "title": "Solo almacenamiento del navegador",

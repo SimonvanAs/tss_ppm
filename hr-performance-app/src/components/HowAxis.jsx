@@ -56,7 +56,7 @@ export function HowAxis() {
               </p>
 
               <details className="competency-indicators">
-                <summary>Behavioral Indicators</summary>
+                <summary>{t('howAxis.behavioralIndicators')}</summary>
                 <ul>
                   {(comp.indicators[language] || comp.indicators.en).map((indicator, idx) => (
                     <li key={idx}>{indicator}</li>

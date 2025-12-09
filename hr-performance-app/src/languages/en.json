@@ -71,7 +71,8 @@
     "selectedLevel": "Selected Level",
     "competencies": "Competencies for Level",
     "vetoWarning": "VETO: Any score of 1 will set HOW score to 1.00",
-    "notePlaceholder": "Explanation (optional)..."
+    "notePlaceholder": "Explanation (optional)...",
+    "behavioralIndicators": "Behavioral Indicators"
   },
   "grid": {
     "title": "Performance Grid",
@@ -119,7 +120,9 @@
     "loadingModel": "Loading model...",
     "preparingDictation": "Preparing dictation...",
     "oneTimeDownload": "One-time download per browser",
-    "browserDictation": "Browser Dictation"
+    "browserDictation": "Browser Dictation",
+    "useServerInstead": "Use server instead",
+    "switchToServer": "Switch to server-based dictation"
   },
   "storageWarning": {
     "title": "Browser Storage Only",

@@ -4,11 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an **HR Performance Scoring Web Application** for Total Specific Solutions. The application replaces an Excel-based annual employee performance review process with a web-based interface featuring:
+This is an **HR Performance Scoring Web Application** (v1.2.1) for Total Specific Solutions. The application replaces an Excel-based annual employee performance review process with a web-based interface featuring:
 - 9-grid performance scoring (WHAT-axis × HOW-axis)
-- Multi-language voice input (English, Spanish, Dutch)
+- Multi-language support (English, Spanish, Dutch)
+- Browser-based and server-based speech-to-text via Whisper
 - Automatic DOCX report generation
 - Session-based auto-save with 14-day retention
+- Sessions list page for managing multiple reviews
 
 ## Development Commands
 
@@ -27,31 +29,88 @@ npm run build
 
 # Preview production build
 npm run preview
+
+# Run unit tests
+npm run test        # Watch mode
+npm run test:run    # Single run
+
+# Run E2E tests
+npm run test:e2e    # Headless
+npm run test:e2e:ui # Interactive UI
+```
+
+## Docker Deployment
+
+```bash
+# Build and run all services
+docker compose up --build
+
+# Services:
+# - caddy: Reverse proxy with auto-HTTPS (ports 80, 443)
+# - frontend: React app served via nginx
+# - whisper: Python server with faster-whisper for speech-to-text
 ```
 
 ## Technology Stack
 
-- **Frontend**: React 18 with Vite
+- **Frontend**: React 19 with Vite 7
 - **Styling**: Custom CSS with Tahoma font
 - **Brand Colors**: Magenta `#CC0E70`, Navy Blue `#004A91` (as accents)
 - **Storage**: Browser localStorage (14-day max retention)
 - **Output**: DOCX generation via `docx` package
-- **Voice**: Web Speech API for speech-to-text
+- **Voice Input**:
+  - **Browser**: Transformers.js with Whisper (WebGPU/WASM)
+  - **Server**: faster-whisper Python service (Docker)
+- **Testing**: Vitest (unit) + Playwright (E2E)
+- **CI/CD**: GitHub Actions (security scanning, Docker builds)
 
 ## Project Structure
 
 ```
-hr-performance-app/
-├── src/
-│   ├── components/       # React components (Header, WhatAxis, HowAxis, etc.)
-│   ├── contexts/         # React contexts (FormContext, LanguageContext)
-│   ├── hooks/            # Custom hooks (useVoiceInput)
-│   ├── languages/        # i18n translations (en.json, nl.json, es.json)
-│   ├── utils/            # Utilities (scoring, session, competencies, docxGenerator)
-│   ├── App.jsx           # Main app component
-│   └── App.css           # Global styles
-└── package.json
+tss_ppm/
+├── hr-performance-app/
+│   ├── src/
+│   │   ├── components/       # React components
+│   │   ├── contexts/         # React contexts (Form, Language, Whisper)
+│   │   ├── hooks/            # Custom hooks (useVoiceInput, useBrowserWhisper, useWhisper)
+│   │   ├── languages/        # i18n translations (en.json, nl.json, es.json)
+│   │   ├── utils/            # Utilities (scoring, session, competencies, docxGenerator)
+│   │   ├── test/             # Test setup and utilities
+│   │   ├── App.jsx           # Main app component
+│   │   └── App.css           # Global styles
+│   ├── e2e/                  # Playwright E2E tests
+│   ├── server/               # Whisper server (Python)
+│   └── package.json
+├── Dockerfile.frontend       # Frontend container
+├── Dockerfile.whisper        # Whisper server container
+├── docker-compose.yml        # Multi-service orchestration
+├── Caddyfile                 # Reverse proxy config
+└── .github/workflows/        # CI/CD pipelines
 ```
+
+## Key Components
+
+| Component | Purpose |
+|-----------|---------|
+| `Header.jsx` | App header with logo, language selector, version, sessions link |
+| `EmployeeInfo.jsx` | Employee details form |
+| `WhatAxis.jsx` | Goals & results scoring (up to 9 goals) |
+| `HowAxis.jsx` | Competency scoring based on TOV-Level |
+| `PerformanceGrid.jsx` | 9-grid visualization |
+| `SelfAssessment.jsx` | Employee self-assessment section |
+| `Comments.jsx` | Manager comments section |
+| `Actions.jsx` | Download DOCX, session management |
+| `SessionsList.jsx` | View/manage all saved sessions |
+| `VoiceInputButton.jsx` | Hold-to-dictate voice input |
+| `WhisperLoadingBanner.jsx` | Model download progress indicator |
+
+## Key Contexts
+
+| Context | Purpose |
+|---------|---------|
+| `FormContext` | Form state management, auto-save, session handling |
+| `LanguageContext` | i18n translations, language switching |
+| `WhisperContext` | Shared Whisper model loading, transcription |
 
 ## Scoring System Architecture
 
@@ -71,16 +130,27 @@ hr-performance-app/
 - Grid mapping: A=1, B=2, C=3, D=3
 - Colors: Red (1,1), Orange (edges), Green (center), Dark Green (3,3)
 
-## Key Files
+## Voice Input System
 
-| File | Purpose |
-|------|---------|
-| `HR-Scoring-App-Prompt.md` | Complete requirements document |
-| `IDE-Competency-Framework-Complete.md` | HOW-axis competency data with EN/NL/ES translations |
-| `src/utils/scoring.js` | WHAT/HOW score calculations, validation |
-| `src/utils/session.js` | Session management, localStorage handling |
-| `src/utils/docxGenerator.js` | DOCX report generation |
-| `src/utils/competencies.js` | All 24 competencies with translations |
+The app supports two speech-to-text backends:
+
+### Browser Whisper (Default on Desktop)
+- Uses `@huggingface/transformers` with ONNX models
+- WebGPU backend: `whisper-small` (~500MB)
+- WASM fallback: `whisper-base` (~150MB)
+- Auto-preloads model when browser backend selected
+- Progress tracking via `WhisperLoadingBanner`
+
+### Server Whisper (Mobile/Fallback)
+- faster-whisper Python service in Docker
+- Configurable model size via `WHISPER_MODEL` env var
+- VAD (Voice Activity Detection) enabled
+- 4GB memory limit in Docker
+
+### Backend Selection
+- Auto-detected based on device capabilities
+- Mobile devices always use server backend
+- Toggle in header to switch between browser/server
 
 ## Key Business Rules
 
@@ -95,11 +165,31 @@ hr-performance-app/
 
 - UI and reports: English (en), Spanish (es), Dutch (nl)
 - Translations in `src/languages/` directory
-- Voice input uses Web Speech API with language codes (en-US, nl-NL, es-ES)
-- Language selector persists with session
+- Voice input supports all three languages
+- Language selector with flag icons persists with session
+
+## Testing
+
+### Unit Tests (Vitest)
+- Component tests: `*.test.jsx`
+- Utility tests: `*.test.js`
+- Run: `npm run test:run`
+
+### E2E Tests (Playwright)
+- Full user flow tests in `e2e/`
+- Run: `npm run test:e2e`
+
+## Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DOMAIN` | localhost | Domain for Caddy SSL |
+| `WHISPER_MODEL` | small | Whisper model size |
+| `WHISPER_COMPUTE_TYPE` | int8 | Compute precision |
+| `WHISPER_WORKERS` | 2 | Gunicorn workers |
 
 ## Future Phases
 
-- **Phase 2**: Enhanced UX, dictation mode, rich text editors, mobile optimization
+- **Phase 2**: Rich text editors, mobile optimization, offline support
 - **Phase 3**: Multi-user auth, admin dashboard, analytics
 - **Phase 4**: AFAS HRIS integration, advanced features

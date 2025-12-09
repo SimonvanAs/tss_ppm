@@ -1,0 +1,447 @@
+[1mdiff --git a/hr-performance-app/src/components/Actions.css b/hr-performance-app/src/components/Actions.css[m
+[1mindex 6f6681d..eeae30e 100644[m
+[1m--- a/hr-performance-app/src/components/Actions.css[m
+[1m+++ b/hr-performance-app/src/components/Actions.css[m
+[36m@@ -93,6 +93,19 @@[m
+ }[m
+ [m
+ /* Preview Modal */[m
+[32m+[m[32m.modal-overlay {[m
+[32m+[m[32m  position: fixed;[m
+[32m+[m[32m  top: 0;[m
+[32m+[m[32m  left: 0;[m
+[32m+[m[32m  right: 0;[m
+[32m+[m[32m  bottom: 0;[m
+[32m+[m[32m  background: rgba(0, 0, 0, 0.5);[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  justify-content: center;[m
+[32m+[m[32m  z-index: 1000;[m
+[32m+[m[32m}[m
+[32m+[m
+ .preview-modal {[m
+   background: white;[m
+   border-radius: 8px;[m
+[36m@@ -138,7 +151,7 @@[m
+ }[m
+ [m
+ .preview-document {[m
+[31m-  max-width: 600px;[m
+[32m+[m[32m  max-width: 900px;[m
+   margin: 0 auto;[m
+   font-family: 'Tahoma', sans-serif;[m
+ }[m
+[36m@@ -213,6 +226,221 @@[m
+   border-top: 1px solid #e5e5e5;[m
+ }[m
+ [m
+[32m+[m[32m/* Preview Competency Styles */[m
+[32m+[m[32m.preview-level-info {[m
+[32m+[m[32m  font-weight: 500;[m
+[32m+[m[32m  margin-bottom: 16px;[m
+[32m+[m[32m  color: #666;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-competency {[m
+[32m+[m[32m  margin-bottom: 16px;[m
+[32m+[m[32m  padding: 12px;[m
+[32m+[m[32m  background: #f8f9fa;[m
+[32m+[m[32m  border-radius: 4px;[m
+[32m+[m[32m  border-left: 3px solid #004A91;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-competency-header {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  justify-content: space-between;[m
+[32m+[m[32m  align-items: flex-start;[m
+[32m+[m[32m  margin-bottom: 8px;[m
+[32m+[m[32m  flex-wrap: wrap;[m
+[32m+[m[32m  gap: 8px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-competency-category {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  flex-direction: column;[m
+[32m+[m[32m  gap: 4px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-category-name {[m
+[32m+[m[32m  font-weight: 600;[m
+[32m+[m[32m  color: #004A91;[m
+[32m+[m[32m  font-size: 0.9rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-subcategory-name {[m
+[32m+[m[32m  font-weight: 500;[m
+[32m+[m[32m  color: #666;[m
+[32m+[m[32m  font-size: 0.85rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-competency-score {[m
+[32m+[m[32m  color: #CC0E70;[m
+[32m+[m[32m  font-weight: 500;[m
+[32m+[m[32m  font-size: 0.9rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-competency-title {[m
+[32m+[m[32m  margin: 8px 0;[m
+[32m+[m[32m  color: #333;[m
+[32m+[m[32m  line-height: 1.5;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-competency-note {[m
+[32m+[m[32m  margin-top: 8px;[m
+[32m+[m[32m  padding: 8px;[m
+[32m+[m[32m  background: white;[m
+[32m+[m[32m  border-radius: 4px;[m
+[32m+[m[32m  font-size: 0.9rem;[m
+[32m+[m[32m  color: #555;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-competency-note strong {[m
+[32m+[m[32m  color: #004A91;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m/* Preview Grid Styles */[m
+[32m+[m[32m.preview-grid-container {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  align-items: flex-start;[m
+[32m+[m[32m  gap: 24px;[m
+[32m+[m[32m  padding: 20px;[m
+[32m+[m[32m  background: #f8f9fa;[m
+[32m+[m[32m  border-radius: 8px;[m
+[32m+[m[32m  flex-wrap: wrap;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-grid-wrapper {[m
+[32m+[m[32m  display: grid;[m
+[32m+[m[32m  grid-template-areas:[m
+[32m+[m[32m    ". ylabel yaxis grid ."[m
+[32m+[m[32m    ". . . xaxis ."[m
+[32m+[m[32m    ". . . xlabel .";[m
+[32m+[m[32m  grid-template-columns: 20px 20px 30px 180px 20px;[m
+[32m+[m[32m  grid-template-rows: 180px 30px 20px;[m
+[32m+[m[32m  gap: 4px;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  justify-items: center;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-axis-label {[m
+[32m+[m[32m  font-weight: 600;[m
+[32m+[m[32m  color: #004A91;[m
+[32m+[m[32m  font-size: 0.875rem;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-y-axis-label {[m
+[32m+[m[32m  grid-area: ylabel;[m
+[32m+[m[32m  writing-mode: vertical-rl;[m
+[32m+[m[32m  transform: rotate(180deg);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-x-axis-label {[m
+[32m+[m[32m  grid-area: xlabel;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-y-axis {[m
+[32m+[m[32m  grid-area: yaxis;[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  flex-direction: column;[m
+[32m+[m[32m  justify-content: space-around;[m
+[32m+[m[32m  height: 100%;[m
+[32m+[m[32m  text-align: right;[m
+[32m+[m[32m  font-weight: 500;[m
+[32m+[m[32m  color: #666;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-x-axis {[m
+[32m+[m[32m  grid-area: xaxis;[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  justify-content: space-around;[m
+[32m+[m[32m  width: 100%;[m
+[32m+[m[32m  font-weight: 500;[m
+[32m+[m[32m  color: #666;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-grid {[m
+[32m+[m[32m  grid-area: grid;[m
+[32m+[m[32m  display: grid;[m
+[32m+[m[32m  grid-template-columns: repeat(3, 60px);[m
+[32m+[m[32m  grid-template-rows: repeat(3, 60px);[m
+[32m+[m[32m  gap: 2px;[m
+[32m+[m[32m  background: #333;[m
+[32m+[m[32m  padding: 2px;[m
+[32m+[m[32m  border-radius: 4px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-grid-cell {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  justify-content: center;[m
+[32m+[m[32m  position: relative;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-grid-cell.preview-position {[m
+[32m+[m[32m  box-shadow: inset 0 0 0 3px white;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-position-marker {[m
+[32m+[m[32m  color: white;[m
+[32m+[m[32m  font-size: 24px;[m
+[32m+[m[32m  text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-scores-display {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  flex-direction: column;[m
+[32m+[m[32m  gap: 16px;[m
+[32m+[m[32m  padding: 20px;[m
+[32m+[m[32m  background: white;[m
+[32m+[m[32m  border-radius: 8px;[m
+[32m+[m[32m  border: 1px solid #e5e5e5;[m
+[32m+[m[32m  min-width: 200px;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-score-item {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  justify-content: space-between;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-score-name {[m
+[32m+[m[32m  font-weight: 500;[m
+[32m+[m[32m  color: #666;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-score-value {[m
+[32m+[m[32m  font-size: 1.5rem;[m
+[32m+[m[32m  font-weight: 700;[m
+[32m+[m[32m  color: #004A91;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-position-info {[m
+[32m+[m[32m  font-size: 0.9rem;[m
+[32m+[m[32m  color: #666;[m
+[32m+[m[32m  margin-top: 8px;[m
+[32m+[m[32m  padding-top: 8px;[m
+[32m+[m[32m  border-top: 1px solid #e5e5e5;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-grid-legend {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  flex-wrap: wrap;[m
+[32m+[m[32m  gap: 16px;[m
+[32m+[m[32m  margin-top: 16px;[m
+[32m+[m[32m  padding-top: 16px;[m
+[32m+[m[32m  border-top: 1px solid #e5e5e5;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-legend-item {[m
+[32m+[m[32m  display: flex;[m
+[32m+[m[32m  align-items: center;[m
+[32m+[m[32m  gap: 8px;[m
+[32m+[m[32m  font-size: 0.9rem;[m
+[32m+[m[32m  color: #666;[m
+[32m+[m[32m}[m
+[32m+[m
+[32m+[m[32m.preview-legend-color {[m
+[32m+[m[32m  width: 16px;[m
+[32m+[m[32m  height: 16px;[m
+[32m+[m[32m  border-radius: 2px;[m
+[32m+[m[32m  display: inline-block;[m
+[32m+[m[32m}[m
+[32m+[m
+ @media (max-width: 768px) {[m
+   .actions-container {[m
+     flex-direction: column;[m
+[36m@@ -221,4 +449,16 @@[m
+   .action-button {[m
+     width: 100%;[m
+   }[m
+[32m+[m
+[32m+[m[32m  .preview-grid-container {[m
+[32m+[m[32m    flex-direction: column;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  .preview-grid-wrapper {[m
+[32m+[m[32m    margin: 0 auto;[m
+[32m+[m[32m  }[m
+[32m+[m
+[32m+[m[32m  .preview-scores-display {[m
+[32m+[m[32m    width: 100%;[m
+[32m+[m[32m  }[m
+ }[m
+[1mdiff --git a/hr-performance-app/src/components/Actions.jsx b/hr-performance-app/src/components/Actions.jsx[m
+[1mindex a655b7d..34eba49 100644[m
+[1m--- a/hr-performance-app/src/components/Actions.jsx[m
+[1m+++ b/hr-performance-app/src/components/Actions.jsx[m
+[36m@@ -2,6 +2,14 @@[m [mimport { useState, useEffect } from 'react';[m
+ import { useLanguage } from '../contexts/LanguageContext';[m
+ import { useForm } from '../contexts/FormContext';[m
+ import { generateReport } from '../utils/docxGenerator';[m
+[32m+[m[32mimport { competencies, levelDescriptions } from '../utils/competencies';[m
+[32m+[m[32mimport {[m
+[32m+[m[32m  calculateWhatScore,[m
+[32m+[m[32m  calculateHowScore,[m
+[32m+[m[32m  roundToGridPosition,[m
+[32m+[m[32m  mapLevelToGrid,[m
+[32m+[m[32m  getGridColor[m
+[32m+[m[32m} from '../utils/scoring';[m
+ import './Actions.css';[m
+ [m
+ export function Actions() {[m
+[36m@@ -110,6 +118,31 @@[m [mexport function Actions() {[m
+ function PreviewModal({ formData, sessionCode, onClose }) {[m
+   const { t, language } = useLanguage();[m
+ [m
+[32m+[m[32m  const selectedLevel = formData.tovLevel;[m
+[32m+[m[32m  const levelCompetencies = selectedLevel ? competencies[selectedLevel] : [];[m
+[32m+[m
+[32m+[m[32m  // Calculate scores for grid[m
+[32m+[m[32m  const whatScore = calculateWhatScore(formData.goals || []);[m
+[32m+[m[32m  const howScore = calculateHowScore(formData.competencyScores || {});[m
+[32m+[m[32m  const levelPosition = mapLevelToGrid(formData.tovLevel);[m
+[32m+[m[32m  const whatPosition = whatScore ? roundToGridPosition(whatScore) : null;[m
+[32m+[m[32m  const howPosition = howScore ? roundToGridPosition(howScore) : levelPosition;[m
+[32m+[m
+[32m+[m[32m  // Generate grid cells[m
+[32m+[m[32m  const gridCells = [];[m
+[32m+[m[32m  for (let what = 3; what >= 1; what--) {[m
+[32m+[m[32m    for (let how = 1; how <= 3; how++) {[m
+[32m+[m[32m      const isPosition = whatPosition === what && howPosition === how;[m
+[32m+[m[32m      const color = getGridColor(what, how);[m
+[32m+[m[32m      gridCells.push({[m
+[32m+[m[32m        what,[m
+[32m+[m[32m        how,[m
+[32m+[m[32m        isPosition,[m
+[32m+[m[32m        color[m
+[32m+[m[32m      });[m
+[32m+[m[32m    }[m
+[32m+[m[32m  }[m
+[32m+[m
+   return ([m
+     <div className="modal-overlay" onClick={onClose}>[m
+       <div className="preview-modal" onClick={(e) => e.stopPropagation()}>[m
+[36m@@ -159,7 +192,122 @@[m [mfunction PreviewModal({ formData, sessionCode, onClose }) {[m
+ [m
+             <div className="preview-section">[m
+               <h3>{t('howAxis.title')}</h3>[m
+[31m-              <p>Level: {formData.tovLevel}</p>[m
+[32m+[m[32m              {formData.tovLevel && ([m
+[32m+[m[32m                <div className="preview-level-info">[m
+[32m+[m[32m                  <p className="preview-level-badge">[m
+[32m+[m[32m                    <strong>Level {formData.tovLevel}:</strong> {levelDescriptions[formData.tovLevel]?.[language] || levelDescriptions[formData.tovLevel]?.en || ''}[m
+[32m+[m[32m                  </p>[m
+[32m+[m[32m                </div>[m
+[32m+[m[32m              )}[m
+[32m+[m[32m              {levelCompetencies.map((comp) => {[m
+[32m+[m[32m                const score = formData.competencyScores?.[comp.id];[m
+[32m+[m[32m                const note = formData.competencyNotes?.[comp.id];[m
+[32m+[m[32m                return ([m
+[32m+[m[32m                  <div key={comp.id} className="preview-competency">[m
+[32m+[m[32m                    <div className="preview-competency-header">[m
+[32m+[m[32m                      <div className="preview-competency-category">[m
+[32m+[m[32m                        <span className="preview-category-name">{comp.category}</span>[m
+[32m+[m[32m                        <span className="preview-subcategory-name">{comp.subcategory}</span>[m
+[32m+[m[32m                      </div>[m
+[32m+[m[32m                      {score && ([m
+[32m+[m[32m                        <span className="preview-competency-score">[m
+[32m+[m[32m                          Score: {score} - {t(`scores.${score}`)}[m
+[32m+[m[32m                        </span>[m
+[32m+[m[32m                      )}[m
+[32m+[m[32m                    </div>[m
+[32m+[m[32m                    <p className="preview-competency-title">[m
+[32m+[m[32m                      {comp.title[language] || comp.title.en}[m
+[32m+[m[32m                    </p>[m
+[32m+[m[32m                    {note && ([m
+[32m+[m[32m                      <div className="preview-competency-note">[m
+[32m+[m[32m                        <strong>Note:</strong> {note}[m
+[32m+[m[32m                      </div>[m
+[32m+[m[32m                    )}[m
+[32m+[m[32m                  </div>[m
+[32m+[m[32m                );[m
+[32m+[m[32m              })}[m
+[32m+[m[32m            </div>[m
+[32m+[m
+[32m+[m[32m            {/* 9-Grid Visualization */}[m
+[32m+[m[32m            <div className="preview-section">[m
+[32m+[m[32m              <h3>{t('grid.title')}</h3>[m
+[32m+[m[32m              <div className="preview-grid-container">[m
+[32m+[m[32m                <div className="preview-grid-wrapper">[m
+[32m+[m[32m                  {/* Y-axis label */}[m
+[32m+[m[32m                  <div className="preview-axis-label preview-y-axis-label">WHAT</div>[m
+[32m+[m
+[32m+[m[32m                  {/* Y-axis numbers */}[m
+[32m+[m[32m                  <div className="preview-y-axis">[m
+[32m+[m[32m                    <span>3</span>[m
+[32m+[m[32m                    <span>2</span>[m
+[32m+[m[32m                    <span>1</span>[m
+[32m+[m[32m                  </div>[m
+[32m+[m
+[32m+[m[32m                  {/* Grid */}[m
+[32m+[m[32m                  <div className="preview-grid">[m
+[32m+[m[32m                    {gridCells.map((cell, idx) => ([m
+[32m+[m[32m                      <div[m
+[32m+[m[32m                        key={idx}[m
+[32m+[m[32m                        className={`preview-grid-cell ${cell.isPosition ? 'preview-position' : ''}`}[m
+[32m+[m[32m                        style={{ backgroundColor: cell.color }}[m
+[32m+[m[32m                      >[m
+[32m+[m[32m                        {cell.isPosition && <div className="preview-position-marker">●</div>}[m
+[32m+[m[32m                      </div>[m
+[32m+[m[32m                    ))}[m
+[32m+[m[32m                  </div>[m
+[32m+[m
+[32m+[m[32m                  {/* X-axis numbers */}[m
+[32m+[m[32m                  <div className="preview-x-axis">[m
+[32m+[m[32m                    <span>1</span>[m
+[32m+[m[32m                    <span>2</span>[m
+[32m+[m[32m                    <span>3</span>[m
+[32m+[m[32m                  </div>[m
+[32m+[m
+[32m+[m[32m                  {/* X-axis label */}[m
+[32m+[m[32m                  <div className="preview-axis-label preview-x-axis-label">HOW</div>[m
+[32m+[m[32m                </div>[m
+[32m+[m
+[32m+[m[32m                {/* Scores display */}[m
+[32m+[m[32m                <div className="preview-scores-display">[m
+[32m+[m[32m                  <div className="preview-score-item">[m
+[32m+[m[32m                    <span className="preview-score-name">{t('grid.whatScore')}:</span>[m
+[32m+[m[32m                    <span className="preview-score-value">[m
+[32m+[m[32m                      {whatScore !== null ? whatScore.toFixed(2) : '-'}[m
+[32m+[m[32m                    </span>[m
+[32m+[m[32m                  </div>[m
+[32m+[m[32m                  <div className="preview-score-item">[m
+[32m+[m[32m                    <span className="preview-score-name">{t('grid.howScore')}:</span>[m
+[32m+[m[32m                    <span className="preview-score-value">[m
+[32m+[m[32m                      {howScore !== null ? howScore.toFixed(2) : '-'}[m
+[32m+[m[32m                    </span>[m
+[32m+[m[32m                  </div>[m
+[32m+[m[32m                  {whatPosition && howPosition && ([m
+[32m+[m[32m                    <div className="preview-position-info">[m
+[32m+[m[32m                      <span>{t('grid.position')}: ({whatPosition}, {howPosition})</span>[m
+[32m+[m[32m                    </div>[m
+[32m+[m[32m                  )}[m
+[32m+[m[32m                </div>[m
+[32m+[m[32m              </div>[m
+[32m+[m
+[32m+[m[32m              {/* Legend */}[m
+[32m+[m[32m              <div className="preview-grid-legend">[m
+[32m+[m[32m                <div className="preview-legend-item">[m
+[32m+[m[32m                  <span className="preview-legend-color" style={{ backgroundColor: '#DC3545' }} />[m
+[32m+[m[32m                  <span>Immediate attention</span>[m
+[32m+[m[32m                </div>[m
+[32m+[m[32m                <div className="preview-legend-item">[m
+[32m+[m[32m                  <span className="preview-legend-color" style={{ backgroundColor: '#FFA500' }} />[m
+[32m+[m[32m                  <span>Development area</span>[m
+[32m+[m[32m                </div>[m
+[32m+[m[32m                <div className="preview-legend-item">[m
+[32m+[m[32m                  <span className="preview-legend-color" style={{ backgroundColor: '#28A745' }} />[m
+[32m+[m[32m                  <span>Good performance</span>[m
+[32m+[m[32m                </div>[m
+[32m+[m[32m                <div className="preview-legend-item">[m
+[32m+[m[32m                  <span className="preview-legend-color" style={{ backgroundColor: '#1B5E20' }} />[m
+[32m+[m[32m                  <span>Exceptional</span>[m
+[32m+[m[32m                </div>[m
+[32m+[m[32m              </div>[m
+             </div>[m
+ [m
+             {formData.selfAssessment && ([m

@@ -1,0 +1,175 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e6]: ⚠️
+    - generic [ref=e7]:
+      - strong [ref=e8]: Browser Storage Only
+      - paragraph [ref=e9]: Your data is stored locally in this browser only. Use your Session Code to resume on this device. Data cannot be transferred to other browsers or devices. Clearing your browser cache will delete all saved forms.
+    - button "Dismiss" [ref=e10] [cursor=pointer]: ✕
+  - banner [ref=e11]:
+    - generic [ref=e12]:
+      - generic [ref=e13]:
+        - img "Total Specific Solutions"
+        - heading "Performance Review" [level=1] [ref=e14]
+      - generic [ref=e19]: 6% Complete
+      - generic [ref=e21]:
+        - generic [ref=e22]:
+          - button "English" [ref=e23] [cursor=pointer]:
+            - img [ref=e24]
+          - button "Nederlands" [ref=e31] [cursor=pointer]:
+            - img [ref=e32]
+          - button "Español" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+        - generic [ref=e40]: TSS PPM generator v1.2.0
+    - generic [ref=e41]:
+      - generic [ref=e42]:
+        - generic [ref=e43]: "Session Code:"
+        - generic [ref=e44]: 87C0F83625
+        - button "Copy" [ref=e45] [cursor=pointer]
+        - button "My Sessions" [ref=e46] [cursor=pointer]
+      - button "Resume Another Session" [ref=e48] [cursor=pointer]
+  - main [ref=e49]:
+    - generic [ref=e50]:
+      - heading "Employee Information" [level=2] [ref=e51]
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - generic [ref=e54]: Employee Name *
+          - generic [ref=e55]:
+            - textbox "Employee Name *" [ref=e56]:
+              - /placeholder: Enter employee name
+            - button "Hold to speak" [disabled] [ref=e58]:
+              - img [ref=e60]
+        - generic [ref=e65]:
+          - generic [ref=e66]: Function Title / Role *
+          - generic [ref=e67]:
+            - textbox "Function Title / Role *" [ref=e68]:
+              - /placeholder: Enter function title
+            - button "Hold to speak" [disabled] [ref=e70]:
+              - img [ref=e72]
+        - generic [ref=e77]:
+          - generic [ref=e78]: Business Unit *
+          - generic [ref=e79]:
+            - textbox "Business Unit *" [ref=e80]:
+              - /placeholder: Enter business unit
+            - button "Hold to speak" [disabled] [ref=e82]:
+              - img [ref=e84]
+        - generic [ref=e89]:
+          - generic [ref=e90]: IDE-Level *
+          - combobox "IDE-Level *" [ref=e91] [cursor=pointer]:
+            - option "Select level" [selected]
+            - option "A"
+            - option "B"
+            - option "C"
+            - option "D"
+        - generic [ref=e92]:
+          - generic [ref=e93]: Review Date *
+          - textbox "Review Date *" [ref=e94]: 2025-12-08
+        - generic [ref=e95]:
+          - generic [ref=e96]: Manager Name
+          - generic [ref=e97]:
+            - textbox "Manager Name" [ref=e98]:
+              - /placeholder: Enter manager name
+            - button "Hold to speak" [disabled] [ref=e100]:
+              - img [ref=e102]
+    - generic [ref=e107]:
+      - heading "Executive Summary" [level=2] [ref=e108]
+      - generic [ref=e110]:
+        - textbox "Enter executive summary of performance..." [ref=e111]
+        - button "Hold to speak" [disabled] [ref=e113]:
+          - img [ref=e115]
+    - generic [ref=e120]:
+      - 'heading "WHAT-Axis: Goals & Results" [level=2] [ref=e121]'
+      - generic [ref=e123]:
+        - generic [ref=e124]:
+          - generic "Drag to reorder" [ref=e125]: ☰
+          - generic [ref=e126]: "#1"
+        - generic [ref=e127]:
+          - generic [ref=e128]:
+            - generic [ref=e129]: Goal Title
+            - generic [ref=e130]:
+              - textbox "SMART formulated goal" [ref=e131]
+              - button "Hold to speak" [disabled] [ref=e133]:
+                - img [ref=e135]
+          - generic [ref=e140]:
+            - generic [ref=e141]: Description
+            - generic [ref=e142]:
+              - textbox "Describe the goal..." [ref=e143]
+              - button "Hold to speak" [disabled] [ref=e145]:
+                - img [ref=e147]
+          - generic [ref=e152]:
+            - generic [ref=e153]:
+              - generic [ref=e154]: Score
+              - combobox [ref=e155] [cursor=pointer]:
+                - option "-" [selected]
+                - option "1 - Below expectations"
+                - option "2 - Meets expectations"
+                - option "3 - Exceeds expectations"
+            - generic [ref=e156]:
+              - generic [ref=e157]: Weight (%)
+              - spinbutton [ref=e158]
+      - generic [ref=e159]:
+        - generic [ref=e161]: "Total Weight: 0%"
+        - button "+ Add Goal" [ref=e162] [cursor=pointer]
+    - generic [ref=e163]:
+      - 'heading "HOW-Axis: Competencies" [level=2] [ref=e164]'
+      - paragraph [ref=e166]: Please select an IDE-Level
+    - generic [ref=e167]:
+      - heading "Performance Grid" [level=2] [ref=e168]
+      - generic [ref=e169]:
+        - generic [ref=e170]:
+          - generic [ref=e171]: WHAT
+          - generic [ref=e172]:
+            - generic [ref=e173]: "3"
+            - generic [ref=e174]: "2"
+            - generic [ref=e175]: "1"
+          - generic [ref=e186]:
+            - generic [ref=e187]: "1"
+            - generic [ref=e188]: "2"
+            - generic [ref=e189]: "3"
+          - generic [ref=e190]: HOW
+        - generic [ref=e191]:
+          - generic [ref=e192]:
+            - generic [ref=e193]: "WHAT Score:"
+            - generic [ref=e194]: "-"
+          - generic [ref=e195]:
+            - generic [ref=e196]: "HOW Score:"
+            - generic [ref=e197]: "-"
+      - generic [ref=e198]:
+        - generic [ref=e201]: Immediate attention
+        - generic [ref=e204]: Development area
+        - generic [ref=e207]: Good performance
+        - generic [ref=e210]: Exceptional
+    - generic [ref=e211]:
+      - heading "Employee Self-Assessment" [level=2] [ref=e212]
+      - generic [ref=e214]:
+        - textbox "Enter employee's self-assessment as discussed during review meeting..." [ref=e215]
+        - button "Hold to speak" [disabled] [ref=e217]:
+          - img [ref=e219]
+    - generic [ref=e224]:
+      - heading "Additional Comments" [level=2] [ref=e225]
+      - generic [ref=e227]:
+        - textbox "Enter additional notes, development areas, action items..." [ref=e228]
+        - button "Hold to speak" [disabled] [ref=e230]:
+          - img [ref=e232]
+    - generic [ref=e238]:
+      - button "Preview Report" [ref=e239] [cursor=pointer]
+      - button "Download Draft Report" [ref=e240] [cursor=pointer]
+      - button "Download Final Report" [ref=e241] [cursor=pointer]
+      - button "Clear Session" [ref=e242] [cursor=pointer]
+  - contentinfo [ref=e243]:
+    - generic [ref=e244]: Made with AI assistance
+    - generic [ref=e245]:
+      - button "Privacy Policy" [ref=e246] [cursor=pointer]
+      - generic [ref=e247]: "|"
+      - link "View source code on GitHub" [ref=e248] [cursor=pointer]:
+        - /url: https://github.com/SimonvanAs/tss_ppm
+  - generic [ref=e250]:
+    - img [ref=e252]
+    - generic [ref=e257]:
+      - generic [ref=e258]: Preparing dictation...
+      - generic [ref=e259]: "Downloading: 36%"
+      - generic [ref=e260]: One-time download per browser
+    - generic [ref=e263]: 36%
+```

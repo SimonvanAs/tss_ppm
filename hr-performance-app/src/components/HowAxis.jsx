@@ -1,5 +1,6 @@
 import { useLanguage } from '../contexts/LanguageContext';
 import { useForm } from '../contexts/FormContext';
+import { VoiceInputButton } from './VoiceInputButton';
 import { competencies, levelDescriptions } from '../utils/competencies';
 import './HowAxis.css';
 
@@ -9,6 +10,11 @@ export function HowAxis() {
 
   const selectedLevel = formData.tovLevel;
   const levelCompetencies = selectedLevel ? competencies[selectedLevel] : [];
+
+  const handleVoiceInput = (competencyId) => (transcript) => {
+    const currentNote = formData.competencyNotes?.[competencyId] || '';
+    updateCompetencyNote(competencyId, currentNote ? `${currentNote} ${transcript}` : transcript);
+  };
 
   if (!selectedLevel) {
     return (
@@ -86,13 +92,16 @@ export function HowAxis() {
             </div>
 
             <div className="competency-notes">
-              <textarea
-                className="competency-note-input"
-                placeholder={t('howAxis.notePlaceholder')}
-                value={formData.competencyNotes?.[comp.id] || ''}
-                onChange={(e) => updateCompetencyNote(comp.id, e.target.value)}
-                rows={2}
-              />
+              <div className="textarea-with-voice">
+                <textarea
+                  className="competency-note-input"
+                  placeholder={t('howAxis.notePlaceholder')}
+                  value={formData.competencyNotes?.[comp.id] || ''}
+                  onChange={(e) => updateCompetencyNote(comp.id, e.target.value)}
+                  rows={2}
+                />
+                <VoiceInputButton onTranscript={handleVoiceInput(comp.id)} />
+              </div>
             </div>
           </div>
         ))}

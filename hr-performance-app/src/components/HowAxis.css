@@ -201,8 +201,14 @@
   margin-top: 12px;
 }
 
+.how-axis .textarea-with-voice {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+
 .competency-note-input {
-  width: 100%;
+  flex: 1;
   padding: 8px 12px;
   border: 1px solid #ddd;
   border-radius: 4px;

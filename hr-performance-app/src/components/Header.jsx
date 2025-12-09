@@ -2,12 +2,14 @@ import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useForm } from '../contexts/FormContext';
 import { useWhisperContext } from '../contexts/WhisperContext';
+import { useAuth } from '../contexts/AuthContext';
 import './Header.css';
 
 export function Header({ onShowSessions }) {
   const { activeBackend, setActiveBackend, isModelLoading } = useWhisperContext();
   const { t, language, setLanguage, languageNames, availableLanguages } = useLanguage();
   const { sessionCode, progress, lastSaved, resumeSession, updateFormData } = useForm();
+  const { user, logout, isAuthenticated } = useAuth();
   const [showResumeModal, setShowResumeModal] = useState(false);
   const [resumeCode, setResumeCode] = useState('');
   const [resumeError, setResumeError] = useState('');
@@ -140,8 +142,24 @@ export function Header({ onShowSessions }) {
                   </button>
                 ))}
               </div>
-              <span className="version-label">TSS PPM generator v1.2.1</span>
+              <span className="version-label">TSS PPM generator v2.0.0</span>
             </div>
+
+            {isAuthenticated && user && (
+              <div className="user-menu">
+                <span className="user-name" title={user.email}>
+                  {user.displayName || user.email}
+                </span>
+                <span className="user-role">{user.role}</span>
+                <button
+                  className="logout-button"
+                  onClick={() => logout()}
+                  title="Logout"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

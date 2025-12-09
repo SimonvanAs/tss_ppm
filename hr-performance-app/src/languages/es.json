@@ -1,4 +1,111 @@
 {
+  "nav": {
+    "myReviews": "Mis Evaluaciones",
+    "team": "Equipo",
+    "approvals": "Aprobaciones",
+    "hrDashboard": "Panel de RRHH",
+    "allReviews": "Todas las Evaluaciones",
+    "admin": "Administrar"
+  },
+  "pages": {
+    "myReviews": {
+      "title": "Mis Evaluaciones",
+      "newReview": "Nueva Evaluación",
+      "noReviews": "No se encontraron evaluaciones",
+      "startFirst": "Inicie su primera evaluación de desempeño",
+      "year": "Año",
+      "status": "Estado",
+      "stage": "Etapa Actual",
+      "whatScore": "Puntuación QUÉ",
+      "howScore": "Puntuación CÓMO",
+      "lastUpdated": "Última Actualización",
+      "actions": "Acciones",
+      "view": "Ver",
+      "continue": "Continuar",
+      "loading": "Cargando evaluaciones..."
+    },
+    "team": {
+      "title": "Resumen del Equipo",
+      "subtitle": "Reportes directos y sus evaluaciones de desempeño",
+      "noReports": "No se encontraron reportes directos",
+      "employee": "Empleado",
+      "role": "Rol",
+      "currentReview": "Evaluación Actual",
+      "status": "Estado",
+      "actions": "Acciones",
+      "viewReview": "Ver Evaluación",
+      "startReview": "Iniciar Evaluación",
+      "noActiveReview": "Sin evaluación activa"
+    },
+    "approvals": {
+      "title": "Aprobaciones Pendientes",
+      "subtitle": "Cambios de objetivos y completación de etapas que requieren su aprobación",
+      "noApprovals": "No hay aprobaciones pendientes",
+      "goalChanges": "Solicitudes de Cambio de Objetivos",
+      "stageCompletions": "Completación de Etapas",
+      "employee": "Empleado",
+      "type": "Tipo",
+      "description": "Descripción",
+      "requestedOn": "Solicitado",
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "addGoal": "Agregar Objetivo",
+      "editGoal": "Editar Objetivo",
+      "deleteGoal": "Eliminar Objetivo"
+    },
+    "hrDashboard": {
+      "title": "Panel de RRHH",
+      "subtitle": "Resumen del desempeño organizacional",
+      "totalEmployees": "Total de Empleados",
+      "activeReviews": "Evaluaciones Activas",
+      "completedReviews": "Completadas",
+      "pendingApprovals": "Aprobaciones Pendientes",
+      "byStage": "Evaluaciones por Etapa",
+      "byScore": "Distribución de Puntuaciones",
+      "recentActivity": "Actividad Reciente"
+    },
+    "allReviews": {
+      "title": "Todas las Evaluaciones",
+      "subtitle": "Gestión de evaluaciones a nivel organizacional",
+      "filters": "Filtros",
+      "year": "Año",
+      "status": "Estado",
+      "department": "Departamento",
+      "search": "Buscar empleado...",
+      "export": "Exportar"
+    }
+  },
+  "review": {
+    "stages": {
+      "DRAFT": "Borrador",
+      "GOAL_SETTING": "Definición de Objetivos",
+      "GOAL_SETTING_COMPLETE": "Objetivos Bloqueados",
+      "MID_YEAR_REVIEW": "Evaluación de Medio Año",
+      "MID_YEAR_COMPLETE": "Medio Año Completado",
+      "END_YEAR_REVIEW": "Evaluación de Fin de Año",
+      "COMPLETED": "Completado"
+    },
+    "status": {
+      "draft": "Borrador",
+      "inProgress": "En Progreso",
+      "completed": "Completado",
+      "locked": "Bloqueado"
+    },
+    "goalChange": {
+      "title": "Solicitar Cambio de Objetivo",
+      "reason": "Razón del cambio",
+      "reasonPlaceholder": "Explique por qué se necesita este cambio...",
+      "submit": "Enviar Solicitud",
+      "pending": "Solicitud de cambio pendiente de aprobación",
+      "approved": "Cambio aprobado",
+      "rejected": "Cambio rechazado"
+    },
+    "stageInfo": {
+      "goalSetting": "Establecer y definir los objetivos de desempeño para el período de evaluación",
+      "midYear": "Revisión y puntuación del progreso de medio año",
+      "endYear": "Evaluación final del desempeño de fin de año"
+    }
+  },
   "app": {
     "title": "Evaluación de Desempeño",
     "progress": "Completo",

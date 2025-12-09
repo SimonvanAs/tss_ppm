@@ -1,4 +1,10 @@
+# TSS PPM - Multi-tenant Performance Review System
+# Docker Compose configuration for all services
+
 services:
+  # ============================================
+  # REVERSE PROXY
+  # ============================================
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
@@ -11,11 +17,16 @@ services:
       - caddy-config:/config
     depends_on:
       - frontend
+      - api
+      - keycloak
     networks:
       - tss-ppm
     environment:
       - DOMAIN=${DOMAIN:-localhost}
 
+  # ============================================
+  # FRONTEND (React SPA)
+  # ============================================
   frontend:
     build:
       context: .
@@ -24,8 +35,47 @@ services:
     networks:
       - tss-ppm
     depends_on:
-      - whisper
+      - api
+    environment:
+      - VITE_API_URL=/api/v1
+      - VITE_KEYCLOAK_URL=/auth
+      - VITE_KEYCLOAK_REALM=tss-ppm
+      - VITE_KEYCLOAK_CLIENT_ID=tss-ppm-frontend
 
+  # ============================================
+  # BACKEND API (Fastify + Prisma)
+  # ============================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    restart: unless-stopped
+    networks:
+      - tss-ppm
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - LOG_LEVEL=info
+      - DATABASE_URL=postgresql://ppm:${DB_PASSWORD:-changeme}@postgres:5432/tss_ppm
+      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_REALM=tss-ppm
+      - KEYCLOAK_CLIENT_ID=tss-ppm-api
+      - CORS_ORIGINS=https://${DOMAIN:-localhost}
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/v1/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ============================================
+  # WHISPER (Speech-to-Text)
+  # ============================================
   whisper:
     build:
       context: .
@@ -34,34 +84,91 @@ services:
     networks:
       - tss-ppm
     volumes:
-      # Cache the model to avoid re-downloading
       - whisper-cache:/root/.cache/huggingface
     environment:
       - WHISPER_MODEL=small
       - WHISPER_COMPUTE_TYPE=int8
       - WHISPER_WORKERS=2
-    # Resource limits (adjust based on VPS specs)
-    # faster-whisper 1.2.1 with Silero-VAD V6 needs more memory
     deploy:
       resources:
         limits:
           memory: 4G
         reservations:
           memory: 2G
-    # Optional: uncomment for GPU support (requires nvidia-docker)
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
+
+  # ============================================
+  # DATABASE (PostgreSQL)
+  # ============================================
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    networks:
+      - tss-ppm
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    environment:
+      - POSTGRES_USER=ppm
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-changeme}
+      - POSTGRES_DB=tss_ppm
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ppm -d tss_ppm"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # Security: Don't expose port externally in production
+    # Uncomment for local development:
+    # ports:
+    #   - "5432:5432"
+
+  # ============================================
+  # IDENTITY PROVIDER (Keycloak)
+  # ============================================
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0
+    restart: unless-stopped
+    command: start --optimized --proxy-headers=xforwarded --http-enabled=true
+    networks:
+      - tss-ppm
+    volumes:
+      - keycloak-data:/opt/keycloak/data
+      - ./keycloak:/opt/keycloak/data/import:ro
+    environment:
+      # Database (uses same PostgreSQL instance)
+      - KC_DB=postgres
+      - KC_DB_URL=jdbc:postgresql://postgres:5432/keycloak
+      - KC_DB_USERNAME=ppm
+      - KC_DB_PASSWORD=${DB_PASSWORD:-changeme}
+      # Keycloak settings
+      - KC_HOSTNAME=${DOMAIN:-localhost}
+      - KC_HOSTNAME_PATH=/auth
+      - KC_HTTP_RELATIVE_PATH=/auth
+      - KC_PROXY=edge
+      - KC_HTTP_ENABLED=true
+      # Admin credentials
+      - KEYCLOAK_ADMIN=${KC_ADMIN:-admin}
+      - KEYCLOAK_ADMIN_PASSWORD=${KC_ADMIN_PASSWORD:-changeme}
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/8080;echo -e 'GET /auth/health/ready HTTP/1.1\\r\\nhost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3;if timeout 5 grep -q '200 OK' <&3; then exit 0; else exit 1; fi"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Security: Don't expose port externally in production
+    # Uncomment for local development:
+    # ports:
+    #   - "8080:8080"
 
 networks:
   tss-ppm:
     driver: bridge
 
 volumes:
+  postgres-data:
+  keycloak-data:
   whisper-cache:
   caddy-data:
   caddy-config:

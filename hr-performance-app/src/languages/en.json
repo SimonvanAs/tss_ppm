@@ -1,4 +1,111 @@
 {
+  "nav": {
+    "myReviews": "My Reviews",
+    "team": "Team",
+    "approvals": "Approvals",
+    "hrDashboard": "HR Dashboard",
+    "allReviews": "All Reviews",
+    "admin": "Admin"
+  },
+  "pages": {
+    "myReviews": {
+      "title": "My Reviews",
+      "newReview": "New Review",
+      "noReviews": "No reviews found",
+      "startFirst": "Start your first performance review",
+      "year": "Year",
+      "status": "Status",
+      "stage": "Current Stage",
+      "whatScore": "WHAT Score",
+      "howScore": "HOW Score",
+      "lastUpdated": "Last Updated",
+      "actions": "Actions",
+      "view": "View",
+      "continue": "Continue",
+      "loading": "Loading reviews..."
+    },
+    "team": {
+      "title": "Team Overview",
+      "subtitle": "Direct reports and their performance reviews",
+      "noReports": "No direct reports found",
+      "employee": "Employee",
+      "role": "Role",
+      "currentReview": "Current Review",
+      "status": "Status",
+      "actions": "Actions",
+      "viewReview": "View Review",
+      "startReview": "Start Review",
+      "noActiveReview": "No active review"
+    },
+    "approvals": {
+      "title": "Pending Approvals",
+      "subtitle": "Goal changes and stage completions requiring your approval",
+      "noApprovals": "No pending approvals",
+      "goalChanges": "Goal Change Requests",
+      "stageCompletions": "Stage Completions",
+      "employee": "Employee",
+      "type": "Type",
+      "description": "Description",
+      "requestedOn": "Requested",
+      "approve": "Approve",
+      "reject": "Reject",
+      "addGoal": "Add Goal",
+      "editGoal": "Edit Goal",
+      "deleteGoal": "Delete Goal"
+    },
+    "hrDashboard": {
+      "title": "HR Dashboard",
+      "subtitle": "Organization performance overview",
+      "totalEmployees": "Total Employees",
+      "activeReviews": "Active Reviews",
+      "completedReviews": "Completed",
+      "pendingApprovals": "Pending Approvals",
+      "byStage": "Reviews by Stage",
+      "byScore": "Score Distribution",
+      "recentActivity": "Recent Activity"
+    },
+    "allReviews": {
+      "title": "All Reviews",
+      "subtitle": "Organization-wide review management",
+      "filters": "Filters",
+      "year": "Year",
+      "status": "Status",
+      "department": "Department",
+      "search": "Search employee...",
+      "export": "Export"
+    }
+  },
+  "review": {
+    "stages": {
+      "DRAFT": "Draft",
+      "GOAL_SETTING": "Goal Setting",
+      "GOAL_SETTING_COMPLETE": "Goals Locked",
+      "MID_YEAR_REVIEW": "Mid-Year Review",
+      "MID_YEAR_COMPLETE": "Mid-Year Complete",
+      "END_YEAR_REVIEW": "End-Year Review",
+      "COMPLETED": "Completed"
+    },
+    "status": {
+      "draft": "Draft",
+      "inProgress": "In Progress",
+      "completed": "Completed",
+      "locked": "Locked"
+    },
+    "goalChange": {
+      "title": "Request Goal Change",
+      "reason": "Reason for change",
+      "reasonPlaceholder": "Explain why this change is needed...",
+      "submit": "Submit Request",
+      "pending": "Change request pending approval",
+      "approved": "Change approved",
+      "rejected": "Change rejected"
+    },
+    "stageInfo": {
+      "goalSetting": "Set and define performance goals for the review period",
+      "midYear": "Mid-year progress review and scoring",
+      "endYear": "Final year-end performance evaluation"
+    }
+  },
   "app": {
     "title": "Performance Review",
     "progress": "Complete",

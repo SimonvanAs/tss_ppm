@@ -1,0 +1,404 @@
+// TSS PPM Performance Review System - Database Schema
+// Multi-tenant architecture with Row-Level Security via opcoId
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// TENANT & USER MANAGEMENT
+// ============================================
+
+/// Operating Company (Tenant)
+model OpCo {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  displayName String
+  domain      String?  // For email domain mapping
+  isActive    Boolean  @default(true)
+  settings    Json     @default("{}")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users            User[]
+  functionTitles   FunctionTitle[]
+  tovLevels        TovLevel[]
+  competencyLevels CompetencyLevel[]
+  reviewCycles     ReviewCycle[]
+
+  @@map("opcos")
+}
+
+/// User account linked to Keycloak identity
+model User {
+  id          String   @id @default(uuid())
+  keycloakId  String   @unique // Maps to Keycloak user ID (sub claim)
+  email       String
+  firstName   String
+  lastName    String
+  displayName String?
+  role        UserRole @default(EMPLOYEE)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Tenant
+  opcoId String
+  opco   OpCo   @relation(fields: [opcoId], references: [id])
+
+  // Function & Level
+  functionTitleId String?
+  functionTitle   FunctionTitle? @relation(fields: [functionTitleId], references: [id])
+  tovLevelId      String?
+  tovLevel        TovLevel?      @relation(fields: [tovLevelId], references: [id])
+
+  // Manager hierarchy
+  managerId     String?
+  manager       User?  @relation("ManagerEmployee", fields: [managerId], references: [id])
+  directReports User[] @relation("ManagerEmployee")
+
+  // Relations
+  employeeReviews    ReviewCycle[]       @relation("EmployeeReviews")
+  managerReviews     ReviewCycle[]       @relation("ManagerReviews")
+  hrReviews          ReviewCycle[]       @relation("HRReviews")
+  goalChangeRequests GoalChangeRequest[] @relation("RequestedBy")
+  goalApprovals      GoalChangeRequest[] @relation("ApprovedBy")
+  auditLogs          AuditLog[]
+
+  @@unique([opcoId, email])
+  @@index([opcoId])
+  @@index([managerId])
+  @@map("users")
+}
+
+enum UserRole {
+  EMPLOYEE
+  MANAGER
+  HR
+  OPCO_ADMIN
+  TSS_SUPER_ADMIN
+}
+
+// ============================================
+// CONFIGURABLE ENTITIES (per OpCo)
+// ============================================
+
+/// Function/Job titles managed per OpCo
+model FunctionTitle {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  opcoId String
+  opco   OpCo   @relation(fields: [opcoId], references: [id])
+
+  users User[]
+
+  @@unique([opcoId, name])
+  @@index([opcoId])
+  @@map("function_titles")
+}
+
+/// TOV/IDE Level (A, B, C, D) - customizable per OpCo
+model TovLevel {
+  id          String   @id @default(uuid())
+  code        String   // A, B, C, D
+  name        String   // Entry, Professional, Senior, Leadership
+  description Json     // { en: "...", nl: "...", es: "..." }
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  opcoId String
+  opco   OpCo   @relation(fields: [opcoId], references: [id])
+
+  // Relations
+  users            User[]
+  competencyLevels CompetencyLevel[]
+  reviewCycles     ReviewCycle[]
+
+  @@unique([opcoId, code])
+  @@index([opcoId])
+  @@map("tov_levels")
+}
+
+/// Competency definitions per TOV Level
+model CompetencyLevel {
+  id           String  @id @default(uuid())
+  competencyId String  // e.g., "result_driven_a"
+  category     String  // e.g., "Dedicated"
+  subcategory  String  // e.g., "Result driven"
+  title        Json    // { en: "...", nl: "...", es: "..." }
+  indicators   Json    // { en: [...], nl: [...], es: [...] }
+  isActive     Boolean @default(true)
+  sortOrder    Int     @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  opcoId     String
+  opco       OpCo     @relation(fields: [opcoId], references: [id])
+  tovLevelId String
+  tovLevel   TovLevel @relation(fields: [tovLevelId], references: [id])
+
+  // Relations
+  competencyScores CompetencyScore[]
+
+  @@unique([opcoId, tovLevelId, competencyId])
+  @@index([opcoId])
+  @@index([tovLevelId])
+  @@map("competency_levels")
+}
+
+// ============================================
+// REVIEW CYCLE & STAGES
+// ============================================
+
+/// Annual review cycle for an employee
+model ReviewCycle {
+  id     String      @id @default(uuid())
+  year   Int
+  status CycleStatus @default(DRAFT)
+
+  // Dates (flexible per employee)
+  goalSettingStart DateTime?
+  goalSettingEnd   DateTime?
+  midYearStart     DateTime?
+  midYearEnd       DateTime?
+  endYearStart     DateTime?
+  endYearEnd       DateTime?
+
+  // Calculated scores
+  whatScoreMidYear Float?
+  whatScoreEndYear Float?
+  howScoreMidYear  Float?
+  howScoreEndYear  Float?
+
+  // Executive summary
+  summary String? @db.Text
+
+  // Metadata
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Tenant & Participants
+  opcoId     String
+  opco       OpCo     @relation(fields: [opcoId], references: [id])
+  employeeId String
+  employee   User     @relation("EmployeeReviews", fields: [employeeId], references: [id])
+  managerId  String
+  manager    User     @relation("ManagerReviews", fields: [managerId], references: [id])
+  hrUserId   String?
+  hrUser     User?    @relation("HRReviews", fields: [hrUserId], references: [id])
+  tovLevelId String
+  tovLevel   TovLevel @relation(fields: [tovLevelId], references: [id])
+
+  // Relations
+  stages             ReviewStage[]
+  goals              Goal[]
+  competencyScores   CompetencyScore[]
+  goalChangeRequests GoalChangeRequest[]
+  auditLogs          AuditLog[]
+
+  @@unique([opcoId, employeeId, year])
+  @@index([opcoId])
+  @@index([employeeId])
+  @@index([managerId])
+  @@index([year])
+  @@map("review_cycles")
+}
+
+enum CycleStatus {
+  DRAFT
+  GOAL_SETTING
+  GOAL_SETTING_COMPLETE
+  MID_YEAR_REVIEW
+  MID_YEAR_COMPLETE
+  END_YEAR_REVIEW
+  COMPLETED
+  ARCHIVED
+}
+
+/// Individual stage within a review cycle
+model ReviewStage {
+  id        String      @id @default(uuid())
+  stageType StageType
+  status    StageStatus @default(PENDING)
+
+  // Stage-specific data
+  employeeComments String? @db.Text
+  managerComments  String? @db.Text
+  selfAssessment   String? @db.Text
+
+  // Completion tracking
+  employeeCompletedAt DateTime?
+  managerCompletedAt  DateTime?
+  hrApprovedAt        DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviewCycleId String
+  reviewCycle   ReviewCycle @relation(fields: [reviewCycleId], references: [id], onDelete: Cascade)
+
+  @@unique([reviewCycleId, stageType])
+  @@map("review_stages")
+}
+
+enum StageType {
+  GOAL_SETTING
+  MID_YEAR_REVIEW
+  END_YEAR_REVIEW
+}
+
+enum StageStatus {
+  PENDING
+  IN_PROGRESS
+  PENDING_APPROVAL
+  COMPLETED
+  SKIPPED
+}
+
+// ============================================
+// GOALS & SCORING
+// ============================================
+
+/// Individual goal within a review cycle
+model Goal {
+  id          String  @id @default(uuid())
+  title       String
+  description String? @db.Text
+  weight      Int     // Percentage (0-100)
+  sortOrder   Int     @default(0)
+
+  // Scores per stage
+  scoreMidYear Int? // 1, 2, 3
+  scoreEndYear Int? // 1, 2, 3
+
+  // Notes per stage
+  notesMidYear String? @db.Text
+  notesEndYear String? @db.Text
+
+  isLocked  Boolean  @default(false) // Locked after goal setting
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviewCycleId String
+  reviewCycle   ReviewCycle @relation(fields: [reviewCycleId], references: [id], onDelete: Cascade)
+
+  goalChangeRequests GoalChangeRequest[]
+
+  @@index([reviewCycleId])
+  @@map("goals")
+}
+
+/// Competency score within a review cycle
+model CompetencyScore {
+  id String @id @default(uuid())
+
+  // Scores per stage
+  scoreMidYear Int? // 1, 2, 3
+  scoreEndYear Int? // 1, 2, 3
+
+  // Notes per stage
+  notesMidYear String? @db.Text
+  notesEndYear String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviewCycleId     String
+  reviewCycle       ReviewCycle     @relation(fields: [reviewCycleId], references: [id], onDelete: Cascade)
+  competencyLevelId String
+  competencyLevel   CompetencyLevel @relation(fields: [competencyLevelId], references: [id])
+
+  @@unique([reviewCycleId, competencyLevelId])
+  @@map("competency_scores")
+}
+
+// ============================================
+// GOAL CHANGE WORKFLOW
+// ============================================
+
+/// Request to change a goal after goal-setting is locked
+model GoalChangeRequest {
+  id         String         @id @default(uuid())
+  changeType GoalChangeType
+  status     ApprovalStatus @default(PENDING)
+
+  // What's being changed
+  originalData Json? // Snapshot of original goal
+  proposedData Json  // Proposed changes
+
+  // Reason & response
+  reason        String? @db.Text
+  approverNotes String? @db.Text
+
+  // Timestamps
+  requestedAt DateTime  @default(now())
+  respondedAt DateTime?
+
+  // Relations
+  reviewCycleId String
+  reviewCycle   ReviewCycle @relation(fields: [reviewCycleId], references: [id], onDelete: Cascade)
+  goalId        String?
+  goal          Goal?       @relation(fields: [goalId], references: [id])
+  requestedById String
+  requestedBy   User        @relation("RequestedBy", fields: [requestedById], references: [id])
+  approvedById  String?
+  approvedBy    User?       @relation("ApprovedBy", fields: [approvedById], references: [id])
+
+  @@index([reviewCycleId])
+  @@index([status])
+  @@map("goal_change_requests")
+}
+
+enum GoalChangeType {
+  ADD
+  MODIFY
+  DELETE
+  WEIGHT_CHANGE
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+// ============================================
+// AUDIT TRAIL
+// ============================================
+
+/// Immutable audit log for PII access and changes
+model AuditLog {
+  id         String   @id @default(uuid())
+  entityType String   // "ReviewCycle", "Goal", "User", etc.
+  entityId   String
+  action     String   // "CREATE", "UPDATE", "DELETE", "ACCESS", "STATUS_CHANGE"
+  changes    Json?    // { field: { old: ..., new: ... } }
+  metadata   Json?    // Additional context (IP, user agent, etc.)
+  createdAt  DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  reviewCycleId String?
+  reviewCycle   ReviewCycle? @relation(fields: [reviewCycleId], references: [id])
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

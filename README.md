@@ -10,10 +10,12 @@ A web-based HR Performance Review application for Total Specific Solutions. This
 
 - **9-Grid Performance Scoring** - WHAT-axis (Goals & Results) × HOW-axis (Competencies)
 - **Multi-Language Support** - English, Dutch, and Spanish
-- **Voice Input** - Hold-to-dictate functionality using local Whisper AI
+- **Voice Input** - Hold-to-dictate functionality using local Whisper AI (browser or server)
 - **Auto-Save** - Session-based with 14-day retention
 - **DOCX Report Generation** - Professional, editable Word documents
 - **Drag & Drop** - Reorder goals easily
+- **Authentication** - Keycloak integration with EntraID federation support
+- **Role-Based Access** - Employee, Manager, HR, and Admin roles with specific views
 
 ## Quick Start
 
@@ -64,25 +66,28 @@ A web-based HR Performance Review application for Total Specific Solutions. This
 tss_ppm/
 ├── hr-performance-app/          # React frontend
 │   ├── src/
-│   │   ├── components/          # React components
-│   │   ├── contexts/            # React contexts (Form, Language)
+│   │   ├── components/          # React components (Header, Navigation, etc.)
+│   │   ├── contexts/            # React contexts (Auth, Form, Language, Whisper)
+│   │   ├── pages/               # Page components (MyReviews, Team, HR Dashboard)
+│   │   ├── services/            # API client
+│   │   ├── config/              # Configuration (auth.js)
 │   │   ├── hooks/               # Custom hooks (useVoiceInput)
 │   │   ├── languages/           # i18n translations (en, nl, es)
 │   │   └── utils/               # Utilities (scoring, session, docx)
 │   ├── server/                  # Python Whisper server
 │   │   ├── whisper_server_faster.py  # Production Faster-Whisper server
 │   │   ├── requirements-faster.txt   # Production dependencies
-│   │   ├── test_whisper.py      # Test script
-│   │   ├── setup_whisper.bat    # One-time setup (legacy)
-│   │   └── start_whisper.bat    # Start server (legacy)
+│   │   └── test_whisper.py      # Test script
 │   └── package.json
+├── api/                         # Backend API (Fastify + Prisma)
+│   ├── src/                     # API source code
+│   └── prisma/                  # Database schema
 ├── docker-compose.yml           # Production deployment
 ├── Dockerfile.whisper           # Faster-Whisper container
 ├── Dockerfile.frontend          # React app container
 ├── nginx.conf                   # Frontend nginx config
 ├── Caddyfile                    # Reverse proxy config
-├── HR-Scoring-App-Prompt.md     # Detailed requirements
-├── IDE-Competency-Framework-Complete.md  # HOW-axis competencies
+├── ROADMAP.md                   # Implementation roadmap
 ├── CLAUDE.md                    # Development guidelines
 └── README.md                    # This file
 ```
@@ -120,12 +125,13 @@ First-time transcription may be slow as the model loads (~500MB).
 
 ## Technology Stack
 
-- **Frontend**: React 18 + Vite
+- **Frontend**: React 19 + Vite 7 + React Router v7
 - **Styling**: Custom CSS with Tahoma font
 - **Brand Colors**: Magenta `#CC0E70`, Navy Blue `#004A91`
-- **Storage**: Browser localStorage
+- **Storage**: Browser localStorage (+ API when backend connected)
+- **Authentication**: Keycloak JS v26 (OIDC/EntraID federation)
 - **Reports**: DOCX via `docx` package
-- **Voice**: Faster-Whisper + Gunicorn (4x faster than standard Whisper)
+- **Voice**: Browser Whisper (WebGPU/WASM) or Faster-Whisper server
 
 ## Session Management
 
@@ -417,11 +423,47 @@ npm run test:e2e
 
 ## Version
 
-Current version: **1.1.1**
+Current version: **2.0.0**
 
 See the version label in the top-right corner of the application.
 
 ## Changelog
+
+### v2.0.0 - Multi-Tenant Enterprise Release
+
+Major release introducing enterprise authentication, role-based access control, and multi-tenant architecture preparation.
+
+#### Authentication & Security
+- **Keycloak Integration**: Full OIDC authentication with EntraID/Azure AD federation support
+- **JWT Token Management**: Automatic token refresh, secure session handling
+- **Role-Based Access Control**: Five user roles (Employee, Manager, HR, OpCo Admin, TSS Super Admin)
+- **Protected Routes**: Route-level and component-level access guards
+- **Silent SSO**: Seamless single sign-on experience
+
+#### Role-Based UI
+- **React Router v7**: Client-side routing with role-protected routes
+- **Navigation Component**: Role-aware menu with icon-based navigation
+- **My Reviews Page**: Employee view of their performance reviews
+- **Team Overview**: Manager view of direct reports and their reviews
+- **Approvals Page**: Manager interface for goal change request approvals
+- **HR Dashboard**: Organization-wide statistics and metrics
+- **All Reviews Page**: HR view with filtering and search capabilities
+
+#### API Integration
+- **API Client**: Centralized client with automatic JWT injection
+- **Review Context**: API-backed state management for reviews
+- **Full API Coverage**: Endpoints for users, reviews, goals, competencies, approvals
+
+#### Developer Experience
+- **Environment Configuration**: `.env.example` with all configuration options
+- **Test Utilities**: Updated with router and auth mocks
+- **Documentation**: Updated CLAUDE.md and README.md
+
+#### Previous Changes (v1.x)
+- Browser-based Whisper transcription with WebGPU/WASM
+- Dictation toggle for browser vs server transcription
+- HOW-axis explanation boxes with voice input
+- Preview improvements and bug fixes
 
 ### v1.1.1
 - Replace Vite favicon with TSS favicon from totalspecificsolutions.com

@@ -1,4 +1,111 @@
 {
+  "nav": {
+    "myReviews": "Mijn Beoordelingen",
+    "team": "Team",
+    "approvals": "Goedkeuringen",
+    "hrDashboard": "HR Dashboard",
+    "allReviews": "Alle Beoordelingen",
+    "admin": "Beheer"
+  },
+  "pages": {
+    "myReviews": {
+      "title": "Mijn Beoordelingen",
+      "newReview": "Nieuwe Beoordeling",
+      "noReviews": "Geen beoordelingen gevonden",
+      "startFirst": "Start uw eerste beoordelingsgesprek",
+      "year": "Jaar",
+      "status": "Status",
+      "stage": "Huidige Fase",
+      "whatScore": "WAT Score",
+      "howScore": "HOE Score",
+      "lastUpdated": "Laatst Bijgewerkt",
+      "actions": "Acties",
+      "view": "Bekijken",
+      "continue": "Doorgaan",
+      "loading": "Beoordelingen laden..."
+    },
+    "team": {
+      "title": "Team Overzicht",
+      "subtitle": "Direct reports en hun beoordelingen",
+      "noReports": "Geen directe medewerkers gevonden",
+      "employee": "Medewerker",
+      "role": "Functie",
+      "currentReview": "Huidige Beoordeling",
+      "status": "Status",
+      "actions": "Acties",
+      "viewReview": "Beoordeling Bekijken",
+      "startReview": "Beoordeling Starten",
+      "noActiveReview": "Geen actieve beoordeling"
+    },
+    "approvals": {
+      "title": "Openstaande Goedkeuringen",
+      "subtitle": "Doelwijzigingen en fase-afronding die uw goedkeuring vereisen",
+      "noApprovals": "Geen openstaande goedkeuringen",
+      "goalChanges": "Doelwijzigingsverzoeken",
+      "stageCompletions": "Fase-afrondingen",
+      "employee": "Medewerker",
+      "type": "Type",
+      "description": "Beschrijving",
+      "requestedOn": "Aangevraagd",
+      "approve": "Goedkeuren",
+      "reject": "Afwijzen",
+      "addGoal": "Doel Toevoegen",
+      "editGoal": "Doel Bewerken",
+      "deleteGoal": "Doel Verwijderen"
+    },
+    "hrDashboard": {
+      "title": "HR Dashboard",
+      "subtitle": "Organisatie prestatie-overzicht",
+      "totalEmployees": "Totaal Medewerkers",
+      "activeReviews": "Actieve Beoordelingen",
+      "completedReviews": "Afgerond",
+      "pendingApprovals": "Openstaande Goedkeuringen",
+      "byStage": "Beoordelingen per Fase",
+      "byScore": "Score Verdeling",
+      "recentActivity": "Recente Activiteit"
+    },
+    "allReviews": {
+      "title": "Alle Beoordelingen",
+      "subtitle": "Organisatiebrede beoordelingsbeheer",
+      "filters": "Filters",
+      "year": "Jaar",
+      "status": "Status",
+      "department": "Afdeling",
+      "search": "Zoek medewerker...",
+      "export": "Exporteren"
+    }
+  },
+  "review": {
+    "stages": {
+      "DRAFT": "Concept",
+      "GOAL_SETTING": "Doelen Stellen",
+      "GOAL_SETTING_COMPLETE": "Doelen Vergrendeld",
+      "MID_YEAR_REVIEW": "Halfjaarlijkse Beoordeling",
+      "MID_YEAR_COMPLETE": "Halfjaar Afgerond",
+      "END_YEAR_REVIEW": "Eindejaars Beoordeling",
+      "COMPLETED": "Afgerond"
+    },
+    "status": {
+      "draft": "Concept",
+      "inProgress": "In Behandeling",
+      "completed": "Afgerond",
+      "locked": "Vergrendeld"
+    },
+    "goalChange": {
+      "title": "Doelwijziging Aanvragen",
+      "reason": "Reden voor wijziging",
+      "reasonPlaceholder": "Leg uit waarom deze wijziging nodig is...",
+      "submit": "Verzoek Indienen",
+      "pending": "Wijzigingsverzoek wacht op goedkeuring",
+      "approved": "Wijziging goedgekeurd",
+      "rejected": "Wijziging afgewezen"
+    },
+    "stageInfo": {
+      "goalSetting": "Stel prestatie doelen vast voor de beoordelingsperiode",
+      "midYear": "Halfjaarlijkse voortgang beoordeling en scoring",
+      "endYear": "Definitieve eindejaars prestatie-evaluatie"
+    }
+  },
   "app": {
     "title": "Beoordelingsgesprek",
     "progress": "Voltooid",

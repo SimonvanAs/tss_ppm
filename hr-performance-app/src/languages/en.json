@@ -35,7 +35,30 @@
       "actions": "Actions",
       "viewReview": "View Review",
       "startReview": "Start Review",
-      "noActiveReview": "No active review"
+      "noActiveReview": "No active review",
+      "grid": "Grid",
+      "export": "Export CSV",
+      "gridTitle": "Team Performance Grid",
+      "noEmployees": "No employees",
+      "noMatchingMembers": "No team members match the current filters",
+      "topTalent": "Top Talent",
+      "solidPerformer": "Solid Performer",
+      "needsAttention": "Needs Attention",
+      "concern": "Concern",
+      "filters": {
+        "year": "Year",
+        "status": "Status",
+        "allStatuses": "All Statuses",
+        "noReview": "No Review"
+      },
+      "stats": {
+        "teamSize": "Team Size",
+        "completed": "Reviews Completed",
+        "completionRate": "Completion Rate",
+        "avgWhat": "Avg. WHAT",
+        "avgHow": "Avg. HOW",
+        "topPerformers": "Top Performers"
+      }
     },
     "approvals": {
       "title": "Pending Approvals",

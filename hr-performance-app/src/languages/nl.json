@@ -35,7 +35,30 @@
       "actions": "Acties",
       "viewReview": "Beoordeling Bekijken",
       "startReview": "Beoordeling Starten",
-      "noActiveReview": "Geen actieve beoordeling"
+      "noActiveReview": "Geen actieve beoordeling",
+      "grid": "Grid",
+      "export": "Exporteer CSV",
+      "gridTitle": "Team Prestatie Grid",
+      "noEmployees": "Geen medewerkers",
+      "noMatchingMembers": "Geen teamleden voldoen aan de huidige filters",
+      "topTalent": "Top Talent",
+      "solidPerformer": "Solide Presteerder",
+      "needsAttention": "Aandacht Nodig",
+      "concern": "Zorgpunt",
+      "filters": {
+        "year": "Jaar",
+        "status": "Status",
+        "allStatuses": "Alle Statussen",
+        "noReview": "Geen Beoordeling"
+      },
+      "stats": {
+        "teamSize": "Team Grootte",
+        "completed": "Beoordelingen Voltooid",
+        "completionRate": "Voltooiingspercentage",
+        "avgWhat": "Gem. WHAT",
+        "avgHow": "Gem. HOW",
+        "topPerformers": "Top Presteerders"
+      }
     },
     "approvals": {
       "title": "Openstaande Goedkeuringen",

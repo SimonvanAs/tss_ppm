@@ -35,7 +35,30 @@
       "actions": "Acciones",
       "viewReview": "Ver Evaluación",
       "startReview": "Iniciar Evaluación",
-      "noActiveReview": "Sin evaluación activa"
+      "noActiveReview": "Sin evaluación activa",
+      "grid": "Matriz",
+      "export": "Exportar CSV",
+      "gridTitle": "Matriz de Desempeño del Equipo",
+      "noEmployees": "Sin empleados",
+      "noMatchingMembers": "Ningún miembro del equipo coincide con los filtros actuales",
+      "topTalent": "Talento Superior",
+      "solidPerformer": "Desempeño Sólido",
+      "needsAttention": "Necesita Atención",
+      "concern": "Preocupación",
+      "filters": {
+        "year": "Año",
+        "status": "Estado",
+        "allStatuses": "Todos los Estados",
+        "noReview": "Sin Evaluación"
+      },
+      "stats": {
+        "teamSize": "Tamaño del Equipo",
+        "completed": "Evaluaciones Completadas",
+        "completionRate": "Tasa de Completación",
+        "avgWhat": "Prom. QUÉ",
+        "avgHow": "Prom. CÓMO",
+        "topPerformers": "Mejores Desempeños"
+      }
     },
     "approvals": {
       "title": "Aprobaciones Pendientes",

@@ -122,7 +122,9 @@ function PreviewModal({ formData, sessionCode, onClose }) {
   const levelCompetencies = selectedLevel ? competencies[selectedLevel] : [];
 
   // Calculate scores for grid
-  const whatScore = calculateWhatScore(formData.goals || []);
+  const whatResult = calculateWhatScore(formData.goals || []);
+  const whatScore = whatResult?.score ?? null;
+  const hasScfVeto = whatResult?.hasScfVeto ?? false;
   const howScore = calculateHowScore(formData.competencyScores || {});
   const levelPosition = mapLevelToGrid(formData.tovLevel);
   const whatPosition = whatScore ? roundToGridPosition(whatScore) : null;
@@ -269,11 +271,12 @@ function PreviewModal({ formData, sessionCode, onClose }) {
 
                 {/* Scores display */}
                 <div className="preview-scores-display">
-                  <div className="preview-score-item">
+                  <div className={`preview-score-item ${hasScfVeto ? 'veto-active' : ''}`}>
                     <span className="preview-score-name">{t('grid.whatScore')}:</span>
                     <span className="preview-score-value">
                       {whatScore !== null ? whatScore.toFixed(2) : '-'}
                     </span>
+                    {hasScfVeto && <span className="preview-veto-badge">{t('grid.scfVeto')}</span>}
                   </div>
                   <div className="preview-score-item">
                     <span className="preview-score-name">{t('grid.howScore')}:</span>

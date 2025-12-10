@@ -96,7 +96,8 @@ export function ReviewProvider({ children, reviewId }) {
       setIsSaving(true);
 
       // Calculate scores
-      const whatScore = calculateWhatScore(goals);
+      const whatResult = calculateWhatScore(goals);
+      const whatScore = whatResult?.score ?? null;
       const howScore = calculateHowScore(competencyScores);
 
       // Determine which score fields to update based on stage
@@ -317,7 +318,9 @@ export function ReviewProvider({ children, reviewId }) {
   const scoringCompetencies = review
     ? competencyScoresToObject(competencyScores, review.status)
     : {};
-  const whatScore = calculateWhatScore(scoringGoals);
+  const whatResult = calculateWhatScore(scoringGoals);
+  const whatScore = whatResult?.score ?? null;
+  const hasScfVeto = whatResult?.hasScfVeto ?? false;
   const howScore = calculateHowScoreFromObject(scoringCompetencies);
 
   const value = {
@@ -331,6 +334,7 @@ export function ReviewProvider({ children, reviewId }) {
     isDirty,
     lastSaved,
     whatScore,
+    hasScfVeto,
     howScore,
 
     // Actions

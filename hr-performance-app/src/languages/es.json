@@ -184,6 +184,8 @@
   "whatAxis": {
     "title": "Eje QUÉ: Objetivos y Resultados",
     "addGoal": "Agregar objetivo",
+    "addKar": "Agregar KAR",
+    "addScf": "Agregar SCF",
     "goalTitle": "Título del objetivo",
     "goalTitlePlaceholder": "Objetivo formulado SMART",
     "description": "Descripción",
@@ -194,7 +196,20 @@
     "weightError": "Los pesos deben sumar 100%",
     "maxGoals": "Máximo de 9 objetivos alcanzado",
     "removeGoal": "Eliminar objetivo",
-    "dragToReorder": "Arrastre para reordenar"
+    "dragToReorder": "Arrastre para reordenar",
+    "goalType": "Tipo de objetivo",
+    "standard": "Estándar",
+    "kar": "KAR",
+    "scf": "SCF (VETO)",
+    "karDescription": "Resultado de Responsabilidad Clave para liderazgo senior",
+    "scfDescription": "Marco de Control de Seguridad - objetivo VETO de aprobado/reprobado",
+    "standardGoals": "Objetivos estándar",
+    "karObjectives": "Objetivos KAR",
+    "scfResult": "Resultado SCF",
+    "scfPass": "Aprobado",
+    "scfFail": "Reprobado",
+    "scfFailNote": "VETO: Esto anulará la puntuación QUÉ a 1.00",
+    "scfVetoWarning": "VETO SCF ACTIVO: La puntuación QUÉ se ha anulado a 1.00 debido a falla SCF"
   },
   "howAxis": {
     "title": "Eje CÓMO: Competencias",
@@ -202,13 +217,21 @@
     "competencies": "Competencias para nivel",
     "vetoWarning": "VETO: Cualquier puntuación de 1 establecerá la puntuación CÓMO en 1.00",
     "notePlaceholder": "Explicación (opcional)...",
-    "behavioralIndicators": "Indicadores de Comportamiento"
+    "behavioralIndicators": "Indicadores de Comportamiento",
+    "detailedMode": "Puntuación detallada de comportamiento",
+    "simpleMode": "Puntuar competencia directamente",
+    "scoreBehaviors": "Puntuar cada comportamiento individualmente",
+    "computedScore": "Puntuación calculada",
+    "average": "prom",
+    "vetoApplied": "VETO",
+    "allBehaviorsRequired": "Puntúe todos los comportamientos para calcular la puntuación de competencia"
   },
   "grid": {
     "title": "Matriz de Desempeño",
     "whatScore": "Puntuación QUÉ",
     "howScore": "Puntuación CÓMO",
-    "position": "Su posición"
+    "position": "Su posición",
+    "scfVeto": "VETO SCF"
   },
   "selfAssessment": {
     "title": "Autoevaluación del Empleado",

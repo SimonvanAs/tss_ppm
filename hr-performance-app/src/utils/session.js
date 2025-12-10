@@ -141,10 +141,12 @@ export function createInitialFormData() {
     managerName: '',
     summary: '',
     goals: [
-      { id: uuidv4(), title: '', description: '', score: '', weight: '' }
+      { id: uuidv4(), title: '', description: '', score: '', weight: '', goalType: 'STANDARD' }
     ],
     competencyScores: {},
     competencyNotes: {},
+    behaviorScores: {},
+    detailedBehaviorMode: false,
     selfAssessment: '',
     comments: '',
     language: 'en'

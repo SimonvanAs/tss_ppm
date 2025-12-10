@@ -1,12 +1,45 @@
 // Scoring utility functions
 
 /**
+ * Goal types for WHAT-axis
+ */
+export const GOAL_TYPES = {
+  STANDARD: 'STANDARD',
+  KAR: 'KAR',
+  SCF: 'SCF'  // Security Control Framework - binary pass/fail VETO objective
+};
+
+/**
+ * SCF (Security Control Framework) pass/fail values
+ */
+export const SCF_VALUES = {
+  PASS: 'PASS',
+  FAIL: 'FAIL'
+};
+
+/**
  * Calculate WHAT-axis score (weighted average of goals)
+ * Includes SCF VETO rule: if any SCF objective is FAIL, WHAT score = 1.00
  * @param {Array} goals - Array of goal objects with score and weight
- * @returns {number} Weighted average score (1.00 - 3.00)
+ * @returns {{ score: number, hasScfVeto: boolean } | null} Score result or null if incomplete
  */
 export function calculateWhatScore(goals) {
-  const validGoals = goals.filter(g => g.title.trim() && g.score && g.weight);
+  // Check for SCF VETO first
+  const scfGoals = goals.filter(g => g.goalType === GOAL_TYPES.SCF && g.title?.trim());
+  const hasScfVeto = scfGoals.some(g => g.scfValue === SCF_VALUES.FAIL);
+
+  // If SCF VETO triggered, return 1.00
+  if (hasScfVeto) {
+    return { score: 1.00, hasScfVeto: true };
+  }
+
+  // Filter out SCF goals from weighted calculation (they don't have weights)
+  const validGoals = goals.filter(g =>
+    g.goalType !== GOAL_TYPES.SCF &&
+    g.title?.trim() &&
+    g.score &&
+    g.weight
+  );
 
   if (validGoals.length === 0) return null;
 
@@ -18,7 +51,17 @@ export function calculateWhatScore(goals) {
     return sum + (Number(g.score) * Number(g.weight));
   }, 0);
 
-  return weightedSum / totalWeight;
+  return { score: weightedSum / totalWeight, hasScfVeto: false };
+}
+
+/**
+ * Get just the WHAT score number (for backward compatibility)
+ * @param {Array} goals - Array of goal objects
+ * @returns {number|null} WHAT score or null
+ */
+export function getWhatScoreValue(goals) {
+  const result = calculateWhatScore(goals);
+  return result ? result.score : null;
 }
 
 /**
@@ -211,4 +254,68 @@ export function calculateProgress(formData) {
   }
 
   return Math.round(progress);
+}
+
+/**
+ * Calculate KAR objectives weight
+ * @param {Array} goals - Array of goal objects
+ * @returns {number} Total weight of KAR objectives
+ */
+export function calculateKarWeight(goals) {
+  return goals
+    .filter(g => g.goalType === GOAL_TYPES.KAR && g.title?.trim())
+    .reduce((sum, g) => sum + (Number(g.weight) || 0), 0);
+}
+
+/**
+ * Calculate standard goals weight
+ * @param {Array} goals - Array of goal objects
+ * @returns {number} Total weight of standard goals
+ */
+export function calculateStandardWeight(goals) {
+  return goals
+    .filter(g => g.goalType !== GOAL_TYPES.KAR && g.title?.trim())
+    .reduce((sum, g) => sum + (Number(g.weight) || 0), 0);
+}
+
+/**
+ * Calculate competency score from individual behavior scores
+ * @param {Object} behaviorScores - { 0: score, 1: score, ... }
+ * @param {number} behaviorCount - Expected number of behaviors
+ * @returns {{ score: number, hasVeto: boolean, average: number } | null}
+ */
+export function calculateCompetencyScoreFromBehaviors(behaviorScores, behaviorCount) {
+  if (!behaviorScores) return null;
+
+  const scores = Object.values(behaviorScores).filter(s => s !== null && s !== undefined);
+
+  // All behaviors must be scored
+  if (scores.length !== behaviorCount) return null;
+
+  // Calculate average
+  const average = scores.reduce((sum, s) => sum + Number(s), 0) / scores.length;
+
+  // Round to nearest integer (1, 2, or 3)
+  const roundedScore = Math.round(average);
+
+  // Check for veto (any 1 makes competency = 1)
+  const hasVeto = scores.some(s => Number(s) === 1);
+
+  return {
+    score: hasVeto ? 1 : Math.max(1, Math.min(3, roundedScore)),
+    hasVeto,
+    average: Number(average.toFixed(2))
+  };
+}
+
+/**
+ * Check if all behaviors are scored for a competency
+ * @param {Object} behaviorScores - Behavior scores for competency
+ * @param {number} behaviorCount - Expected number of behaviors
+ * @returns {boolean}
+ */
+export function areBehaviorsComplete(behaviorScores, behaviorCount) {
+  if (!behaviorScores) return false;
+  const scores = Object.values(behaviorScores).filter(s => s !== null && s !== undefined);
+  return scores.length === behaviorCount;
 }

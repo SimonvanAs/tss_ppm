@@ -184,6 +184,8 @@
   "whatAxis": {
     "title": "WAT-As: Doelen & Resultaten",
     "addGoal": "Doel toevoegen",
+    "addKar": "KAR toevoegen",
+    "addScf": "SCF toevoegen",
     "goalTitle": "Doeltitel",
     "goalTitlePlaceholder": "SMART geformuleerd doel",
     "description": "Beschrijving",
@@ -194,7 +196,20 @@
     "weightError": "Wegingen moeten optellen tot 100%",
     "maxGoals": "Maximum van 9 doelen bereikt",
     "removeGoal": "Doel verwijderen",
-    "dragToReorder": "Sleep om te herschikken"
+    "dragToReorder": "Sleep om te herschikken",
+    "goalType": "Doeltype",
+    "standard": "Standaard",
+    "kar": "KAR",
+    "scf": "SCF (VETO)",
+    "karDescription": "Key Accountability Result voor senior leiderschap",
+    "scfDescription": "Security Control Framework - binair slagen/falen VETO doelstelling",
+    "standardGoals": "Standaard doelen",
+    "karObjectives": "KAR doelstellingen",
+    "scfResult": "SCF Resultaat",
+    "scfPass": "Geslaagd",
+    "scfFail": "Niet geslaagd",
+    "scfFailNote": "VETO: Dit overschrijft de WAT-score naar 1.00",
+    "scfVetoWarning": "SCF VETO ACTIEF: WAT-score is overschreven naar 1.00 door SCF falen"
   },
   "howAxis": {
     "title": "HOE-As: Competenties",
@@ -202,13 +217,21 @@
     "competencies": "Competenties voor niveau",
     "vetoWarning": "VETO: Elke score van 1 zet de HOE-score op 1.00",
     "notePlaceholder": "Toelichting (optioneel)...",
-    "behavioralIndicators": "Gedragsindicatoren"
+    "behavioralIndicators": "Gedragsindicatoren",
+    "detailedMode": "Gedetailleerde gedragsscore",
+    "simpleMode": "Score competentie direct",
+    "scoreBehaviors": "Scoor elk gedrag afzonderlijk",
+    "computedScore": "Berekende score",
+    "average": "gem",
+    "vetoApplied": "VETO",
+    "allBehaviorsRequired": "Scoor alle gedragingen om competentiescore te berekenen"
   },
   "grid": {
     "title": "Prestatiematrix",
     "whatScore": "WAT Score",
     "howScore": "HOE Score",
-    "position": "Uw positie"
+    "position": "Uw positie",
+    "scfVeto": "SCF VETO"
   },
   "selfAssessment": {
     "title": "Zelfevaluatie medewerker",

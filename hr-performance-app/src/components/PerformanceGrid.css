@@ -111,6 +111,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.score-item.veto-active {
+  background: #fef0f0;
+  padding: 8px;
+  border-radius: 4px;
+  margin: -8px;
 }
 
 .score-name {
@@ -122,6 +131,20 @@
   font-size: 1.5rem;
   font-weight: 700;
   color: #004A91;
+}
+
+.score-item.veto-active .score-value {
+  color: #DC3545;
+}
+
+.veto-badge {
+  background: #DC3545;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
 }
 
 .position-info {

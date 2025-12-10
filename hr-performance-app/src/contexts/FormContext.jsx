@@ -119,12 +119,12 @@ export function FormProvider({ children }) {
   }, []);
 
   // Add a new goal
-  const addGoal = useCallback(() => {
+  const addGoal = useCallback((goalType = 'STANDARD') => {
     setFormData(prev => {
       if (prev.goals.length >= 9) return prev;
       return {
         ...prev,
-        goals: [...prev.goals, { id: uuidv4(), title: '', description: '', score: '', weight: '' }]
+        goals: [...prev.goals, { id: uuidv4(), title: '', description: '', score: '', weight: '', goalType }]
       };
     });
     setIsDirty(true);
@@ -177,6 +177,43 @@ export function FormProvider({ children }) {
     setIsDirty(true);
   }, []);
 
+  // Update behavior score (for detailed HOW-axis scoring)
+  const updateBehaviorScore = useCallback((competencyId, behaviorIndex, score) => {
+    setFormData(prev => ({
+      ...prev,
+      behaviorScores: {
+        ...prev.behaviorScores,
+        [competencyId]: {
+          ...(prev.behaviorScores?.[competencyId] || {}),
+          [behaviorIndex]: score
+        }
+      }
+    }));
+    setIsDirty(true);
+  }, []);
+
+  // Toggle detailed behavior mode
+  const setDetailedBehaviorMode = useCallback((enabled) => {
+    setFormData(prev => ({
+      ...prev,
+      detailedBehaviorMode: enabled
+    }));
+    setIsDirty(true);
+  }, []);
+
+  // Clear behavior scores for a competency (when switching modes)
+  const clearBehaviorScores = useCallback((competencyId) => {
+    setFormData(prev => {
+      const newBehaviorScores = { ...prev.behaviorScores };
+      delete newBehaviorScores[competencyId];
+      return {
+        ...prev,
+        behaviorScores: newBehaviorScores
+      };
+    });
+    setIsDirty(true);
+  }, []);
+
   // Resume a session
   const resumeSession = useCallback((code) => {
     const session = loadSession(code);
@@ -225,6 +262,9 @@ export function FormProvider({ children }) {
     reorderGoals,
     updateCompetencyScore,
     updateCompetencyNote,
+    updateBehaviorScore,
+    setDetailedBehaviorMode,
+    clearBehaviorScores,
     resumeSession,
     startNewSession,
     clearSession,

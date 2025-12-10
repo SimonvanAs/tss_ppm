@@ -184,6 +184,8 @@
   "whatAxis": {
     "title": "WHAT-Axis: Goals & Results",
     "addGoal": "Add Goal",
+    "addKar": "Add KAR",
+    "addScf": "Add SCF",
     "goalTitle": "Goal Title",
     "goalTitlePlaceholder": "SMART formulated goal",
     "description": "Description",
@@ -194,7 +196,20 @@
     "weightError": "Weights must sum to 100%",
     "maxGoals": "Maximum 9 goals reached",
     "removeGoal": "Remove goal",
-    "dragToReorder": "Drag to reorder"
+    "dragToReorder": "Drag to reorder",
+    "goalType": "Goal Type",
+    "standard": "Standard",
+    "kar": "KAR",
+    "scf": "SCF (VETO)",
+    "karDescription": "Key Accountability Result for senior leadership",
+    "scfDescription": "Security Control Framework - binary pass/fail VETO objective",
+    "standardGoals": "Standard Goals",
+    "karObjectives": "KAR Objectives",
+    "scfResult": "SCF Result",
+    "scfPass": "Pass",
+    "scfFail": "Fail",
+    "scfFailNote": "VETO: This will override the WHAT score to 1.00",
+    "scfVetoWarning": "SCF VETO ACTIVE: WHAT score is overridden to 1.00 due to SCF failure"
   },
   "howAxis": {
     "title": "HOW-Axis: Competencies",
@@ -202,13 +217,21 @@
     "competencies": "Competencies for Level",
     "vetoWarning": "VETO: Any score of 1 will set HOW score to 1.00",
     "notePlaceholder": "Explanation (optional)...",
-    "behavioralIndicators": "Behavioral Indicators"
+    "behavioralIndicators": "Behavioral Indicators",
+    "detailedMode": "Detailed Behavior Scoring",
+    "simpleMode": "Score competency directly",
+    "scoreBehaviors": "Score each behavior individually",
+    "computedScore": "Computed Score",
+    "average": "avg",
+    "vetoApplied": "VETO",
+    "allBehaviorsRequired": "Score all behaviors to compute competency score"
   },
   "grid": {
     "title": "Performance Grid",
     "whatScore": "WHAT Score",
     "howScore": "HOW Score",
-    "position": "Your position"
+    "position": "Your position",
+    "scfVeto": "SCF VETO"
   },
   "selfAssessment": {
     "title": "Employee Self-Assessment",

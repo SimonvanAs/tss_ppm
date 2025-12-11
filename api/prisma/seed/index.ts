@@ -203,18 +203,21 @@ async function main() {
   const userIds: Record<string, string> = {};
 
   for (const userData of testUsers) {
-    const user = await prisma.user.upsert({
-      where: {
-        keycloakId: userData.keycloakId,
-      },
-      update: {
-        email: userData.email,
-        firstName: userData.firstName,
-        lastName: userData.lastName,
-        displayName: userData.displayName,
-        role: userData.role,
-      },
-      create: {
+    // Check if user already exists with this email (JIT-created users)
+    const existingUser = await prisma.user.findFirst({
+      where: { opcoId: tssOpCo.id, email: userData.email },
+    });
+
+    if (existingUser) {
+      // User already exists (likely JIT-created), skip creation
+      userIds[userData.email] = existingUser.id;
+      console.log(`User already exists: ${userData.email} (${existingUser.role}) - skipping`);
+      continue;
+    }
+
+    // Create new test user
+    const user = await prisma.user.create({
+      data: {
         keycloakId: userData.keycloakId,
         email: userData.email,
         firstName: userData.firstName,
@@ -227,7 +230,7 @@ async function main() {
       },
     });
     userIds[userData.email] = user.id;
-    console.log(`Created/updated user: ${userData.email} (${userData.role})`);
+    console.log(`Created user: ${userData.email} (${userData.role})`);
   }
 
   // Set up manager hierarchy: Manager manages Employee, Dev1, Dev2

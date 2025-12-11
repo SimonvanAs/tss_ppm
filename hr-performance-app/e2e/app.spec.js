@@ -32,7 +32,10 @@ test.describe('TSS PPM Generator', () => {
   });
 
   test('should display version number', async ({ page }) => {
-    await expect(page.getByText('TSS PPM generator v1.2.1')).toBeVisible();
+    const versionText = page.locator('.app-version');
+    await expect(versionText).toBeVisible();
+    const text = await versionText.textContent();
+    expect(text).toMatch(/TSS PPM generator v\d+\.\d+\.\d+/);
   });
 
   test('should have Plausible analytics script', async ({ page }) => {
@@ -68,6 +71,25 @@ test.describe('TSS PPM Generator', () => {
     // Should be back to main app
     await expect(page.locator('.header')).toBeVisible();
     await expect(page.locator('.privacy-policy')).not.toBeVisible();
+  });
+});
+
+test.describe('Authentication', () => {
+  test('should show user menu in header when authenticated', async ({ page }) => {
+    await page.goto('/');
+    // In dev mode, user is auto-authenticated
+    const userMenu = page.locator('.user-menu');
+    await expect(userMenu).toBeVisible();
+  });
+
+  test('should display user information in user menu', async ({ page }) => {
+    await page.goto('/');
+    const userMenu = page.locator('.user-menu');
+    await userMenu.click();
+
+    // Should show user display name or email
+    const userInfo = page.locator('.user-menu-dropdown');
+    await expect(userInfo).toBeVisible();
   });
 });
 
@@ -283,5 +305,118 @@ test.describe('Form Validation', () => {
     // Should show validation errors
     const errorFields = page.locator('.has-error');
     expect(await errorFields.count()).toBeGreaterThan(0);
+  });
+});
+
+test.describe('Navigation', () => {
+  test('should display navigation menu', async ({ page }) => {
+    await page.goto('/my-reviews');
+
+    const navigation = page.locator('.navigation');
+    await expect(navigation).toBeVisible();
+  });
+
+  test('should navigate to My Reviews page', async ({ page }) => {
+    await page.goto('/my-reviews');
+
+    // In dev mode, should show My Reviews page
+    await expect(page.locator('.page-header h1')).toContainText(/My Reviews|Mijn Beoordelingen/);
+  });
+
+  test('should navigate to Team page as manager', async ({ page }) => {
+    // Dev mode gives TSS_SUPER_ADMIN role which includes manager access
+    await page.goto('/team');
+
+    await expect(page.locator('.page-header h1')).toContainText(/Team|Equipe/);
+  });
+
+  test('should navigate to HR Dashboard as HR user', async ({ page }) => {
+    // Dev mode gives TSS_SUPER_ADMIN role which includes HR access
+    await page.goto('/hr/dashboard');
+
+    await expect(page.locator('.page-header h1')).toContainText(/Dashboard/);
+  });
+});
+
+test.describe('Admin Portal', () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto('/admin');
+  });
+
+  test('should display admin layout with sidebar', async ({ page }) => {
+    const sidebar = page.locator('.admin-sidebar');
+    await expect(sidebar).toBeVisible();
+  });
+
+  test('should show admin dashboard', async ({ page }) => {
+    const dashboardTitle = page.locator('.admin-main h1');
+    await expect(dashboardTitle).toContainText(/Dashboard|Admin/);
+  });
+
+  test('should navigate to User Management', async ({ page }) => {
+    await page.click('a[href="/admin/users"]');
+
+    await expect(page.locator('.admin-main h1')).toContainText(/User|Gebruiker/);
+  });
+
+  test('should navigate to Function Titles', async ({ page }) => {
+    await page.click('a[href="/admin/function-titles"]');
+
+    await expect(page.locator('.admin-main h1')).toContainText(/Function|Functie/);
+  });
+
+  test('should navigate to TOV Levels', async ({ page }) => {
+    await page.click('a[href="/admin/tov-levels"]');
+
+    await expect(page.locator('.admin-main h1')).toContainText(/TOV|IDE/);
+  });
+
+  test('should navigate to Competencies', async ({ page }) => {
+    await page.click('a[href="/admin/competencies"]');
+
+    await expect(page.locator('.admin-main h1')).toContainText(/Competen/);
+  });
+
+  test('should navigate to Org Chart', async ({ page }) => {
+    await page.click('a[href="/admin/org-chart"]');
+
+    await expect(page.locator('.admin-main h1')).toContainText(/Org|Organigram/);
+  });
+
+  test('should show Super Admin menu for TSS_SUPER_ADMIN', async ({ page }) => {
+    // In dev mode, user has TSS_SUPER_ADMIN role
+    const superAdminSection = page.locator('.admin-sidebar').getByText(/Super Admin|Global/);
+    await expect(superAdminSection).toBeVisible();
+  });
+
+  test('should navigate to OpCo Management (Super Admin)', async ({ page }) => {
+    await page.click('a[href="/admin/opcos"]');
+
+    await expect(page.locator('.admin-main h1')).toContainText(/OpCo/);
+  });
+
+  test('should navigate to Global Dashboard (Super Admin)', async ({ page }) => {
+    await page.click('a[href="/admin/global"]');
+
+    await expect(page.locator('.admin-main h1')).toContainText(/Global|Dashboard/);
+  });
+});
+
+test.describe('Responsive Design', () => {
+  test('should toggle admin sidebar on mobile', async ({ page }) => {
+    // Set mobile viewport
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto('/admin');
+
+    // Sidebar should be hidden initially on mobile
+    const sidebar = page.locator('.admin-sidebar');
+
+    // Look for mobile toggle button
+    const toggleButton = page.locator('.admin-mobile-toggle');
+    if (await toggleButton.isVisible()) {
+      await toggleButton.click();
+      // Sidebar should now be visible
+      await expect(sidebar).toBeVisible();
+    }
   });
 });

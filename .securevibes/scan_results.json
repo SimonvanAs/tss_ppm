@@ -1,166 +1,221 @@
 {
-  "scan_metadata": {
-    "timestamp": "2025-12-09T00:00:00Z",
-    "project": "HR Performance Scoring Web Application",
-    "version": "1.2.1",
-    "scan_type": "Static Application Security Testing (SAST)",
-    "phases_completed": [
-      "assessment",
-      "threat-modeling",
-      "code-review",
-      "report-generation"
-    ],
-    "repository": "https://github.com/SimonvanAs/tss_ppm",
-    "scanner": "SecureVibes Security Analysis Agent",
-    "methodology": "STRIDE Threat Modeling + Manual Code Review"
+  "repository_path": "/mnt/c/Users/s.vanas/Projects/tss_ppm",
+  "scan_timestamp": "2025-12-09T00:00:00Z",
+  "files_scanned": 0,
+  "scan_time_seconds": 0.0,
+  "total_cost_usd": 0.0,
+  "summary": {
+    "total_threats_identified": 10,
+    "total_vulnerabilities_confirmed": 17,
+    "critical": 2,
+    "high": 3,
+    "medium": 10,
+    "low": 2
   },
-  "executive_summary": {
-    "overall_risk": "Critical",
-    "total_findings": 18,
-    "critical_count": 3,
-    "high_count": 7,
-    "medium_count": 7,
-    "low_count": 1,
-    "exploitable_count": 15,
-    "key_risks": [
-      "Complete absence of authentication - anyone with device access can read/modify all performance reviews",
-      "Unencrypted sensitive employee data in localStorage - confidential performance data stored in plaintext",
-      "No data integrity protection - scores and comments can be tampered without detection",
-      "Whisper server lacks authentication and rate limiting - vulnerable to DoS and resource abuse",
-      "Missing security headers - vulnerable to clickjacking and XSS attacks"
-    ],
-    "recommendation": "DO NOT DEPLOY TO PRODUCTION",
-    "deployment_rationale": "Application requires critical security improvements before handling confidential data. Three critical vulnerabilities (CVSS 9.3, 8.6, 8.1) with trivial exploitability make this fundamentally unsafe for production use with confidential employee data."
-  },
-  "vulnerabilities_summary": {
-    "total": 18,
-    "by_severity": {
-      "Critical": 3,
-      "High": 7,
-      "Medium": 7,
-      "Low": 1
+  "issues": [
+    {
+      "threat_id": "THREAT-001",
+      "title": "Unencrypted Performance Data in Browser localStorage",
+      "description": "All employee performance review data is stored in browser localStorage in plain text JSON format without encryption. The data includes sensitive employee names, roles, performance scores, competency assessments, manager comments, and self-assessments. This data persists for 14 days and can be accessed by anyone with physical access to the device or browser DevTools.",
+      "severity": "critical",
+      "file_path": "hr-performance-app/src/utils/session.js",
+      "line_number": 33,
+      "code_snippet": "function saveAllSessions(sessions) {\n  try {\n    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));\n  } catch (e) {\n    console.error('Error saving sessions to localStorage:', e);\n  }\n}",
+      "cwe_id": "CWE-312",
+      "recommendation": "Implement client-side encryption using Web Crypto API with password-derived keys before storing data in localStorage. Alternatively, migrate to server-side encrypted storage with proper authentication. Add warning banners about data storage risks.",
+      "evidence": "The saveAllSessions function at line 33 directly saves unencrypted JSON to localStorage using the key 'hr_performance_sessions'. The data structure includes all sensitive fields (employeeName, role, goals, competencyScores, comments, selfAssessment) as defined in createInitialFormData() at line 134. Any attacker with browser access can execute: localStorage.getItem('hr_performance_sessions') to retrieve all performance review data in plain text. FormContext.jsx line 74 saves sanitized but unencrypted data every 2.5 seconds via auto-save."
     },
-    "top_3_critical": [
-      {
-        "id": "VULN-001",
-        "title": "Complete Absence of Authentication Mechanism",
-        "cvss_score": 9.3,
-        "exploitability": "Trivial"
-      },
-      {
-        "id": "VULN-002",
-        "title": "Unencrypted Sensitive Data in localStorage",
-        "cvss_score": 8.6,
-        "exploitability": "Trivial"
-      },
-      {
-        "id": "VULN-003",
-        "title": "Plaintext Storage of Confidential Performance Review Data",
-        "cvss_score": 8.1,
-        "exploitability": "Trivial"
-      }
-    ]
-  },
-  "remediation_roadmap": {
-    "immediate": [
-      "Add Content Security Policy headers to nginx.conf",
-      "Add HTTP security headers (X-Frame-Options, HSTS, X-Content-Type-Options)",
-      "Remove sensitive console.log statements in production builds",
-      "Add input length limits to prevent localStorage DoS",
-      "Configure Docker containers to run as non-root users",
-      "Add Subresource Integrity to Plausible Analytics script",
-      "Implement prototype pollution protection in JSON.parse",
-      "Restrict CORS on Whisper server to specific origins"
-    ],
-    "short_term": [
-      "Implement authentication system with user login/registration",
-      "Add API key authentication and rate limiting to /transcribe endpoint",
-      "Implement localStorage encryption using Web Crypto API",
-      "Add file validation to Whisper server: magic number checks, MIME type whitelist",
-      "Cryptographically sign timestamps to prevent manipulation",
-      "Add model integrity verification for Whisper downloads",
-      "Implement server-side validation for DOCX generation",
-      "Add digital signatures to generated DOCX reports"
-    ],
-    "medium_term": [
-      "Migrate to server-side session management with persistent database",
-      "Implement role-based access control (RBAC)",
-      "Add comprehensive audit logging",
-      "Implement request queuing and advanced rate limiting",
-      "Add security monitoring and alerting",
-      "Conduct security testing and penetration testing",
-      "Implement GDPR compliance features",
-      "Add session ownership validation"
-    ],
-    "long_term": [
-      "Implement server-side encryption at rest",
-      "Add watermarking and QR code verification to DOCX reports",
-      "Implement advanced threat detection",
-      "Add SIEM integration",
-      "Conduct regular third-party security audits",
-      "Implement bug bounty program",
-      "Add multi-factor authentication",
-      "Implement container security scanning in CI/CD",
-      "Add AppArmor/SELinux profiles",
-      "Implement read-only filesystems for containers"
-    ]
-  },
-  "compliance": {
-    "gdpr": {
-      "status": "Non-Compliant",
-      "issues": [
-        "Article 32: No encryption of personal data at rest - CRITICAL",
-        "Article 5(1)(f): No integrity checks allow data tampering - CRITICAL",
-        "Article 25: Security not built-in from design - HIGH",
-        "Article 30: No audit logging - MEDIUM",
-        "Article 5(1)(e): Client-side timestamp allows indefinite storage - MEDIUM",
-        "Article 6: No explicit consent mechanism - MEDIUM"
-      ]
+    {
+      "threat_id": "THREAT-002",
+      "title": "Session Code Hijacking via Weak Session Identifiers",
+      "description": "Session codes are only 10 alphanumeric characters (case-insensitive) generated from UUID and displayed prominently in the UI. No authentication is required to resume any session. An attacker who observes or guesses a session code can access and modify another user's performance review data.",
+      "severity": "high",
+      "file_path": "hr-performance-app/src/utils/session.js",
+      "line_number": 10,
+      "code_snippet": "export function generateSessionCode() {\n  const uuid = uuidv4().replace(/-/g, '').toUpperCase();\n  return uuid.substring(0, 10);\n}",
+      "cwe_id": "CWE-287",
+      "recommendation": "Implement device fingerprinting to bind sessions to specific browsers/devices. Add optional PIN/password protection for sensitive sessions. Increase session code entropy to 16+ characters with case sensitivity. Migrate to authentication-based session management with JWT tokens.",
+      "evidence": "The generateSessionCode() function at line 10 generates only 10 uppercase alphanumeric characters from a UUID, reducing entropy from 128 bits to approximately 52 bits (36^10). The loadSession() function at line 91 requires only the session code with no additional authentication. FormContext.jsx resumeSession() at line 181 loads any session given a valid code. SessionsList.jsx displays session codes prominently at line 149, making shoulder-surfing trivial."
     },
-    "owasp_top_10": {
-      "matched_categories": [
-        "A01:2021 - Broken Access Control",
-        "A02:2021 - Cryptographic Failures",
-        "A03:2021 - Injection",
-        "A05:2021 - Security Misconfiguration",
-        "A07:2021 - Identification and Authentication Failures",
-        "A09:2021 - Security Logging and Monitoring Failures",
-        "A04:2021 - Insecure Design"
-      ]
+    {
+      "threat_id": "THREAT-003",
+      "title": "Whisper Server Resource Exhaustion via Unauthenticated Endpoint",
+      "description": "The /transcribe endpoint accepts audio files without authentication or rate limiting. An attacker can submit multiple large audio files simultaneously, exhausting CPU and memory resources. The Whisper model processing is CPU-intensive and concurrent requests can completely block legitimate users.",
+      "severity": "high",
+      "file_path": "hr-performance-app/server/whisper_server_faster.py",
+      "line_number": 87,
+      "code_snippet": "@app.route('/transcribe', methods=['POST'])\ndef transcribe():\n    if 'audio' not in request.files:\n        return jsonify({'error': 'No audio file provided'}), 400\n    audio_file = request.files['audio']",
+      "cwe_id": "CWE-770",
+      "recommendation": "Implement rate limiting at Caddy reverse proxy level (per-IP limits on /whisper/* routes). Add request authentication or API key validation. Reduce maximum audio file size. Implement request queuing with max queue length. Add monitoring and auto-scaling for Whisper containers.",
+      "evidence": "The /transcribe endpoint at line 87 has no authentication checks - it only validates the presence of an audio file. Line 17 shows CORS(app) allowing unrestricted cross-origin requests. docker-compose.yml line 95 sets memory limit to 4GB with only 1 worker (Dockerfile.whisper line 47). The Caddyfile at line 22 proxies /whisper/* without any rate limiting configuration. Processing timeout is 300 seconds (Dockerfile.whisper line 49)."
+    },
+    {
+      "threat_id": "THREAT-004",
+      "title": "Performance Score Manipulation via Client-Side Logic",
+      "description": "All business logic runs client-side with no server validation. An attacker can use browser DevTools to directly modify React state, localStorage, or intercept functions to change performance scores, competency ratings, and calculated grid positions before generating the DOCX report.",
+      "severity": "high",
+      "file_path": "hr-performance-app/src/contexts/FormContext.jsx",
+      "line_number": 156,
+      "code_snippet": "const updateCompetencyScore = useCallback((competencyId, score) => {\n  setFormData(prev => ({\n    ...prev,\n    competencyScores: {\n      ...prev.competencyScores,\n      [competencyId]: score\n    }\n  }));\n  setIsDirty(true);\n}, []);",
+      "cwe_id": "CWE-602",
+      "recommendation": "Migrate to server-side validation and tamper detection. Implement digital signatures on exported DOCX files with timestamps and manager identity. Add checksums to localStorage data to detect tampering. Create audit logs of all score changes with timestamps.",
+      "evidence": "The updateCompetencyScore function at line 156 directly updates scores with no validation or tamper protection. An attacker can open DevTools Console and execute: localStorage.setItem('hr_performance_sessions', JSON.stringify(modifiedData)) to change all scores. The DOCX generation in docxGenerator.js line 453 directly uses formData without any integrity checks. Actions.jsx handleDownload() at line 34 only performs client-side validation which can be bypassed."
+    },
+    {
+      "threat_id": "THREAT-007",
+      "title": "No Authentication or Authorization System",
+      "description": "Phase 1 has no authentication or authorization. Anyone with access to the application URL can create performance reviews for any employee, including executives or HR personnel. No validation exists to ensure the person conducting the review is the employee's actual manager.",
+      "severity": "critical",
+      "file_path": "hr-performance-app/src/App.jsx",
+      "line_number": 1,
+      "code_snippet": "// Application has no authentication implementation",
+      "cwe_id": "CWE-862",
+      "recommendation": "Immediately implement authentication using the Keycloak service already configured in docker-compose.yml. Enforce role-based access control where only assigned managers can review their direct reports. Add digital signatures to prove review authenticity. Implement manager-employee relationship validation.",
+      "evidence": "No authentication mechanism exists in the frontend application. docker-compose.yml includes Keycloak (lines 127-162) but the frontend does not integrate it. AuthContext.jsx exists but is not used in the main App.jsx flow. FormContext.jsx manages sessions without any user identity checks. Anyone can access http://localhost/ and create reviews without proving their identity."
+    },
+    {
+      "threat_id": "THREAT-008",
+      "title": "Sensitive Data Exposure via Browser Autocomplete",
+      "description": "Employee names, roles, business units, and other sensitive information entered into the application may be cached by the browser's autocomplete feature. This data persists beyond the 14-day session expiry and can be recovered through browser forensics.",
+      "severity": "medium",
+      "file_path": "hr-performance-app/src/components/EmployeeInfo.jsx",
+      "line_number": 30,
+      "code_snippet": "<input\n  type=\"text\"\n  id=\"employeeName\"\n  value={formData.employeeName}\n  onChange={handleChange('employeeName')}\n  placeholder={t('employee.namePlaceholder')}\n/>",
+      "cwe_id": "CWE-524",
+      "recommendation": "Add autocomplete='off' attributes to all sensitive form fields. Implement Cache-Control headers (no-cache, no-store, must-revalidate). Add prominent warning to users about clearing browser data after use. Use autocomplete='new-password' for sensitive fields.",
+      "evidence": "EmployeeInfo.jsx renders input fields for sensitive employee data (employeeName at line 30, role at line 50, businessUnit at line 68) without any autocomplete attributes. Grep search confirms no autocomplete attributes are set anywhere in the codebase. Browsers will cache these values in autocomplete history indefinitely, accessible via browser settings or forensics tools."
+    },
+    {
+      "threat_id": "THREAT-010",
+      "title": "Content Security Policy Not Enforced",
+      "description": "While HTML entity encoding is implemented for XSS prevention, no Content Security Policy headers are configured in production. CSP is commented out in Caddyfile, leaving the application vulnerable to sophisticated XSS attacks that could bypass basic input sanitization.",
+      "severity": "medium",
+      "file_path": "Caddyfile",
+      "line_number": 65,
+      "code_snippet": "# Content-Security-Policy \"default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' wss: https:; frame-ancestors 'self'\"",
+      "cwe_id": "CWE-1021",
+      "recommendation": "Uncomment and configure Content Security Policy headers in Caddyfile. Remove 'unsafe-inline' and 'unsafe-eval' from script-src. Implement nonce-based CSP for inline scripts. Use strict CSP directives appropriate for the application architecture.",
+      "evidence": "The Caddyfile at line 65 shows CSP header configuration is commented out. The application has awareness of CSP but hasn't implemented it. session.js sanitizeInput() function at line 159 provides basic XSS protection with HTML entity encoding, but without CSP enforcement, sophisticated attacks using encoded payloads, CSS injection, or JavaScript protocol handlers could bypass this."
+    },
+    {
+      "threat_id": "THREAT-006",
+      "title": "Voice Recording Data Transmitted Over HTTP in Development",
+      "description": "Audio recordings containing sensitive performance feedback are transmitted to the Whisper server endpoint without encryption in development mode. The useWhisper.js hook uses http://localhost:3001 in development, allowing network sniffing to capture sensitive conversations.",
+      "severity": "medium",
+      "file_path": "hr-performance-app/src/hooks/useWhisper.js",
+      "line_number": 5,
+      "code_snippet": "const SPEECH_SERVER_URL = import.meta.env.PROD ? '' : 'http://localhost:3001';",
+      "cwe_id": "CWE-319",
+      "recommendation": "Enforce HTTPS even in development using self-signed certificates. Implement end-to-end encryption for audio data before transmission. Add network segmentation to isolate Whisper container. Implement TLS mutual authentication between Caddy and Whisper service.",
+      "evidence": "useWhisper.js line 5 explicitly uses HTTP (not HTTPS) for development mode connections to the Whisper server. The transcribeWithServer function at line 126 sends audio files containing potentially sensitive performance discussions over this unencrypted connection. In development on shared networks (coffee shop WiFi, corporate network), this audio could be intercepted via packet sniffing."
+    },
+    {
+      "threat_id": "THREAT-022",
+      "title": "Docker Container Running as Root User",
+      "description": "The Whisper server Docker container does not specify a non-root user, meaning it runs as root by default. If vulnerabilities exist in Flask, faster-whisper, or audio processing libraries, an attacker could exploit them to gain root access inside the container and potentially escape to the host system.",
+      "severity": "medium",
+      "file_path": "Dockerfile.whisper",
+      "line_number": 1,
+      "code_snippet": "FROM python:3.11-slim\n\nWORKDIR /app\n\n# Install system dependencies for audio processing",
+      "cwe_id": "CWE-250",
+      "recommendation": "Add USER directive in Dockerfile to run as non-root user. Implement read-only root filesystem with only /tmp writable. Enable Docker security features (AppArmor, SELinux, seccomp profiles). Remove unnecessary packages. Keep dependencies updated with vulnerability scanning.",
+      "evidence": "Dockerfile.whisper does not contain a USER directive anywhere in the file. Docker containers run as root by default unless explicitly specified otherwise. The container processes audio files with libraries like librosa and ffmpeg (line 12) which have had security vulnerabilities. Running as root amplifies the impact of any exploit, making container escape easier."
+    },
+    {
+      "threat_id": "THREAT-026",
+      "title": "Potential Prototype Pollution via Dynamic Object Properties",
+      "description": "The application uses dynamic object property assignment for competencyScores and competencyNotes. While competency IDs are generated from a controlled source (competencies.js), if an attacker could manipulate these IDs to '__proto__' or 'constructor', it could cause prototype pollution affecting all objects.",
+      "severity": "medium",
+      "file_path": "hr-performance-app/src/contexts/FormContext.jsx",
+      "line_number": 160,
+      "code_snippet": "competencyScores: {\n  ...prev.competencyScores,\n  [competencyId]: score\n}",
+      "cwe_id": "CWE-1321",
+      "recommendation": "Validate all object property names against whitelist before assignment. Use Object.create(null) for dictionaries to avoid prototype chain. Implement Object.freeze() on critical objects. Use Map instead of plain objects for dynamic properties. Add input validation rejecting '__proto__' or 'constructor'.",
+      "evidence": "The updateCompetencyScore function at line 156 uses bracket notation [competencyId] to dynamically set properties on the competencyScores object. While competencyId normally comes from competencies.js with controlled IDs like 'result_driven_a', an attacker with browser access could manipulate React state or localStorage to inject '__proto__' as a competency ID. No validation exists in the code to prevent prototype pollution attacks."
+    },
+    {
+      "threat_id": "THREAT-018",
+      "title": "Organizational Competency Framework Publicly Accessible",
+      "description": "The competencies.js file containing the complete organizational hierarchy structure (TOV-levels A/B/C/D) and expected capabilities for each level is exposed in the client-side JavaScript bundle. This information could be valuable for competitive intelligence or targeted social engineering attacks.",
+      "severity": "low",
+      "file_path": "hr-performance-app/src/utils/competencies.js",
+      "line_number": 4,
+      "code_snippet": "export const competencies = {\n  A: [\n    {\n      id: 'result_driven_a',\n      category: 'Dedicated',\n      subcategory: 'Result driven',",
+      "cwe_id": "CWE-200",
+      "recommendation": "Consider if this data needs to be secret - it may be acceptable as public information. If confidential, move competency definitions to server-side with role-based access. Obfuscate or encrypt competency data in JavaScript bundles. Implement API authentication before serving competency frameworks.",
+      "evidence": "The competencies.js file exports the complete competency framework including all 24 competencies (6 per level × 4 levels) with detailed descriptions in English, Dutch, and Spanish. This data is bundled in the client-side JavaScript and accessible to anyone. The file is 847 lines containing the full organizational capability model. Attackers could use this for targeted social engineering or competitive intelligence."
+    },
+    {
+      "threat_id": "THREAT-027",
+      "title": "Session Deletion Without Strong Confirmation or Audit Trail",
+      "description": "The application allows managers to delete sessions with only a basic confirmation prompt and without creating any audit trail. A manager could create a review, then delete it claiming it never existed, with no recovery mechanism or logging.",
+      "severity": "medium",
+      "file_path": "hr-performance-app/src/components/Actions.jsx",
+      "line_number": 54,
+      "code_snippet": "const handleClear = () => {\n  if (window.confirm(t('actions.confirmClear'))) {\n    clearSession();\n  }\n};",
+      "cwe_id": "CWE-778",
+      "recommendation": "Implement soft delete with recovery period (e.g., 30-day recycle bin). Add stronger confirmation dialog warning about permanent deletion. Implement audit logging before deletion capturing full session data. In production, prevent deletion entirely - mark as 'void' with reason requiring HR approval.",
+      "evidence": "The handleClear function at line 54 only uses basic window.confirm() dialog before calling clearSession(). FormContext.jsx clearSession() at line 203 calls deleteSession() which permanently removes the session from localStorage (session.js line 111). No backup, audit trail, or recovery mechanism exists. SessionsList.jsx shows similar pattern with confirmDelete state but still permanent deletion at line 23."
+    },
+    {
+      "threat_id": "THREAT-019",
+      "title": "Session Data Corruption via Concurrent Browser Tabs",
+      "description": "If a user opens the same session in multiple browser tabs simultaneously, concurrent modifications to localStorage create race conditions. The auto-save mechanism with a 2.5 second delay means the last tab to save overwrites changes from other tabs, causing data loss.",
+      "severity": "medium",
+      "file_path": "hr-performance-app/src/contexts/FormContext.jsx",
+      "line_number": 72,
+      "code_snippet": "saveTimeoutRef.current = setTimeout(() => {\n  const sanitizedData = sanitizeFormData(formData);\n  saveSession(sessionCode, sanitizedData);\n  setLastSaved(new Date());\n  setIsDirty(false);\n  triggerSaveIndicator();\n}, 2500);",
+      "cwe_id": "CWE-362",
+      "recommendation": "Implement browser tab synchronization using StorageEvent listeners to detect concurrent edits. Add conflict detection comparing timestamps before saves. Show warning modal when session is open in another tab. Implement optimistic locking with version numbers.",
+      "evidence": "The auto-save mechanism at line 72 saves to localStorage after 2.5 seconds of inactivity. There's no check for whether the session is open in other tabs or whether localStorage data has changed since last read. No StorageEvent listeners exist in the codebase to detect concurrent modifications. If two tabs modify different parts of the same session, the second save will overwrite the first completely."
+    },
+    {
+      "threat_id": "THREAT-020",
+      "title": "Temporary Audio Files May Persist After Processing Errors",
+      "description": "While the Whisper server attempts to delete temporary audio files in the finally block, errors during cleanup could leave files persisted. If the /app/uploads/ directory is mapped to a Docker volume, audio recordings containing sensitive performance discussions could accumulate.",
+      "severity": "low",
+      "file_path": "hr-performance-app/server/whisper_server_faster.py",
+      "line_number": 161,
+      "code_snippet": "finally:\n    # Clean up temp files\n    for path in [temp_path, wav_path]:\n        if path and os.path.exists(path):\n            try:\n                os.unlink(path)\n            except Exception:\n                pass",
+      "cwe_id": "CWE-459",
+      "recommendation": "Implement guaranteed cleanup using context managers (with statements) for temporary files. Add startup script that cleans /app/uploads/ on container start. Mount /app/uploads/ as tmpfs (memory-only filesystem). Implement audio file encryption before writing to temp storage.",
+      "evidence": "The finally block at line 161 attempts to delete temporary files but silently catches and ignores any exceptions (pass statement at line 168). If the container crashes before the finally block executes, or if file deletion fails due to permissions, the audio files will remain. Dockerfile.whisper creates /app/uploads/ directory at line 25 but doesn't configure it as tmpfs, meaning files persist to disk."
+    },
+    {
+      "threat_id": "THREAT-012",
+      "title": "Session Code Enumeration Theoretically Possible",
+      "description": "Session codes are 10 alphanumeric characters (case-insensitive) yielding 36^10 combinations. While this is a large space (3.6 quadrillion), the lack of any rate limiting on session loading means automated brute force attempts are technically possible, though highly impractical.",
+      "severity": "low",
+      "file_path": "hr-performance-app/src/utils/session.js",
+      "line_number": 91,
+      "code_snippet": "export function loadSession(sessionCode) {\n  const sessions = getAllSessions();\n  const session = sessions[sessionCode?.toUpperCase()];\n  if (!session) return null;",
+      "cwe_id": "CWE-307",
+      "recommendation": "Increase session code entropy to 16+ characters with mixed case. Implement client-side rate limiting using Web Storage API to track failed attempts. Add exponential backoff after failed resume attempts. Migrate to server-side session validation with brute force protection.",
+      "evidence": "The loadSession function at line 91 has no rate limiting - it simply checks localStorage for the session code and returns it if found. An attacker could theoretically write a script to attempt session code combinations. While 36^10 (3.6 quadrillion) is large, the lack of any protection mechanism means enumeration is only limited by client-side performance. No account lockout, CAPTCHA, delay, or server-side validation exists."
+    },
+    {
+      "threat_id": "THREAT-014",
+      "title": "Goal Weight Manipulation to Artificially Inflate Scores",
+      "description": "The application validates that goal weights sum to 100% but allows users to assign 99% weight to high-scoring goals and 1% to low-scoring goals, artificially inflating the overall WHAT score. No business rules enforce balanced weight distribution.",
+      "severity": "low",
+      "file_path": "hr-performance-app/src/utils/scoring.js",
+      "line_number": 8,
+      "code_snippet": "export function calculateWhatScore(goals) {\n  const validGoals = goals.filter(g => g.title.trim() && g.score && g.weight);\n  if (validGoals.length === 0) return null;\n  const totalWeight = validGoals.reduce((sum, g) => sum + Number(g.weight), 0);\n  if (totalWeight === 0) return null;\n  const weightedSum = validGoals.reduce((sum, g) => {\n    return sum + (Number(g.score) * Number(g.weight));\n  }, 0);",
+      "cwe_id": "CWE-1021",
+      "recommendation": "Implement business rules enforcing balanced weights (e.g., no single goal > 50% weight, minimum 5% per goal). Add warnings in UI and DOCX report when weight distribution is unbalanced. Flag reviews with suspicious patterns for HR review. Implement approval workflows requiring justification.",
+      "evidence": "The calculateWhatScore function at line 8 performs a straight weighted average calculation with no validation of weight distribution. A manager could create 5 goals, assign 98% to one scored-3 goal and 0.5% each to four scored-1 goals, yielding a WHAT score of 2.96 despite 4/5 goals failing. The validateWeights function at line 95 only checks sum equals 100%, not distribution fairness."
+    },
+    {
+      "threat_id": "THREAT-024",
+      "title": "Auto-Save Mechanism Could Cause Performance Issues",
+      "description": "The auto-save mechanism triggers after 2.5 seconds of inactivity and includes recursive sanitization of all form data. During rapid voice input or typing, this could accumulate pending saves, though the implementation does clear previous timeouts which mitigates the severity.",
+      "severity": "low",
+      "file_path": "hr-performance-app/src/contexts/FormContext.jsx",
+      "line_number": 68,
+      "code_snippet": "if (saveTimeoutRef.current) {\n  clearTimeout(saveTimeoutRef.current);\n}\nsaveTimeoutRef.current = setTimeout(() => {\n  const sanitizedData = sanitizeFormData(formData);\n  saveSession(sessionCode, sanitizedData);\n}, 2500);",
+      "cwe_id": "CWE-400",
+      "recommendation": "Current implementation already cancels pending timeouts which prevents most issues. Consider adding explicit save queue management to ensure only one save operation is in flight at a time. Add save status indicator. Monitor performance during rapid input scenarios.",
+      "evidence": "The code at line 68 shows clearTimeout(saveTimeoutRef.current) which cancels any pending save before scheduling a new one, preventing accumulation of save operations. However, the sanitizeFormData function at FormContext.jsx line 21 recursively processes the entire form object on each save. With large comment fields or many goals, this could be CPU-intensive. The timeout is relatively short at 2.5 seconds."
     }
-  },
-  "metrics": {
-    "files_analyzed": 45,
-    "lines_of_code_reviewed": 8742,
-    "threats_identified": 25,
-    "vulnerabilities_confirmed": 18,
-    "false_positives": 0,
-    "scan_duration_hours": 4,
-    "coverage_percentage": 95
-  },
-  "deployment_decision": {
-    "recommendation": "DO NOT DEPLOY TO PRODUCTION",
-    "confidence": "High",
-    "acceptable_use_cases": [
-      "Internal development and testing environments only",
-      "Non-confidential performance reviews with informed user consent",
-      "Proof-of-concept demonstrations in controlled settings"
-    ],
-    "required_before_production": [
-      "Authentication and authorization system (CRITICAL)",
-      "Data encryption at rest (CRITICAL)",
-      "Server-side session management (CRITICAL)",
-      "All security headers implemented (HIGH)",
-      "Rate limiting and authentication on all APIs (HIGH)",
-      "Audit logging and monitoring (HIGH)",
-      "Security testing by third party (MEDIUM)",
-      "GDPR compliance review (MEDIUM)"
-    ],
-    "estimated_remediation_time": {
-      "immediate_fixes": "2-3 days",
-      "short_term_fixes": "3-4 weeks",
-      "medium_term_fixes": "2-3 months",
-      "total_to_production_ready": "3-4 months"
-    }
-  }
+  ]
 }

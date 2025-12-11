@@ -149,6 +149,25 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
     return reply.status(201).send(tovLevel);
   });
 
+  fastify.patch('/tov-levels/:id', {
+    schema: {
+      description: 'Update a TOV/IDE level',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request) => {
+    const { id } = request.params as { id: string };
+    const body = request.body as Partial<{ name: string; description: object; sortOrder: number; isActive: boolean }>;
+
+    const tovLevel = await fastify.prisma.tovLevel.update({
+      where: { id },
+      data: body,
+    });
+
+    return tovLevel;
+  });
+
   // ============================================
   // COMPETENCIES
   // ============================================
@@ -223,6 +242,51 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
     });
 
     return reply.status(201).send(competency);
+  });
+
+  fastify.patch('/competencies/:id', {
+    schema: {
+      description: 'Update a competency',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request) => {
+    const { id } = request.params as { id: string };
+    const body = request.body as Partial<{
+      category: string;
+      subcategory: string;
+      title: object;
+      indicators: object;
+      sortOrder: number;
+      isActive: boolean;
+    }>;
+
+    const competency = await fastify.prisma.competencyLevel.update({
+      where: { id },
+      data: body,
+    });
+
+    return competency;
+  });
+
+  fastify.delete('/competencies/:id', {
+    schema: {
+      description: 'Delete a competency (soft delete)',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+
+    // Soft delete
+    await fastify.prisma.competencyLevel.update({
+      where: { id },
+      data: { isActive: false },
+    });
+
+    return reply.status(204).send();
   });
 
   // ============================================

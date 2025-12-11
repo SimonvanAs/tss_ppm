@@ -18,7 +18,22 @@ import { Comments } from './components/Comments';
 import { Actions } from './components/Actions';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import { SessionsList } from './components/SessionsList';
-import { MyReviews, TeamOverview, Approvals, HRDashboard, AllReviews } from './pages';
+import {
+  MyReviews,
+  TeamOverview,
+  Approvals,
+  HRDashboard,
+  AllReviews,
+  AdminLayout,
+  AdminDashboard,
+  UserManagement,
+  OrgChart,
+  FunctionTitles,
+  TovLevels,
+  Competencies,
+  OpCoManagement,
+  GlobalDashboard,
+} from './pages';
 import './App.css';
 
 function LoadingScreen() {
@@ -304,6 +319,7 @@ function AppRouter() {
         }
       />
 
+      {/* Admin Portal with nested routes */}
       <Route
         path="/admin"
         element={
@@ -311,18 +327,38 @@ function AppRouter() {
             <LanguageProvider>
               <WhisperProvider>
                 <FormProvider>
-                  <PageWrapper>
-                    <div className="card" style={{ padding: 48, textAlign: 'center' }}>
-                      <h2 style={{ color: '#004A91', margin: '0 0 16px' }}>Admin Portal</h2>
-                      <p style={{ color: '#666' }}>Admin functionality coming in Phase 6</p>
-                    </div>
+                  <PageWrapper showNav={false}>
+                    <AdminLayout />
                   </PageWrapper>
                 </FormProvider>
               </WhisperProvider>
             </LanguageProvider>
           </ProtectedRoute>
         }
-      />
+      >
+        <Route index element={<AdminDashboard />} />
+        <Route path="users" element={<UserManagement />} />
+        <Route path="org-chart" element={<OrgChart />} />
+        <Route path="function-titles" element={<FunctionTitles />} />
+        <Route path="tov-levels" element={<TovLevels />} />
+        <Route path="competencies" element={<Competencies />} />
+        <Route
+          path="opcos"
+          element={
+            <ProtectedRoute roles={['TSS_SUPER_ADMIN']}>
+              <OpCoManagement />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="global"
+          element={
+            <ProtectedRoute roles={['TSS_SUPER_ADMIN']}>
+              <GlobalDashboard />
+            </ProtectedRoute>
+          }
+        />
+      </Route>
 
       {/* API-backed review form route (for future use) */}
       <Route

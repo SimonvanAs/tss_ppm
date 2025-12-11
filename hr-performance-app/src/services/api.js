@@ -220,6 +220,8 @@ export const adminApi = {
   // Competencies
   getCompetencies: (params = {}) => apiClient.get('/admin/competencies', params),
   createCompetency: (data) => apiClient.post('/admin/competencies', data),
+  updateCompetency: (id, data) => apiClient.patch(`/admin/competencies/${id}`, data),
+  deleteCompetency: (id) => apiClient.delete(`/admin/competencies/${id}`),
 
   // Users (admin view)
   getUsers: () => apiClient.get('/admin/users'),

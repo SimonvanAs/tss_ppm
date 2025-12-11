@@ -1,676 +1,600 @@
-# Security Assessment Report
+# Security Architecture
 
-**Application**: HR Performance Scoring Web Application (TSS PPM)
-**Version**: 1.2.1
-**Analysis Date**: 2025-12-08
-**Repository**: https://github.com/SimonvanAs/tss_ppm
+## Overview
 
----
+The TSS PPM (Total Specific Solutions Performance Management) application is an HR performance review system that replaces Excel-based annual employee performance reviews with a web-based interface. The application enables managers to conduct structured performance evaluations using a 9-grid scoring matrix (WHAT-axis for goals/results × HOW-axis for competencies), supports multi-language input (English, Spanish, Dutch), includes browser and server-based speech-to-text capabilities via Whisper, and generates professional DOCX reports.
 
-## 1. Architecture Overview
+**Current Version:** 1.2.1
 
-This is a client-side React 19 application built with Vite that provides an HR Performance Scoring interface. The application architecture is entirely browser-based with the following key characteristics:
+**Architecture Style:** Multi-tier web application with planned migration from client-side-only to multi-tenant server-based architecture
 
-- **Frontend-only architecture**: No backend database or authentication server
-- **Browser localStorage**: Primary data persistence mechanism
-- **Optional server component**: Python-based Whisper transcription service for voice input
-- **DOCX generation**: Client-side document generation using the `docx` npm package
-- **Dual voice input modes**: Web Speech API (browser) OR Transformers.js Whisper (browser) OR Faster-Whisper server
+## Architecture
 
-### Deployment Architecture
+The application is transitioning between two architectural phases:
 
+### Phase 1 Architecture (Current Production)
 ```
-┌─────────────────────────────────────────────┐
-│  Caddy Reverse Proxy (HTTPS/TLS)            │
-│  - SSL/TLS termination via Let's Encrypt    │
-│  - Domain: configurable via env             │
-└──────────────┬──────────────────────────────┘
-               │
-       ┌───────┴────────┐
-       │                │
-┌──────▼─────┐   ┌──────▼──────────────┐
-│  Frontend  │   │  Whisper Service     │
-│  (Nginx)   │   │  (Python/Flask)      │
-│  Port: 80  │   │  Port: 3001          │
-└────────────┘   └─────────────────────┘
-     │
-     │ Serves static files & proxies /transcribe
-     │
-┌────▼──────────────────────┐
-│  Browser                  │
-│  - React App              │
-│  - localStorage           │
-│  - Web Speech API         │
-│  - Transformers.js        │
-└───────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                        User Browser                          │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │  React 19 SPA (Vite 7)                                 │ │
+│  │  - Form State Management (FormContext)                 │ │
+│  │  - localStorage (14-day retention, unencrypted)        │ │
+│  │  - DOCX Generation (client-side via docx library)     │ │
+│  │  - Browser Whisper (transformers.js, WebGPU/WASM)     │ │
+│  └────────────────────────────────────────────────────────┘ │
+└─────────────────────┬───────────────────────────────────────┘
+                      │ (Optional)
+                      ▼
+        ┌─────────────────────────────┐
+        │   Caddy Reverse Proxy       │
+        │   - Auto HTTPS               │
+        │   - Security Headers         │
+        └─────────────┬─────────────────┘
+                      │
+                      ▼
+        ┌─────────────────────────────┐
+        │   Whisper Server (Docker)   │
+        │   - Python Flask API        │
+        │   - faster-whisper (CPU)    │
+        │   - Audio transcription     │
+        └─────────────────────────────┘
 ```
 
-The application replaces an Excel-based performance review process with a web interface featuring:
-- 9-grid performance scoring (WHAT-axis × HOW-axis)
-- Multi-language support (English, Spanish, Dutch)
-- Session-based auto-save with 14-day retention
-- DOCX report generation
-- Advanced voice input with ML-based transcription
-
-## 2. Technology Stack
-
-### Frontend Dependencies (package.json v1.2.1)
-- **React 19.2.0**: UI framework (latest major version)
-- **Vite 7.2.7**: Build tool and dev server
-- **docx 9.5.1**: DOCX file generation
-- **file-saver 2.0.5**: File download utility
-- **uuid 13.0.0**: Session ID generation (UUID v4)
-- **@huggingface/transformers 3.8.1**: Browser-based ML models (500MB+ Whisper models)
-- Testing: Vitest 4.0.15, Playwright 1.57.0
-
-### Backend Services (Optional Whisper Transcription)
-- **Python 3.11-slim**: Runtime environment
-- **Flask + Gunicorn**: HTTP server (production deployment)
-- **faster-whisper**: Optimized speech-to-text (4x faster than PyTorch Whisper)
-- **Model**: Whisper-small with int8 quantization
-- **Resource Limits**: 4GB memory, 2GB reserved
-- **Health Check**: `/health` endpoint with 30s interval
-
-### Deployment Stack
-- **Caddy 2**: Automatic HTTPS via Let's Encrypt, reverse proxy
-- **Nginx Alpine**: Static file serving, /transcribe proxy
-- **Docker Compose**: Multi-container orchestration
-- **Networks**: Bridge network isolation between services
-- **Volumes**: whisper-cache, caddy-data, caddy-config
-
-### External Services
-- **Web Speech API**: Browser-native speech recognition (no external data)
-- **Plausible Analytics**: Privacy-focused analytics at `plausible.io/js/pa-OVp2RFVy8CfsubEwNvi3F.js`
-- **Hugging Face CDN**: Whisper model downloads (browser mode only)
-
-## 3. Data Flow Analysis
-
-### Input Flow
-1. User enters performance review data via forms (text inputs, textareas, dropdowns)
-2. Voice input: Web Speech API (primary) → text or Whisper server (fallback) → text
-3. Input validation: Client-side validation for required fields, weight percentages
-4. Sanitization: `sanitizeInput()` function encodes HTML entities before storage
-
-### Processing Flow
-1. Form data stored in React state (FormContext)
-2. Auto-save triggers after 2.5 seconds of inactivity
-3. Scoring calculations performed client-side (WHAT/HOW axes, 9-grid mapping)
-4. Session data serialized to JSON
-
-### Storage Flow
-1. Session data saved to browser localStorage
-2. Session key format: `ppm_session_[10-char-alphanumeric]`
-3. Timestamp stored for 14-day expiration check
-4. No encryption applied to stored data
-
-### Output Flow
-1. User triggers DOCX download
-2. Client-side DOCX generation using `docx` package
-3. File downloaded directly to user's device
-4. No server-side storage or transmission
-
-## 4. Authentication & Authorization
-
-**CRITICAL FINDING**: The application has NO authentication or authorization mechanisms.
-
-- No user login/registration system
-- No access controls
-- No role-based permissions
-- No session authentication beyond localStorage keys
-- Anyone with the URL can create/access review sessions
-- Anyone with physical access to device can read localStorage data
-
-Session management:
-- 10-character alphanumeric session codes (random, not cryptographically secure)
-- Session codes used only for localStorage key generation
-- No server-side session validation
-- 14-day expiration based on client-side timestamp
-
-## 5. Data Storage & Persistence
-
-### localStorage Implementation
-**Location**: `hr-performance-app/src/utils/session.js`
-
-Stored data includes:
-- Employee name and role
-- TOV level (A/B/C/D)
-- Up to 9 goals with titles, descriptions, scores, and weights
-- 6 competency scores per TOV level
-- Competency strengths, improvements, and goal comments (multi-line text)
-- Self-assessment text
-- Language preference
-- Last modified timestamp
-
-**Security Concerns**:
-- ❌ No encryption at rest
-- ❌ Plaintext storage of potentially sensitive performance data
-- ❌ Accessible via browser DevTools or file system access
-- ❌ No data integrity checks (HMAC, signatures)
-- ✅ Input sanitization prevents XSS in stored data
-- ✅ 14-day auto-expiration reduces data exposure window
-
-### Privacy Policy
-**Location**: `hr-performance-app/PRIVACY_POLICY.md`
-
-Documents that:
-- No personal data sent to external servers (except optional Whisper transcription)
-- Data stored locally in browser
-- No cookies beyond analytics
-- Users responsible for securing their devices
-
-## 6. External Dependencies & APIs
-
-### npm Packages (24 total)
-**High-risk dependencies**:
-- `@huggingface/transformers` (3.2.2): Large ML library, potential supply chain risk
-- `onnxruntime-web` (1.20.2): WebAssembly runtime for ML models
-- `docx` (8.5.0): DOCX generation - handles user input in document creation
-- `file-saver` (2.0.5): File download utility
-
-**Security Controls**:
-- Weekly `npm audit` via GitHub Actions (`.github/workflows/security.yml`)
-- Dependabot enabled for automated dependency updates
-
-### External APIs
-1. **Web Speech API**: Browser-native, no data leaves browser
-2. **Whisper Server** (optional):
-   - Endpoint: `http://localhost:5000/transcribe`
-   - Sends audio files for transcription
-   - CORS enabled for localhost:5173
-3. **Plausible Analytics**: External script (`https://plausible.io/js/script.js`)
-   - Privacy-focused, GDPR-compliant
-   - Optional (can be disabled)
-
-## 7. Input/Output Mechanisms
-
-### User Inputs
-1. **Text fields**: Employee name, role, goal titles, descriptions
-2. **Textareas**: Competency comments, self-assessment
-3. **Dropdowns**: TOV level selection, language selection
-4. **Number inputs**: Goal scores (1-3), competency scores (1-3)
-5. **Percentage inputs**: Goal weight percentages
-6. **Voice input**: Microphone audio → text transcription
-
-### Input Validation
-**Location**: `hr-performance-app/src/utils/session.js` (`sanitizeInput` function)
-
-```javascript
-const sanitizeInput = (value) => {
-  if (typeof value !== 'string') return value;
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;');
-};
+### Phase 2/3 Architecture (Planned - Under Development)
+```
+┌──────────────────────────────────────────────────────────────────┐
+│                          Internet                                 │
+└────────────────────────┬─────────────────────────────────────────┘
+                         │
+                         ▼
+         ┌───────────────────────────────┐
+         │   Caddy Reverse Proxy         │
+         │   - Auto HTTPS                 │
+         │   - Security Headers           │
+         │   - Path-based Routing         │
+         └─┬────────┬───────────┬────────┘
+           │        │           │
+    ┌──────▼──┐  ┌─▼────────┐  ┌▼──────────────┐
+    │Frontend │  │Keycloak  │  │  API Backend  │
+    │ (nginx) │  │ (Auth)   │  │  (Fastify +   │
+    │         │  │          │  │   Prisma)     │
+    └─────────┘  └──────────┘  └───────┬───────┘
+                                        │
+                         ┌──────────────▼──────────────┐
+                         │   PostgreSQL 16              │
+                         │   - Application DB           │
+                         │   - Keycloak DB              │
+                         │   - Multi-tenant isolation   │
+                         └─────────────────────────────┘
 ```
 
-**Strengths**:
-- ✅ HTML entity encoding prevents stored XSS
-- ✅ Applied to all string inputs before localStorage storage
-
-**Weaknesses**:
-- ❌ No input length limits (potential DoS via localStorage quota exhaustion)
-- ❌ No content security policy (CSP) headers
-- ❌ No rate limiting on voice transcription endpoint
-- ❌ File upload validation relies on extension-based detection
-
-### Outputs
-1. **DOCX file generation**: Client-side, uses user input directly
-2. **9-grid visualization**: SVG rendering with calculated scores
-3. **Session code display**: 10-character alphanumeric code
-
-## 8. Key Security-Relevant Components
-
-### Critical Components
-1. **FormContext** (`src/contexts/FormContext.jsx`)
-   - Manages all application state
-   - Handles auto-save logic
-   - Stores sensitive performance data
-
-2. **session.js** (`src/utils/session.js`)
-   - Generates session codes
-   - Saves/loads localStorage data
-   - Input sanitization
-   - Session expiration logic
-
-3. **docxGenerator.js** (`src/utils/docxGenerator.js`)
-   - Creates DOCX files with user input
-   - No additional sanitization before document generation
-   - Potential injection risk if sanitization bypassed
-
-4. **useVoiceInput.jsx** (`src/hooks/useVoiceInput.jsx`)
-   - Handles microphone permissions
-   - Web Speech API integration
-   - Fallback to Whisper server with file uploads
-
-5. **whisper_server_faster.py** (`server/whisper_server_faster.py`)
-   - Accepts file uploads without robust validation
-   - No authentication required
-   - CORS enabled for localhost only
-
-### Sensitive Data Handlers
-- Employee personal information (name, role)
-- Performance scores and ratings
-- Manager comments on competencies
-- Self-assessment narratives
-- TOV level classifications
-
-## 9. Initial Security Observations
-
-### High-Risk Findings
-
-1. **No Authentication/Authorization** ⚠️ CRITICAL
-   - Zero access controls
-   - Anyone can create or access sessions
-   - Unsuitable for confidential performance data
-
-2. **Unencrypted Data Storage** ⚠️ HIGH
-   - Plaintext localStorage exposes sensitive employee data
-   - Physical device access = full data access
-   - Browser sync features could leak data across devices
-
-3. **File Upload Vulnerability** ⚠️ MEDIUM
-   - Whisper server accepts arbitrary files
-   - Extension-based validation can be spoofed
-   - No file size limits enforced
-   - No authentication on upload endpoint
-
-4. **No Content Security Policy** ⚠️ MEDIUM
-   - Missing CSP headers increase XSS risk
-   - External script (Plausible) not integrity-checked
-
-5. **Supply Chain Risks** ⚠️ MEDIUM
-   - 24 npm dependencies, some large (Hugging Face transformers)
-   - Automated scanning present but not sufficient
-
-### Positive Security Features
-
-1. **Input Sanitization** ✅
-   - HTML entity encoding prevents stored XSS
-   - Consistently applied across all text inputs
-
-2. **Client-Side Processing** ✅
-   - DOCX generation happens locally
-   - No sensitive data transmitted to servers (except optional Whisper)
-
-3. **Data Expiration** ✅
-   - 14-day auto-deletion reduces exposure window
-   - Old sessions automatically cleaned up
-
-4. **Privacy-Focused Design** ✅
-   - Minimal external dependencies
-   - Privacy policy clearly documents data handling
-   - Web Speech API keeps voice data local
-
-5. **Automated Security Scanning** ✅
-   - GitHub Actions workflow runs npm audit weekly
-   - Dependabot enabled for dependency updates
-
-### Risk Assessment
-
-**Current Security Posture**: LOW-MEDIUM
-
-This application is appropriate for:
-- Non-confidential performance reviews
-- Internal use within trusted environments
-- Scenarios where physical device security is ensured
-- Users who understand data is stored locally unencrypted
-
-**NOT appropriate for**:
-- Highly confidential performance data
-- Multi-tenant environments
-- Compliance-regulated industries (HIPAA, SOX, etc.)
-- Public-facing deployment without authentication
-
-## 10. Attack Surface Mapping
-
-### 10.1 Client-Side Attack Vectors
-
-#### localStorage Manipulation (HIGH RISK)
-**Entry Points**:
-- Browser DevTools → Application → Local Storage
-- Malicious browser extensions
-- XSS attacks leading to localStorage access
-- Physical device access
-
-**Attack Scenarios**:
-1. Direct modification of session data to alter scores/comments
-2. Injection of XSS payloads into stored text fields
-3. Timestamp manipulation to extend session beyond 14 days
-4. Session enumeration by iterating UUID-based codes
-5. Data exfiltration by reading all stored sessions
-
-**Current Controls**:
-- HTML entity encoding in `sanitizeInput()`
-- 14-day expiration cleanup
-- Session code entropy (UUID v4 substring)
-
-**Gaps**:
-- No encryption at rest
-- No HMAC or signature validation
-- No integrity checks
-- No Content Security Policy
-
-#### Cross-Site Scripting (XSS) (MEDIUM-HIGH RISK)
-**Potential Injection Points**:
-1. Employee Name field → appears in DOCX header
-2. Goal titles/descriptions → 9 fields, rendered in grid
-3. Competency notes → 6 notes per TOV level
-4. Self-assessment textarea → large text field
-5. Additional comments → large text field
-6. Voice transcription results → ML-generated text
-
-**Attack Vectors**:
-- Stored XSS via localStorage
-- DOM-based XSS if sanitization bypassed
-- XSS via DOCX generation (docx library)
-- Adversarial audio to produce XSS strings via Whisper
-
-**Current Mitigations**:
-- React JSX auto-escaping
-- HTML entity encoding before storage
-- No dangerouslySetInnerHTML usage detected
-
-**Gaps**:
-- No Content Security Policy headers
-- No Subresource Integrity for external scripts
-- Plausible Analytics script not SRI-protected
-
-#### Voice Input Vulnerabilities (MEDIUM RISK)
-**Browser Mode (Transformers.js)**:
-- Model downloaded from Hugging Face CDN without integrity checks
-- 500MB Whisper-small model could be MITM'd
-- Cache poisoning risk for model files
-- Adversarial audio examples could fool model
-
-**Server Mode (Faster-Whisper)**:
-- POST /transcribe endpoint has no authentication
-- Max upload 50MB enforced by nginx
-- No rate limiting visible
-- Audio files not validated beyond size
-- Potential ffmpeg exploits via malicious audio
-
-**Current Controls**:
-- Nginx upload limit (50MB)
-- Gunicorn timeout (300s)
-- Docker resource limits (4GB memory)
-- Browser-side WAV conversion
-
-**Gaps**:
-- No authentication on /transcribe
-- No rate limiting
-- No audio file magic number validation
-- No model checksum verification
-
-### 10.2 Network Attack Vectors
-
-#### Man-in-the-Middle (MITM) (LOW RISK - if HTTPS enforced)
-**Attack Scenarios**:
-- Intercept audio uploads to /transcribe
-- Inject malicious Whisper models during download
-- Steal session codes from network traffic
-- Modify DOCX before download
-
-**Current Mitigations**:
-- Caddy automatic HTTPS via Let's Encrypt
-- TLS termination at reverse proxy
-
-**Gaps**:
-- No HSTS header detected in nginx config
-- No HTTP → HTTPS redirect enforcement
-- No certificate pinning
-
-#### Cross-Origin Attacks (LOW RISK)
-**CORS Configuration**:
-- Nginx proxies /transcribe to whisper:3001 (same-origin)
-- No explicit CORS policy in nginx.conf
-- Default same-origin policy applies
-
-**Risk**: Minimal (SPA architecture, same-origin)
-
-### 10.3 Dependency Vulnerabilities (MEDIUM RISK)
-
-**High-Risk Dependencies**:
-
-| Package | Version | Risk Level | Attack Surface |
-|---------|---------|-----------|----------------|
-| @huggingface/transformers | 3.8.1 | HIGH | 500MB+ models, WASM/WebGPU execution, CDN downloads |
-| docx | 9.5.1 | MEDIUM | DOCX generation from user input, XML parsing |
-| react | 19.2.0 | LOW | Latest version, auto-escaping |
-| vite | 7.2.7 | LOW | Dev tool, not in production bundle |
-| file-saver | 2.0.5 | LOW | Older package, simple file download |
-| uuid | 13.0.0 | LOW | Crypto functions, session IDs |
-
-**Supply Chain Risks**:
-- Transformers.js has large dependency tree
-- No npm package signature verification
-- No lockfile checksum validation in CI/CD
-
-**Current Controls**:
-- GitHub Actions `npm audit` (if configured)
-- Dependabot alerts enabled
-- `npm ci` in Dockerfile (uses package-lock.json)
-
-**Gaps**:
-- No SCA (Software Composition Analysis) tool
-- No SBOM (Software Bill of Materials)
-- No package integrity checks
-
-### 10.4 Docker Security (MEDIUM RISK)
-
-**Container Risks**:
-1. **Running as root**: No USER directive in Dockerfiles
-2. **Secrets in images**: Hardcoded model names in ENV vars
-3. **Base image vulnerabilities**: Using Alpine/Slim images (good) but no scanning
-4. **Volume permissions**: whisper-cache volume accessible
-
-**Current Controls**:
-- Multi-stage builds (frontend)
-- Official base images (node:25-alpine, python:3.11-slim, nginx:alpine)
-- Bridge network isolation
-- Resource limits on Whisper container
-- Health checks
-
-**Gaps**:
-- No image vulnerability scanning (Trivy, Snyk)
-- Containers run as root
-- No read-only filesystems
-- No AppArmor/SELinux profiles
-- No secrets management (Docker secrets)
-
-### 10.5 Third-Party Service Risks (LOW RISK)
-
-#### Plausible Analytics
-- Script loaded from `plausible.io/js/pa-OVp2RFVy8CfsubEwNvi3F.js`
-- No Subresource Integrity (SRI)
-- GDPR-compliant, privacy-focused
-- Risk: Script compromise at Plausible could inject malicious code
-
-#### Hugging Face CDN (Browser Mode Only)
-- Whisper models downloaded on-demand
-- No checksum validation
-- Risk: MITM model replacement
-
-## 11. Critical Security Files
-
-### High-Priority Review Files
-
-| File Path | Security Relevance | Key Functions |
-|-----------|-------------------|---------------|
-| `src/utils/session.js` | XSS prevention, session security | `sanitizeInput()`, `saveSession()`, `loadSession()` |
-| `src/contexts/FormContext.jsx` | Data flow control, auto-save | `sanitizeFormData()`, `manualSave()` |
-| `src/utils/docxGenerator.js` | Output encoding | `generateReport()`, DOCX creation |
-| `src/hooks/useWhisper.js` | Voice transcription | `transcribeWithServer()`, `transcribeWithBrowser()` |
-| `src/contexts/WhisperContext.jsx` | ML model loading | `loadModel()`, `transcribe()` |
-| `nginx.conf` | HTTP security headers | Proxy config, upload limits |
-| `docker-compose.yml` | Service isolation | Network config, resource limits |
-| `Dockerfile.whisper` | Server security | Python dependencies, model download |
-| `index.html` | CSP, external scripts | Plausible Analytics script tag |
-
-### Input Validation Files
-- `src/components/EmployeeInfo.jsx` - Employee data
-- `src/components/WhatAxis.jsx` - Goal scoring
-- `src/components/HowAxis.jsx` - Competency assessment
-- `src/components/VoiceInputButton.jsx` - Voice input handling
-
-## 12. Threat Model Summary (STRIDE)
-
-| Threat | Scenario | Likelihood | Impact | Risk | Current Mitigation |
-|--------|----------|-----------|--------|------|-------------------|
-| **Spoofing** | Session code guessing | Low | Medium | MEDIUM | UUID v4 entropy |
-| **Tampering** | localStorage modification | High | High | HIGH | HTML encoding only |
-| **Repudiation** | No audit logs | N/A | Low | LOW | None (by design) |
-| **Info Disclosure** | localStorage theft | Medium | High | HIGH | 14-day expiration |
-| **DoS** | Audio upload flood | Medium | Medium | MEDIUM | 50MB upload limit |
-| **Elevation** | XSS → full DOM access | Medium | High | HIGH | React escaping |
-
-## 13. Compliance Considerations
-
-### GDPR Alignment
-- ✅ Data minimization (local storage only)
-- ✅ Storage limitation (14-day auto-delete)
-- ✅ Privacy by design (no central database)
-- ⚠️ Consent management (privacy policy present but no consent banner)
-- ⚠️ Right to erasure (manual session deletion available)
-- ⚠️ Data portability (DOCX export available)
-- ❌ Breach notification (no audit trail)
-- ❌ Data encryption (localStorage is plaintext)
+## Technology Stack
+
+### Frontend
+- **Framework:** React 19.2.0 with React DOM 19.2.0
+- **Build Tool:** Vite 7.2.7
+- **Language:** JavaScript (ES modules)
+- **UI:** Custom CSS with Tahoma font, brand colors (Magenta #CC0E70, Navy Blue #004A91)
+- **State Management:** React Context API (FormContext, LanguageContext, WhisperContext)
+- **Storage:** Browser localStorage (unencrypted, client-side only)
+- **Document Generation:** docx 9.5.1 (client-side DOCX creation)
+- **File Handling:** file-saver 2.0.5
+- **Session IDs:** uuid 13.0.0
+- **Speech Recognition:** @huggingface/transformers 3.8.1 (ONNX models, WebGPU/WASM)
+
+### Backend Services
+
+#### Whisper Speech-to-Text Server
+- **Runtime:** Python 3.11 (slim container)
+- **Framework:** Flask 3.1.2 with Flask-CORS 6.0.1
+- **Server:** Gunicorn 23.0.0
+- **ML Model:** faster-whisper 1.2.1 (CTranslate2 backend)
+- **Audio Processing:** librosa 0.11.0, soundfile 0.13.1, pydub 0.25.1
+- **System Dependencies:** ffmpeg, libsndfile1
+
+#### API Backend (Phase 2/3 - Under Development)
+- **Runtime:** Node.js 22 (Alpine Linux)
+- **Framework:** Fastify (TypeScript)
+- **ORM:** Prisma
+- **Authentication:** Keycloak integration
+- **Process Manager:** dumb-init (signal handling)
+
+### Infrastructure
+- **Reverse Proxy:** Caddy 2 (Alpine Linux)
+- **Database:** PostgreSQL 16 (Alpine Linux)
+- **Identity Provider:** Keycloak 25.0
+- **Containerization:** Docker with multi-stage builds
+- **Orchestration:** Docker Compose
+
+### Development & Testing
+- **Testing Framework:** Vitest 4.0.15 with @vitest/coverage-v8
+- **E2E Testing:** Playwright 1.57.0
+- **Code Quality:** ESLint 9.39.1 with React-specific plugins
+- **CI/CD:** GitHub Actions (security scanning, Docker builds)
+
+## Entry Points
+
+### Phase 1 (Current Production)
+
+#### 1. Frontend Web Application (Port 80/443)
+- **Path:** `/*` (all routes)
+- **Protocol:** HTTP/HTTPS
+- **Access:** Public, unauthenticated
+- **Input Vectors:**
+  - Text input fields (employee info, goals, comments, self-assessment)
+  - Numeric input (scores 1-3, weight percentages)
+  - File selection (voice recording via MediaRecorder API)
+  - Session codes (10 alphanumeric characters)
+  - Language selection (en/nl/es)
+
+#### 2. Whisper Transcription Endpoint
+- **Path:** `/transcribe` (proxied through Caddy or nginx)
+- **Protocol:** HTTP POST (multipart/form-data)
+- **Access:** Public, no authentication
+- **Input Vectors:**
+  - Audio files (webm, mp3, wav, up to 50MB)
+  - Language parameter (en/nl/es)
+
+#### 3. Health Check Endpoint
+- **Path:** `/health`
+- **Protocol:** HTTP GET
+- **Access:** Public, no authentication
+- **Purpose:** Container health monitoring
+
+### Phase 2/3 (Planned - Under Development)
+
+#### 4. API Backend Endpoints
+- **Base Path:** `/api/v1/*`
+- **Protocol:** HTTP/HTTPS
+- **Authentication:** Keycloak OAuth2/OIDC tokens
+- **Input Vectors:**
+  - JSON payloads (review data, user profiles)
+  - Query parameters (filters, pagination)
+  - JWT tokens (authentication)
+
+#### 5. Keycloak Authentication
+- **Base Path:** `/auth/*`
+- **Protocol:** HTTP/HTTPS
+- **Purpose:** User authentication, token issuance, user management
+- **Input Vectors:**
+  - Credentials (username/password)
+  - OAuth2 flows (authorization code, refresh tokens)
+  - SAML assertions (future SSO integration)
+
+## Authentication & Authorization
+
+### Phase 1 (Current - No Authentication)
+- **Authentication:** None - fully client-side application
+- **Authorization:** None - all data stored locally in user's browser
+- **Session Management:**
+  - 10-character alphanumeric session codes generated via UUID v4
+  - Session codes stored in localStorage, valid for 14 days
+  - Session codes are client-side only, cannot transfer data between browsers/devices
+  - No server-side session validation
+
+### Phase 2/3 (Planned - Keycloak Integration)
+- **Identity Provider:** Keycloak 25.0 with PostgreSQL backend
+- **Authentication Protocol:** OAuth2 + OpenID Connect (OIDC)
+- **Token Type:** JWT (JSON Web Tokens)
+- **Token Storage:** Frontend securely stores access/refresh tokens
+- **Authorization Model:**
+  - Role-Based Access Control (RBAC)
+  - Tenant-based data isolation (multi-tenancy)
+  - User roles: Employee, Manager, Admin, Super Admin
+- **Session Management:**
+  - Server-side session tracking in PostgreSQL
+  - Token refresh mechanism
+  - Configurable session timeouts
+
+### Trust Boundaries
+
+**Phase 1 Trust Boundaries:**
+1. **User Browser ↔ Whisper Server:** Unauthenticated, public endpoint (audio transcription)
+2. **User Browser ↔ localStorage:** No encryption, vulnerable to XSS/device access
+
+**Phase 2/3 Trust Boundaries:**
+1. **Internet ↔ Caddy:** HTTPS termination, public entry point
+2. **Caddy ↔ Backend Services:** Internal Docker network, HTTP within container network
+3. **API ↔ Keycloak:** Internal authentication verification
+4. **API ↔ PostgreSQL:** Database credentials via environment variables
+5. **User Browser ↔ API:** JWT bearer tokens in Authorization header
+
+## Data Flow
+
+### Phase 1 Data Flow (Current Production)
+
+#### 1. User Input → Browser Storage
+```
+User types in form fields
+  → React state (FormContext)
+  → Auto-save after 2.5s inactivity
+  → XSS sanitization (HTML entities escaped)
+  → localStorage (hr_performance_sessions key)
+  → Data stored unencrypted in plain text
+```
+
+#### 2. Voice Input → Transcription (Browser Whisper)
+```
+User holds voice button
+  → MediaRecorder API captures audio (WebM/Opus)
+  → Audio converted to WAV (16kHz mono PCM) in browser
+  → transformers.js Whisper model (WebGPU or WASM)
+  → Model downloads once (whisper-small ~500MB or whisper-base ~150MB)
+  → Transcription happens locally in browser
+  → Text appended to form field
+```
+
+#### 3. Voice Input → Transcription (Server Whisper)
+```
+User holds voice button (mobile or fallback)
+  → MediaRecorder API captures audio (WebM/Opus)
+  → Audio converted to WAV (16kHz mono PCM) in browser
+  → HTTP POST to /transcribe (multipart/form-data)
+  → Caddy/nginx proxies to Whisper container
+  → faster-whisper processes audio (CPU, int8 quantization)
+  → Temporary file created, processed, deleted
+  → Text returned in JSON response
+  → Text appended to form field
+```
+
+#### 4. Document Generation
+```
+User clicks "Download Report"
+  → Form validation checks (all goals scored, weights sum to 100%)
+  → Form data retrieved from FormContext
+  → docx library generates DOCX in browser memory
+  → file-saver triggers browser download
+  → File saved directly to user's device
+  → No server upload, fully client-side
+```
+
+#### 5. Session Management
+```
+On form load:
+  → Generate UUID v4 session code (10 chars)
+  → Auto-save form data every 2.5s to localStorage
+  → Cleanup expired sessions (>14 days) on mount
+
+User resumes session:
+  → User enters session code
+  → Code looked up in localStorage
+  → Session expiry checked (14 days)
+  → If valid, data loaded into FormContext
+  → If expired, session deleted
+```
+
+### Phase 2/3 Data Flow (Planned)
+
+#### Server-Side Review Persistence
+```
+User submits review form
+  → JWT validated by API
+  → Tenant ID extracted from token
+  → Data validated against schema
+  → Prisma ORM transaction
+  → PostgreSQL stores review (row-level tenant isolation)
+  → Response returned to frontend
+```
+
+## Sensitive Data
 
 ### Data Classification
 
-| Data Type | Sensitivity | PII | Storage Location | Retention |
-|-----------|------------|-----|-----------------|-----------|
-| Employee Name | HIGH | Yes | localStorage | 14 days |
-| Performance Scores | HIGH | No | localStorage | 14 days |
-| Manager Comments | HIGH | No | localStorage | 14 days |
-| Competency Assessments | MEDIUM | No | localStorage | 14 days |
-| Voice Audio | HIGH | No | Memory only | Immediate deletion |
-| Session Code | LOW | No | localStorage | 14 days |
-| Generated DOCX | HIGH | Yes | User download | User-controlled |
+#### Highly Sensitive (Personal Performance Data)
+- **Employee Names:** Stored in localStorage (Phase 1) or PostgreSQL (Phase 2/3)
+- **Role/Function Titles:** Job position information
+- **Business Unit:** Organizational structure data
+- **Performance Goals:** Detailed descriptions of work objectives
+- **Performance Scores:** Numeric ratings (1-3) for goals and competencies
+- **Manager Comments:** Subjective performance assessments
+- **Self-Assessments:** Employee's personal reflections on performance
+- **TOV/IDE Level:** Employee classification level (A/B/C/D)
+- **Review Dates:** Temporal performance tracking
 
-## 14. Security Recommendations
+#### Sensitive (System Data)
+- **Session Codes:** 10-character session identifiers
+- **Language Preferences:** User's selected language (en/nl/es)
+- **Voice Recordings:** Temporary audio captured during speech-to-text (deleted after processing)
+- **JWT Tokens:** (Phase 2/3) Authentication credentials
 
-### Immediate Actions (High Priority)
+#### Low Sensitivity
+- **Competency Definitions:** Standard competency framework (static data)
+- **UI State:** Form progress, collapsed sections
+- **Usage Analytics:** Anonymous aggregate statistics (Plausible Analytics)
 
-1. **Implement Content Security Policy**
-   ```nginx
-   add_header Content-Security-Policy "default-src 'self'; script-src 'self' https://plausible.io; connect-src 'self' https://cdn.huggingface.co; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none';" always;
-   ```
+### Data Storage Locations
 
-2. **Add HTTP Security Headers** (nginx.conf)
-   - `X-Frame-Options: DENY`
-   - `X-Content-Type-Options: nosniff`
-   - `Strict-Transport-Security: max-age=31536000; includeSubDomains`
-   - `Referrer-Policy: no-referrer`
-   - `Permissions-Policy: microphone=(self)`
+#### Phase 1
+- **localStorage:** All review data stored unencrypted as JSON strings
+  - Key: `hr_performance_sessions`
+  - Retention: 14 days (automatic cleanup)
+  - Encryption: None
+  - Backup: None (user's device only)
 
-3. **Add Subresource Integrity (SRI)** for Plausible script
-   ```html
-   <script src="..." integrity="sha384-..." crossorigin="anonymous"></script>
-   ```
+- **Whisper Server Temporary Storage:**
+  - Audio files written to `/app/uploads/` during processing
+  - Files immediately deleted after transcription
+  - No persistent audio storage
+  - Memory-resident during processing only
 
-4. **Implement Rate Limiting** on /transcribe endpoint
-   - Use nginx `limit_req` module
-   - Max 10 requests per minute per IP
+#### Phase 2/3
+- **PostgreSQL Database:**
+  - Multi-tenant architecture with tenant isolation
+  - Row-level security enforced by Prisma
+  - Database credentials in environment variables
+  - Backups not yet implemented
+  - Encryption at rest: depends on deployment
 
-5. **Add Audio File Validation** in Whisper server
-   - Magic number validation (WAV header check)
-   - File type whitelist (audio/wav only)
-   - Virus scanning integration
+- **Keycloak Database:**
+  - User credentials (hashed passwords)
+  - OAuth tokens
+  - User profile information
+  - Separate PostgreSQL database
 
-### Short-Term Actions (Medium Priority)
+### Data Transmission
 
-6. **Encrypt localStorage Data**
-   - Use Web Crypto API (SubtleCrypto)
-   - Encrypt session data with user-derived key
-   - Add HMAC signatures for integrity
+#### Phase 1
+- **In Production:** HTTPS enforced by Caddy (Let's Encrypt auto-certificates)
+- **In Development:** HTTP to localhost (secure context for MediaRecorder API)
+- **Audio Upload:** Multipart form-data over HTTP/HTTPS (up to 50MB)
 
-7. **Enhance Session Security**
-   - Use cryptographically secure session codes
-   - Add session signature validation
-   - Implement session binding to browser fingerprint
+#### Phase 2/3
+- **All External Traffic:** HTTPS with TLS 1.2+ (Caddy handles termination)
+- **Internal Traffic:** HTTP within Docker bridge network (trusted network)
 
-8. **Dependency Security**
-   - Set up automated npm audit in CI/CD
-   - Enable Dependabot
-   - Add SCA tool (Snyk, Sonatype)
-   - Generate SBOM
+## External Dependencies
 
-9. **Docker Hardening**
-   - Run containers as non-root user
-   - Add image vulnerability scanning (Trivy)
-   - Implement read-only filesystems where possible
-   - Use Docker secrets for sensitive config
+### Frontend Dependencies (npm)
+- **@huggingface/transformers:** Client-side ML models (ONNX runtime)
+- **docx:** DOCX file generation
+- **file-saver:** Browser download triggering
+- **uuid:** Session code generation
+- **react & react-dom:** UI framework
 
-10. **Model Integrity Checks**
-    - Validate Whisper model checksums
-    - Implement SRI for model downloads
-    - Pin model versions
+### Backend Dependencies (Python)
+- **flask & flask-cors:** HTTP server and CORS handling
+- **gunicorn:** Production WSGI server
+- **faster-whisper:** Speech recognition model (CTranslate2)
+- **librosa, soundfile, pydub:** Audio processing libraries
 
-### Long-Term Actions (Lower Priority)
+### Backend Dependencies (Node.js - Phase 2/3)
+- **fastify:** HTTP framework
+- **prisma:** Database ORM
+- **keycloak client libraries:** Authentication integration
 
-11. **Authentication & Authorization**
-    - Add user authentication system
-    - Implement role-based access control
-    - Session-based or JWT authentication
+### External Services
+- **Hugging Face CDN:** Downloads ONNX models for transformers.js
+  - whisper-small (~500MB) for WebGPU
+  - whisper-base (~150MB) for WASM
+  - Models cached in browser (IndexedDB)
 
-12. **Backend Security**
-    - Move to persistent backend database
-    - Implement server-side encryption
-    - Add comprehensive audit logging
+- **Plausible Analytics:** Privacy-friendly web analytics
+  - Anonymous, cookieless tracking
+  - GDPR/CCPA compliant
+  - No personal data collection
 
-13. **Compliance**
-    - Add GDPR consent management
-    - Implement data export/deletion workflows
-    - Create audit trail for compliance
+- **Let's Encrypt:** (Production) TLS certificate authority via Caddy
+  - Automatic certificate issuance and renewal
+  - HTTP-01 ACME challenge
 
-14. **Monitoring & Detection**
-    - Add security event logging
-    - Implement anomaly detection
-    - Set up alerting for suspicious activity
+### Container Base Images
+- **node:25-alpine:** Frontend build
+- **nginx:alpine:** Static file serving
+- **python:3.11-slim:** Whisper server
+- **postgres:16-alpine:** Database
+- **quay.io/keycloak/keycloak:25.0:** Identity provider
+- **caddy:2-alpine:** Reverse proxy
 
-15. **Penetration Testing**
-    - Conduct XSS testing across all inputs
-    - Test session enumeration/hijacking
-    - Validate localStorage injection vectors
-    - Test audio-based injection attacks
+## Security Controls
 
----
+### Input Validation
 
-## 15. Conclusion
+#### Frontend Sanitization
+- **XSS Prevention:** All string inputs sanitized before saving to localStorage
+  - HTML entities escaped: `&<>"'/`
+  - Implemented in `sanitizeFormData()` function
+  - Applied recursively to all form data
+- **Numeric Validation:** Scores limited to 1-3, weights to 0-100%
+- **Weight Sum Validation:** Goals weights must sum exactly to 100%
+- **Session Code Validation:** 10 alphanumeric characters, case-insensitive
 
-The HR Performance Scoring Application demonstrates a **privacy-first architecture** with strong data retention policies and minimal server dependencies. However, the lack of authentication, unencrypted localStorage, and missing security headers present significant risks for handling sensitive employee performance data.
+#### Backend Validation (Whisper Server)
+- **File Type Validation:** Audio MIME types checked (webm, mp3, wav, ogg)
+- **File Size Limit:** 50MB enforced by nginx/Caddy
+- **Language Validation:** Limited to en/nl/es with mapping to Whisper language codes
+- **Temporary File Cleanup:** Automatic deletion in finally block
 
-**Overall Security Posture**: MODERATE (improved from LOW-MEDIUM)
+### Security Headers (Caddy Configuration)
 
-**Key Strengths**:
-- Privacy-by-design architecture
-- Client-side processing minimizes data exposure
-- Input sanitization implemented
-- Auto-expiration reduces data retention risks
-- Docker isolation for services
+```
+X-Content-Type-Options: nosniff
+X-Frame-Options: SAMEORIGIN
+Referrer-Policy: strict-origin-when-cross-origin
+X-XSS-Protection: 1; mode=block
+Server: (removed)
+```
 
-**Key Weaknesses**:
-- No authentication or authorization
-- Unencrypted localStorage storage
-- Missing Content Security Policy
-- Unauthenticated /transcribe endpoint
-- No localStorage integrity checks
-- Limited dependency vulnerability scanning
+**Not Currently Implemented (Commented Out):**
+- HSTS (Strict-Transport-Security)
+- Content-Security-Policy
 
-**Recommended Next Steps**:
-1. Implement CSP and security headers (immediate)
-2. Add rate limiting and audio validation (short-term)
-3. Encrypt localStorage data (short-term)
-4. Add authentication system (long-term)
+### Transport Security
 
-**Risk Level**: MEDIUM - Suitable for internal use with trusted users and non-sensitive data. Requires significant hardening before handling highly confidential performance reviews or deployment in regulated environments.
+#### HTTPS Configuration
+- **Production:** Automatic HTTPS via Caddy with Let's Encrypt
+- **Development:** HTTP to localhost (secure context maintained)
+- **Certificate Management:** Fully automated renewal
+- **TLS Version:** Modern defaults (TLS 1.2+)
 
----
+#### CORS Configuration
+- **Whisper Server:** Flask-CORS enabled (permissive in current configuration)
+- **Phase 2/3 API:** CORS_ORIGINS environment variable restricts origins
 
-**Document Version**: 2.0
-**Last Updated**: 2025-12-08
-**Next Review**: Q1 2026
+### Container Security
+
+#### Docker Security Measures
+- **Non-Root User:** API backend runs as nodejs:nodejs (UID 1001)
+- **Multi-Stage Builds:** Reduced attack surface, no build tools in production images
+- **Alpine Base Images:** Minimal OS footprint
+- **Read-Only Filesystems:** Not currently implemented
+- **Resource Limits:** Whisper container limited to 4GB memory
+- **Health Checks:** Automated container restart on failure
+
+#### Network Isolation
+- **Docker Bridge Network:** Internal communication isolated from host
+- **No Direct Database Exposure:** PostgreSQL ports not exposed externally
+- **No Direct Keycloak Exposure:** Keycloak only accessible via Caddy proxy
+
+### Session Security
+
+#### Phase 1 (Current)
+- **No Server Sessions:** Fully client-side state
+- **Session Expiry:** 14-day automatic cleanup
+- **No Cross-Device Sync:** Sessions are device/browser-specific
+- **localStorage Vulnerabilities:**
+  - No encryption at rest
+  - Vulnerable to XSS (mitigated by sanitization)
+  - Vulnerable to physical device access
+  - Vulnerable to browser extensions with broad permissions
+
+#### Phase 2/3 (Planned)
+- **JWT Tokens:** Short-lived access tokens, longer-lived refresh tokens
+- **Token Storage:** Secure httpOnly cookies or browser memory
+- **Token Validation:** Every API request validates JWT signature and expiry
+- **Revocation:** Keycloak supports token revocation
+
+### Authentication Security (Phase 2/3)
+
+- **Password Hashing:** Keycloak uses bcrypt/PBKDF2
+- **Brute Force Protection:** Keycloak configurable lockout policies
+- **Multi-Factor Authentication:** Keycloak supports TOTP, SMS, email
+- **OAuth2 Flows:** Authorization code flow with PKCE
+- **Token Security:** JWT signed with RS256 or HS256
+
+### Vulnerability Management
+
+#### CI/CD Security Scanning
+- **npm audit:** Weekly scheduled scans via GitHub Actions
+- **Dependency Review:** GitHub's advisory database on pull requests
+- **Severity Thresholds:** Critical vulnerabilities block builds
+- **License Compliance:** GPL/AGPL licenses denied
+
+#### Update Strategy
+- **Security Patches:** Manual review and update of package.json
+- **Base Image Updates:** Alpine and Node images updated periodically
+- **CVE Monitoring:** Automated weekly reports uploaded as artifacts
+
+### Logging & Monitoring
+
+#### Current Logging
+- **Caddy Access Logs:** stdout (console format, INFO level)
+- **Whisper Server Logs:** Python print statements (transcription events, errors)
+- **Frontend Logs:** Browser console.log/console.error
+- **No Centralized Logging:** Logs not aggregated or persisted
+
+#### Phase 2/3 Logging (Planned)
+- **Structured Logging:** JSON format with correlation IDs
+- **Audit Trails:** User actions logged to database
+- **Security Events:** Failed authentication, authorization failures
+- **Performance Metrics:** API response times, database query performance
+
+## Notes
+
+### Known Security Limitations
+
+#### Phase 1 (Current Production)
+1. **No Data Encryption at Rest:** localStorage stores data in plain text
+2. **No Authentication:** Application fully client-side, no user login
+3. **No Authorization:** All data accessible to anyone with device access
+4. **No Audit Logging:** No record of who accessed or modified data
+5. **No Data Backup:** User responsible for exporting DOCX backups
+6. **Limited Session Security:** Session codes provide minimal security
+7. **Unauthenticated Whisper API:** Open for abuse without rate limiting
+8. **No Content Security Policy:** XSS attacks rely solely on input sanitization
+9. **Permissive CORS:** Whisper server accepts requests from any origin
+10. **No HTTPS in Development:** localhost uses HTTP (mitigated by secure context)
+
+#### Phase 2/3 (Planned - Under Development)
+1. **Database Encryption:** Encryption at rest depends on PostgreSQL configuration
+2. **Secret Management:** Environment variables for secrets (not production-grade)
+3. **No WAF:** Web Application Firewall not implemented
+4. **No Rate Limiting:** API rate limiting not yet implemented
+5. **No MFA by Default:** Multi-factor authentication optional in Keycloak
+6. **Limited Audit Logging:** Audit trail implementation incomplete
+
+### Deployment Model
+
+#### Development Deployment
+```bash
+cd hr-performance-app
+npm install
+npm run dev  # Vite dev server on http://localhost:5173
+```
+- **Hot Reload:** Enabled via Vite HMR
+- **Source Maps:** Enabled for debugging
+- **Whisper Server:** Optional (can run separately on port 3001)
+
+#### Production Deployment (Docker Compose)
+
+**Phase 1 Services:**
+```yaml
+services:
+  - caddy:      ports 80, 443 (reverse proxy, HTTPS)
+  - frontend:   nginx serving React SPA
+  - whisper:    port 3001 (speech-to-text API)
+```
+
+**Phase 2/3 Services (Full Stack):**
+```yaml
+services:
+  - caddy:      ports 80, 443 (reverse proxy, HTTPS)
+  - frontend:   nginx serving React SPA
+  - api:        port 3000 (Fastify backend)
+  - whisper:    port 3001 (speech-to-text API)
+  - postgres:   port 5432 (internal only)
+  - keycloak:   port 8080 (internal only)
+```
+
+#### Environment Configuration
+- **Domain:** Set via `DOMAIN` environment variable
+- **Database Credentials:** `DB_PASSWORD` (must be changed from default)
+- **Keycloak Admin:** `KC_ADMIN`, `KC_ADMIN_PASSWORD` (must be changed)
+- **Whisper Model Size:** `WHISPER_MODEL` (tiny/base/small/medium/large)
+- **Compute Type:** `WHISPER_COMPUTE_TYPE` (int8/int16/float32)
+
+#### Persistent Data Volumes
+- `postgres-data`: Database persistence
+- `keycloak-data`: Identity provider data
+- `whisper-cache`: ML model cache (reduces startup time)
+- `caddy-data`: TLS certificates
+- `caddy-config`: Caddy configuration cache
+
+### Privacy & Compliance
+
+#### Privacy Model (Phase 1)
+- **Data Residency:** All data remains on user's device
+- **No Server Storage:** Zero data transmitted to servers (except optional voice transcription)
+- **No Cookies:** Application does not use cookies
+- **No User Tracking:** Anonymous analytics via Plausible only
+- **User Control:** Users can delete all data via browser localStorage clear
+
+#### GDPR Considerations
+- **Lawful Basis:** Legitimate interest (employment relationship)
+- **Data Minimization:** Only necessary performance data collected
+- **Purpose Limitation:** Data used only for performance reviews
+- **Storage Limitation:** 14-day retention (Phase 1), configurable (Phase 2/3)
+- **Data Portability:** DOCX export provides human-readable format
+- **Right to Erasure:** Users can clear localStorage or request deletion
+
+### Security Contacts
+
+- **Source Code:** https://github.com/SimonvanAs/tss_ppm
+- **Security Issues:** Report via GitHub Issues (private security advisories recommended)
+- **Maintainer:** TSS (Total Specific Solutions)
+
+### Document Revision History
+
+- **Version 1.0** - Initial security architecture documentation
+- **Date:** 2025-12-09
+- **Application Version:** 1.2.1

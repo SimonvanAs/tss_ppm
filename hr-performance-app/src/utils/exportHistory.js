@@ -1,6 +1,7 @@
 // Historical data export utilities (Excel and PDF)
 
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 import { jsPDF } from 'jspdf';
 import {
   transformReviewsToTrendData,
@@ -15,14 +16,17 @@ import {
  * @param {string} employeeName - Employee name for filename
  * @param {Object} options - Export options
  */
-export function exportToExcel(reviews, employeeName, options = {}) {
+export async function exportToExcel(reviews, employeeName, options = {}) {
   const { includeDetails = true } = options;
 
   // Create workbook
-  const wb = XLSX.utils.book_new();
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'TSS PPM';
+  wb.created = new Date();
 
   // Summary sheet
   const stats = calculateHistoryStats(reviews);
+  const summarySheet = wb.addWorksheet('Summary');
   const summaryData = [
     ['Performance History Summary'],
     [''],
@@ -39,11 +43,16 @@ export function exportToExcel(reviews, employeeName, options = {}) {
     ['Latest Grid Position', stats.latestGridPosition || 'N/A'],
     ['Overall Trend', stats.trend.toUpperCase()],
   ];
-  const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-  XLSX.utils.book_append_sheet(wb, summarySheet, 'Summary');
+  summarySheet.addRows(summaryData);
+
+  // Style the summary sheet
+  summarySheet.getRow(1).font = { bold: true, size: 14 };
+  summarySheet.getColumn(1).width = 25;
+  summarySheet.getColumn(2).width = 20;
 
   // Scores by Year sheet
   const trendData = transformReviewsToTrendData(reviews);
+  const scoresSheet = wb.addWorksheet('Scores by Year');
   const scoresData = [
     ['Year', 'WHAT (Mid)', 'WHAT (End)', 'HOW (Mid)', 'HOW (End)', 'Grid Position', 'Performance Level', 'Status'],
     ...trendData.map(d => [
@@ -59,12 +68,16 @@ export function exportToExcel(reviews, employeeName, options = {}) {
       d.status,
     ]),
   ];
-  const scoresSheet = XLSX.utils.aoa_to_sheet(scoresData);
-  XLSX.utils.book_append_sheet(wb, scoresSheet, 'Scores by Year');
+  scoresSheet.addRows(scoresData);
+
+  // Style the scores sheet
+  scoresSheet.getRow(1).font = { bold: true };
+  scoresSheet.columns.forEach(col => { col.width = 15; });
 
   // Year-over-Year Changes sheet
   const comparison = buildYearOverYearComparison(reviews);
   if (comparison.years.length > 1) {
+    const changesSheet = wb.addWorksheet('Year-over-Year');
     const changesData = [
       ['Year', 'WHAT Score', 'WHAT Change', 'HOW Score', 'HOW Change'],
       ...comparison.years.map((year, i) => {
@@ -81,8 +94,11 @@ export function exportToExcel(reviews, employeeName, options = {}) {
         ];
       }),
     ];
-    const changesSheet = XLSX.utils.aoa_to_sheet(changesData);
-    XLSX.utils.book_append_sheet(wb, changesSheet, 'Year-over-Year');
+    changesSheet.addRows(changesData);
+
+    // Style the changes sheet
+    changesSheet.getRow(1).font = { bold: true };
+    changesSheet.columns.forEach(col => { col.width = 15; });
   }
 
   // Goals History sheet (if details included)
@@ -102,14 +118,20 @@ export function exportToExcel(reviews, employeeName, options = {}) {
       }
     });
     if (goalsData.length > 1) {
-      const goalsSheet = XLSX.utils.aoa_to_sheet(goalsData);
-      XLSX.utils.book_append_sheet(wb, goalsSheet, 'Goals History');
+      const goalsSheet = wb.addWorksheet('Goals History');
+      goalsSheet.addRows(goalsData);
+
+      // Style the goals sheet
+      goalsSheet.getRow(1).font = { bold: true };
+      goalsSheet.columns.forEach(col => { col.width = 18; });
     }
   }
 
   // Generate filename and download
   const filename = `${employeeName.replace(/\s+/g, '_')}_Performance_History_${new Date().toISOString().split('T')[0]}.xlsx`;
-  XLSX.writeFile(wb, filename);
+
+  const buffer = await wb.xlsx.writeBuffer();
+  saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), filename);
 }
 
 /**

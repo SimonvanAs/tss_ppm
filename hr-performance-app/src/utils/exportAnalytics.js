@@ -1,6 +1,7 @@
 // Analytics export utilities (Excel and PDF)
 
-import * as XLSX from 'xlsx';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 import { jsPDF } from 'jspdf';
 import { GRID_POSITIONS, PERFORMANCE_TIERS, getGridColor, getPerformanceLevel } from './analyticsUtils';
 
@@ -9,7 +10,7 @@ import { GRID_POSITIONS, PERFORMANCE_TIERS, getGridColor, getPerformanceLevel } 
  * @param {Object} analyticsData - Analytics data from API
  * @param {Object} options - Export options
  */
-export function exportAnalyticsToExcel(analyticsData, options = {}) {
+export async function exportAnalyticsToExcel(analyticsData, options = {}) {
   const {
     scopeName = 'Organization',
     year = new Date().getFullYear(),
@@ -19,10 +20,13 @@ export function exportAnalyticsToExcel(analyticsData, options = {}) {
   } = options;
 
   // Create workbook
-  const wb = XLSX.utils.book_new();
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'TSS PPM';
+  wb.created = new Date();
 
   // Summary sheet
   const summary = analyticsData.summary || {};
+  const summarySheet = wb.addWorksheet('Summary');
   const summaryData = [
     ['Performance Analytics Report'],
     [''],
@@ -44,10 +48,15 @@ export function exportAnalyticsToExcel(analyticsData, options = {}) {
     ['Needs Attention', analyticsData.distribution?.needsAttention || 0],
     ['Concern', analyticsData.distribution?.concern || 0],
   ];
-  const summarySheet = XLSX.utils.aoa_to_sheet(summaryData);
-  XLSX.utils.book_append_sheet(wb, summarySheet, 'Summary');
+  summarySheet.addRows(summaryData);
+
+  // Style the title row
+  summarySheet.getRow(1).font = { bold: true, size: 14 };
+  summarySheet.getColumn(1).width = 25;
+  summarySheet.getColumn(2).width = 20;
 
   // 9-Grid Distribution sheet
+  const gridSheet = wb.addWorksheet('9-Grid Distribution');
   const gridData = [
     ['9-Grid Distribution'],
     [''],
@@ -65,12 +74,16 @@ export function exportAnalyticsToExcel(analyticsData, options = {}) {
       getPerformanceLevel(config.whatPos, config.howPos),
     ]);
   });
+  gridSheet.addRows(gridData);
 
-  const gridSheet = XLSX.utils.aoa_to_sheet(gridData);
-  XLSX.utils.book_append_sheet(wb, gridSheet, '9-Grid Distribution');
+  // Style the grid sheet
+  gridSheet.getRow(1).font = { bold: true, size: 14 };
+  gridSheet.getRow(3).font = { bold: true };
+  gridSheet.columns.forEach(col => { col.width = 18; });
 
   // Employee List sheet (if included)
   if (includeEmployees && employees.length > 0) {
+    const employeeSheet = wb.addWorksheet('Employee List');
     const employeeData = [
       ['Employee List'],
       [''],
@@ -89,14 +102,20 @@ export function exportAnalyticsToExcel(analyticsData, options = {}) {
         ];
       }),
     ];
-    const employeeSheet = XLSX.utils.aoa_to_sheet(employeeData);
-    XLSX.utils.book_append_sheet(wb, employeeSheet, 'Employee List');
+    employeeSheet.addRows(employeeData);
+
+    // Style the employee sheet
+    employeeSheet.getRow(1).font = { bold: true, size: 14 };
+    employeeSheet.getRow(3).font = { bold: true };
+    employeeSheet.columns.forEach(col => { col.width = 18; });
   }
 
   // Generate filename and download
   const sanitizedScope = scopeName.replace(/[^a-zA-Z0-9]/g, '_');
   const filename = `Analytics_${sanitizedScope}_${year}_${new Date().toISOString().split('T')[0]}.xlsx`;
-  XLSX.writeFile(wb, filename);
+
+  const buffer = await wb.xlsx.writeBuffer();
+  saveAs(new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), filename);
 }
 
 /**

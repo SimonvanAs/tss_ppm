@@ -34,7 +34,7 @@ export function AnalyticsExportMenu({
 
     setIsExporting(true);
     try {
-      exportAnalyticsToExcel(analyticsData, {
+      await exportAnalyticsToExcel(analyticsData, {
         scopeName,
         year,
         stage,

@@ -29,7 +29,7 @@ export function HistoryExportMenu({ reviews, employeeName }) {
     setExporting(format);
     try {
       if (format === 'excel') {
-        exportToExcel(reviews, employeeName, { language });
+        await exportToExcel(reviews, employeeName, { language });
       } else if (format === 'pdf') {
         exportToPDF(reviews, employeeName, { language });
       }

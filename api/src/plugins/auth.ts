@@ -245,15 +245,36 @@ const authPluginCallback: FastifyPluginAsync = async (fastify: FastifyInstance) 
         }
       }
 
+      const userOpcoId = dbUser?.opcoId || decoded.opco_id;
+      const userRole = dbUser?.role || mappedRole;
+
       request.user = {
         id: dbUser?.id,
         keycloakId,
         email: decoded.email || decoded.preferred_username || '',
         firstName: decoded.given_name,
         lastName: decoded.family_name,
-        opcoId: dbUser?.opcoId || decoded.opco_id,
+        opcoId: userOpcoId,
         roles: allRoles,
-        role: dbUser?.role || mappedRole,
+        role: userRole,
+      };
+
+      // Set tenant context immediately after authentication
+      const isSuperAdmin = userRole === UserRole.TSS_SUPER_ADMIN;
+      let tenantOpcoId = userOpcoId;
+
+      // Super admins can access any tenant via query param
+      if (isSuperAdmin && request.query) {
+        const query = request.query as Record<string, string>;
+        if (query.opcoId) {
+          tenantOpcoId = query.opcoId;
+        }
+      }
+
+      // Set tenant on request (imported from tenant plugin types)
+      (request as FastifyRequest & { tenant: { opcoId: string; isSuperAdmin: boolean } }).tenant = {
+        opcoId: tenantOpcoId || '',
+        isSuperAdmin,
       };
     } catch (err) {
       fastify.log.warn({ err }, 'Authentication failed');

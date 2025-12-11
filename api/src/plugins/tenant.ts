@@ -58,6 +58,15 @@ export const tenantPlugin = fp(tenantPluginCallback, {
 
 // Helper to build tenant-scoped Prisma query filter
 export const withTenantFilter = (request: FastifyRequest) => {
+  // Handle case where tenant context isn't set (shouldn't happen in protected routes)
+  if (!request.tenant) {
+    // Fall back to user's opcoId if available
+    if (request.user?.opcoId) {
+      return { opcoId: request.user.opcoId };
+    }
+    // Return impossible filter to prevent data leakage
+    return { opcoId: '__NO_TENANT__' };
+  }
   if (request.tenant.isSuperAdmin && !request.tenant.opcoId) {
     // Super admin without specific opco - return empty filter (all data)
     return {};

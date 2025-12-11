@@ -1,10 +1,13 @@
 // Database Seed Script
 // Seeds default OpCo, TOV levels, and competencies
 
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { defaultCompetencies, levelDescriptions } from './competencies.js';
 
 const prisma = new PrismaClient();
+
+// Helper to cast multilang objects to Prisma JSON
+const toJson = <T>(obj: T): Prisma.InputJsonValue => obj as unknown as Prisma.InputJsonValue;
 
 async function main() {
   console.log('Starting database seed...');
@@ -43,13 +46,13 @@ async function main() {
         },
       },
       update: {
-        description: levelDescriptions[level],
+        description: toJson(levelDescriptions[level]),
       },
       create: {
         opcoId: tssOpCo.id,
         code: level,
         name: levelNames[level],
-        description: levelDescriptions[level],
+        description: toJson(levelDescriptions[level]),
         sortOrder: i,
       },
     });
@@ -72,8 +75,8 @@ async function main() {
           },
         },
         update: {
-          title: comp.title,
-          indicators: comp.indicators,
+          title: toJson(comp.title),
+          indicators: toJson(comp.indicators),
         },
         create: {
           opcoId: tssOpCo.id,
@@ -81,8 +84,8 @@ async function main() {
           competencyId: comp.id,
           category: comp.category,
           subcategory: comp.subcategory,
-          title: comp.title,
-          indicators: comp.indicators,
+          title: toJson(comp.title),
+          indicators: toJson(comp.indicators),
           sortOrder: i,
         },
       });

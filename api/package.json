@@ -4,9 +4,13 @@
   "description": "TSS PPM Performance Review API",
   "type": "module",
   "main": "dist/index.js",
+  "prisma": {
+    "seed": "node dist/seed/index.js"
+  },
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
+    "build": "tsc && tsc -p tsconfig.seed.json",
+    "build:seed": "tsc -p tsconfig.seed.json",
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts",
     "test": "vitest",

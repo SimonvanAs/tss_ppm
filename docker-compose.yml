@@ -134,12 +134,6 @@ services:
       # Admin credentials
       - KEYCLOAK_ADMIN=${KC_ADMIN:-admin}
       - KEYCLOAK_ADMIN_PASSWORD=${KC_ADMIN_PASSWORD:-changeme}
-    healthcheck:
-      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000 && echo -e 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3 && cat <&3 | grep -q '200 OK'"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-      start_period: 120s
     depends_on:
       postgres:
         condition: service_healthy

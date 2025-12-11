@@ -11,7 +11,7 @@ services:
   # Expose Keycloak admin console
   keycloak:
     ports:
-      - "8080:8080"
+      - "8180:8080"
     volumes:
       - ./keycloak:/opt/keycloak/data/import:ro
     command: start-dev --import-realm
@@ -22,8 +22,6 @@ services:
       - KC_HOSTNAME=${DOMAIN:-localhost}
       - KC_HOSTNAME_PATH=/auth
       - KC_HTTP_RELATIVE_PATH=/auth
-      # Use import directory
-      - KC_FEATURES=import_export
 
   # API with hot reload for development (if using nodemon)
   api:
@@ -53,4 +51,4 @@ services:
   # Expose Whisper for debugging
   whisper:
     ports:
-      - "3001:3001"
+      - "3002:3001"

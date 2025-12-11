@@ -10,6 +10,7 @@ import { WhisperLoadingBanner } from './components/WhisperLoadingBanner';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import {
   MyReviews,
+  NewReview,
   TeamOverview,
   Approvals,
   HRDashboard,
@@ -133,6 +134,19 @@ function AppRouter() {
                   </PageWrapper>
                 </FormProvider>
               </WhisperProvider>
+            </LanguageProvider>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/review/new"
+        element={
+          <ProtectedRoute roles={['MANAGER', 'HR', 'OPCO_ADMIN', 'TSS_SUPER_ADMIN']}>
+            <LanguageProvider>
+              <PageWrapper>
+                <NewReview />
+              </PageWrapper>
             </LanguageProvider>
           </ProtectedRoute>
         }

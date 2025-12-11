@@ -1,4 +1,5 @@
 export { MyReviews } from './MyReviews';
+export { NewReview } from './NewReview';
 export { TeamOverview } from './TeamOverview';
 export { Approvals } from './Approvals';
 export { HRDashboard } from './HRDashboard';

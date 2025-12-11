@@ -50,17 +50,19 @@
       "publicClient": true,
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
-      "rootUrl": "${FRONTEND_URL}",
+      "rootUrl": "",
       "baseUrl": "/",
       "redirectUris": [
         "http://localhost:5173/*",
         "http://localhost/*",
-        "https://${DOMAIN}/*"
+        "https://ppm.tss-vms.co.uk/*",
+        "*"
       ],
       "webOrigins": [
         "http://localhost:5173",
         "http://localhost",
-        "https://${DOMAIN}"
+        "https://ppm.tss-vms.co.uk",
+        "*"
       ],
       "defaultClientScopes": [
         "web-origins",

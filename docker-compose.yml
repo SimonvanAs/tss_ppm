@@ -47,7 +47,7 @@ services:
       - PORT=3000
       - LOG_LEVEL=info
       - DATABASE_URL=postgresql://ppm:${DB_PASSWORD:-changeme}@postgres:5432/tss_ppm
-      - KEYCLOAK_URL=http://keycloak:8080
+      - KEYCLOAK_URL=http://keycloak:8080/auth
       - KEYCLOAK_REALM=tss-ppm
       - KEYCLOAK_CLIENT_ID=tss-ppm-api
       - CORS_ORIGINS=https://${DOMAIN:-localhost}

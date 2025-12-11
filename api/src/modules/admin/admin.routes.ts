@@ -1,4 +1,5 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
+import { CycleStatus } from '@prisma/client';
 import { UserRole } from '../../plugins/auth.js';
 import { withTenantFilter } from '../../plugins/tenant.js';
 
@@ -691,13 +692,14 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
         });
       }
 
-      const buffer = await data.toBuffer();
+      const bufferData = await data.toBuffer();
       const filename = data.filename || 'import.xlsx';
 
       // Parse Excel file
       const ExcelJS = await import('exceljs');
       const workbook = new ExcelJS.Workbook();
-      await workbook.xlsx.load(buffer);
+      // @ts-ignore - Buffer type compatibility between Node.js versions
+      await workbook.xlsx.load(bufferData);
 
       const worksheet = workbook.getWorksheet(1); // Get first worksheet
       if (!worksheet) {
@@ -862,11 +864,11 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
           const howScore = howScoreStr ? parseFloat(howScoreStr) : null;
 
           // Determine status
-          let status = 'COMPLETED';
+          let status: CycleStatus = CycleStatus.COMPLETED;
           if (statusStr) {
             const normalizedStatus = statusStr.toUpperCase().replace(/[^A-Z_]/g, '_');
-            if (['DRAFT', 'GOAL_SETTING', 'MID_YEAR_REVIEW', 'END_YEAR_REVIEW', 'COMPLETED'].includes(normalizedStatus)) {
-              status = normalizedStatus;
+            if (Object.values(CycleStatus).includes(normalizedStatus as CycleStatus)) {
+              status = normalizedStatus as CycleStatus;
             }
           }
 
@@ -915,9 +917,9 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
                 howScoreEndYear: howScore,
                 stages: {
                   create: [
-                    { stageType: 'GOAL_SETTING', status: 'COMPLETE' },
-                    { stageType: 'MID_YEAR_REVIEW', status: 'COMPLETE' },
-                    { stageType: 'END_YEAR_REVIEW', status: status === 'COMPLETED' ? 'COMPLETE' : 'PENDING' },
+                    { stageType: 'GOAL_SETTING', status: 'COMPLETED' },
+                    { stageType: 'MID_YEAR_REVIEW', status: 'COMPLETED' },
+                    { stageType: 'END_YEAR_REVIEW', status: status === 'COMPLETED' ? 'COMPLETED' : 'PENDING' },
                   ],
                 },
                 competencyScores: {

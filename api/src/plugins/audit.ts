@@ -15,6 +15,8 @@ export type AuditAction =
   | 'GOAL_CHANGE_REQUEST'
   | 'GOAL_CHANGE_APPROVE'
   | 'GOAL_CHANGE_REJECT'
+  | 'EMPLOYEE_SIGN'
+  | 'MANAGER_SIGN'
   | 'LOGIN'
   | 'LOGOUT'
   | 'EXPORT';
@@ -90,8 +92,8 @@ const auditPluginCallback: FastifyPluginAsync = async (fastify: FastifyInstance)
             entityType: entry.entityType,
             entityId: entry.entityId,
             action: entry.action,
-            changes: entry.changes ?? undefined,
-            metadata,
+            changes: entry.changes ? JSON.parse(JSON.stringify(entry.changes)) : undefined,
+            metadata: JSON.parse(JSON.stringify(metadata)),
             userId,
             reviewCycleId: entry.reviewCycleId,
           },

@@ -3,15 +3,17 @@ import fp from 'fastify-plugin';
 import jwt from '@fastify/jwt';
 import jwksClient from 'jwks-rsa';
 import { config } from '../config/index.js';
+import { UserRole as PrismaUserRole } from '@prisma/client';
 
-// User roles enum matching Prisma schema
-export enum UserRole {
-  EMPLOYEE = 'EMPLOYEE',
-  MANAGER = 'MANAGER',
-  HR = 'HR',
-  OPCO_ADMIN = 'OPCO_ADMIN',
-  TSS_SUPER_ADMIN = 'TSS_SUPER_ADMIN',
-}
+// Re-export Prisma's UserRole for use throughout the app
+export type UserRole = PrismaUserRole;
+export const UserRole = {
+  EMPLOYEE: 'EMPLOYEE' as UserRole,
+  MANAGER: 'MANAGER' as UserRole,
+  HR: 'HR' as UserRole,
+  OPCO_ADMIN: 'OPCO_ADMIN' as UserRole,
+  TSS_SUPER_ADMIN: 'TSS_SUPER_ADMIN' as UserRole,
+};
 
 // JWT payload structure from Keycloak
 export interface KeycloakToken {
@@ -55,6 +57,13 @@ export interface AuthUser {
   opcoId?: string;
   roles: string[];
   role: UserRole;        // Primary role for authorization
+}
+
+declare module '@fastify/jwt' {
+  interface FastifyJWT {
+    payload: KeycloakToken;
+    user: AuthUser;
+  }
 }
 
 declare module 'fastify' {
@@ -219,12 +228,12 @@ export const authPlugin = fp(authPluginCallback, {
 });
 
 // Role hierarchy for checking permissions
-export const roleHierarchy: Record<UserRole, number> = {
-  [UserRole.EMPLOYEE]: 1,
-  [UserRole.MANAGER]: 2,
-  [UserRole.HR]: 3,
-  [UserRole.OPCO_ADMIN]: 4,
-  [UserRole.TSS_SUPER_ADMIN]: 5,
+export const roleHierarchy: Record<string, number> = {
+  EMPLOYEE: 1,
+  MANAGER: 2,
+  HR: 3,
+  OPCO_ADMIN: 4,
+  TSS_SUPER_ADMIN: 5,
 };
 
 export const hasMinimumRole = (userRole: UserRole, requiredRole: UserRole): boolean => {

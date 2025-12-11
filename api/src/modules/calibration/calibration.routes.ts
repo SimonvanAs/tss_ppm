@@ -215,7 +215,11 @@ export const calibrationRoutes: FastifyPluginAsync = async (fastify: FastifyInst
     });
 
     // Log audit
-    await fastify.audit?.logFromRequest(request, 'CREATE', 'CalibrationSession', session.id);
+    await fastify.audit?.logFromRequest(request, {
+      entityType: 'CalibrationSession',
+      entityId: session.id,
+      action: 'CREATE',
+    });
 
     return reply.status(201).send({
       id: session.id,
@@ -383,7 +387,11 @@ export const calibrationRoutes: FastifyPluginAsync = async (fastify: FastifyInst
       },
     });
 
-    await fastify.audit?.logFromRequest(request, 'UPDATE', 'CalibrationSession', id);
+    await fastify.audit?.logFromRequest(request, {
+      entityType: 'CalibrationSession',
+      entityId: id,
+      action: 'UPDATE',
+    });
 
     return { success: true, session: updated };
   });
@@ -424,7 +432,11 @@ export const calibrationRoutes: FastifyPluginAsync = async (fastify: FastifyInst
     }
 
     await fastify.prisma.calibrationSession.delete({ where: { id } });
-    await fastify.audit?.logFromRequest(request, 'DELETE', 'CalibrationSession', id);
+    await fastify.audit?.logFromRequest(request, {
+      entityType: 'CalibrationSession',
+      entityId: id,
+      action: 'DELETE',
+    });
 
     return { success: true };
   });
@@ -527,10 +539,15 @@ export const calibrationRoutes: FastifyPluginAsync = async (fastify: FastifyInst
       },
     });
 
-    await fastify.audit?.logFromRequest(request, 'STATUS_CHANGE', 'CalibrationSession', id, {
-      from: session.status,
-      to: 'IN_PROGRESS',
-      itemsCreated: items.length,
+    await fastify.audit?.logFromRequest(request, {
+      entityType: 'CalibrationSession',
+      entityId: id,
+      action: 'STATUS_CHANGE',
+      metadata: {
+        from: session.status,
+        to: 'IN_PROGRESS',
+        itemsCreated: items.length,
+      },
     });
 
     return {
@@ -603,10 +620,15 @@ export const calibrationRoutes: FastifyPluginAsync = async (fastify: FastifyInst
           },
         });
 
-        await fastify.audit?.logFromRequest(request, 'UPDATE', 'ReviewCycle', item.reviewCycleId, {
-          calibrationSessionId: id,
-          whatScore: { old: item.originalWhatScore, new: item.calibratedWhatScore },
-          howScore: { old: item.originalHowScore, new: item.calibratedHowScore },
+        await fastify.audit?.logFromRequest(request, {
+          entityType: 'ReviewCycle',
+          entityId: item.reviewCycleId,
+          action: 'UPDATE',
+          changes: {
+            whatScore: { old: item.originalWhatScore, new: item.calibratedWhatScore },
+            howScore: { old: item.originalHowScore, new: item.calibratedHowScore },
+          },
+          metadata: { calibrationSessionId: id },
         });
 
         appliedCount++;
@@ -622,10 +644,15 @@ export const calibrationRoutes: FastifyPluginAsync = async (fastify: FastifyInst
       },
     });
 
-    await fastify.audit?.logFromRequest(request, 'STATUS_CHANGE', 'CalibrationSession', id, {
-      from: 'IN_PROGRESS',
-      to: 'COMPLETED',
-      appliedCount,
+    await fastify.audit?.logFromRequest(request, {
+      entityType: 'CalibrationSession',
+      entityId: id,
+      action: 'STATUS_CHANGE',
+      metadata: {
+        from: 'IN_PROGRESS',
+        to: 'COMPLETED',
+        appliedCount,
+      },
     });
 
     return {
@@ -839,10 +866,15 @@ export const calibrationRoutes: FastifyPluginAsync = async (fastify: FastifyInst
       },
     });
 
-    await fastify.audit?.logFromRequest(request, 'UPDATE', 'CalibrationItem', itemId, {
-      calibrationSessionId: id,
-      whatScore: { old: item.originalWhatScore, new: newWhatScore },
-      howScore: { old: item.originalHowScore, new: newHowScore },
+    await fastify.audit?.logFromRequest(request, {
+      entityType: 'CalibrationItem',
+      entityId: itemId,
+      action: 'UPDATE',
+      changes: {
+        whatScore: { old: item.originalWhatScore, new: newWhatScore },
+        howScore: { old: item.originalHowScore, new: newHowScore },
+      },
+      metadata: { calibrationSessionId: id },
     });
 
     return {

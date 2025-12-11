@@ -1,4 +1,5 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
+import { CycleStatus } from '@prisma/client';
 import { UserRole } from '../../plugins/auth.js';
 import { withTenantFilter } from '../../plugins/tenant.js';
 import { markAsAudited, computeChanges } from '../../plugins/audit.js';
@@ -10,8 +11,6 @@ import {
   updateGoalSchema,
   reorderGoalsSchema,
   updateCompetencyScoreSchema,
-  startStageSchema,
-  completeStageSchema,
 } from '../../schemas/index.js';
 import {
   calculateWhatScore,
@@ -21,25 +20,11 @@ import {
   calculateReviewScores,
 } from '../../utils/scoring.js';
 
-// Valid status transitions for the review cycle state machine
-const VALID_TRANSITIONS: Record<string, string[]> = {
-  DRAFT: ['GOAL_SETTING'],
-  GOAL_SETTING: ['GOAL_SETTING_COMPLETE'],
-  GOAL_SETTING_COMPLETE: ['MID_YEAR_REVIEW'],
-  MID_YEAR_REVIEW: ['MID_YEAR_COMPLETE'],
-  MID_YEAR_COMPLETE: ['END_YEAR_REVIEW'],
-  END_YEAR_REVIEW: ['PENDING_EMPLOYEE_SIGNATURE'],
-  PENDING_EMPLOYEE_SIGNATURE: ['PENDING_MANAGER_SIGNATURE'],
-  PENDING_MANAGER_SIGNATURE: ['COMPLETED'],
-  COMPLETED: ['ARCHIVED'],
-  ARCHIVED: [],
-};
-
 // Map stage type to required cycle statuses
-const STAGE_STATUS_MAP: Record<string, { start: string; complete: string }> = {
-  GOAL_SETTING: { start: 'GOAL_SETTING', complete: 'GOAL_SETTING_COMPLETE' },
-  MID_YEAR_REVIEW: { start: 'MID_YEAR_REVIEW', complete: 'MID_YEAR_COMPLETE' },
-  END_YEAR_REVIEW: { start: 'END_YEAR_REVIEW', complete: 'PENDING_EMPLOYEE_SIGNATURE' },
+const STAGE_STATUS_MAP: Record<string, { start: CycleStatus; complete: CycleStatus }> = {
+  GOAL_SETTING: { start: CycleStatus.GOAL_SETTING, complete: CycleStatus.GOAL_SETTING_COMPLETE },
+  MID_YEAR_REVIEW: { start: CycleStatus.MID_YEAR_REVIEW, complete: CycleStatus.MID_YEAR_COMPLETE },
+  END_YEAR_REVIEW: { start: CycleStatus.END_YEAR_REVIEW, complete: CycleStatus.PENDING_EMPLOYEE_SIGNATURE },
 };
 
 export const reviewsRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
@@ -173,15 +158,15 @@ export const reviewsRoutes: FastifyPluginAsync = async (fastify: FastifyInstance
       include: {
         employee: {
           select: {
-            id: true, firstName: true, lastName: true, email: true,
+            id: true, firstName: true, lastName: true, email: true, keycloakId: true,
             functionTitle: { select: { id: true, name: true } },
           },
         },
         manager: {
-          select: { id: true, firstName: true, lastName: true, email: true },
+          select: { id: true, firstName: true, lastName: true, email: true, keycloakId: true },
         },
         hrUser: {
-          select: { id: true, firstName: true, lastName: true, email: true },
+          select: { id: true, firstName: true, lastName: true, email: true, keycloakId: true },
         },
         tovLevel: true,
         stages: {

@@ -1,6 +1,6 @@
-<#macro registrationLayout displayMessage=true displayInfo=false; section>
+<#macro registrationLayout bodyClass="" displayInfo=false displayMessage=true displayRequiredFields=false>
 <!DOCTYPE html>
-<html lang="en">
+<html class="${properties.kcHtmlClass!}"<#if realm.internationalizationEnabled> lang="${locale.currentLanguageTag}"</#if>>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
@@ -19,7 +19,7 @@
         </#list>
     </#if>
 </head>
-<body>
+<body class="${bodyClass}">
 <div class="login-container">
     <div class="login-card">
         <#nested "header">
@@ -29,6 +29,9 @@
             </div>
         </#if>
         <#nested "form">
+        <#if displayRequiredFields>
+            <div class="kc-required-fields">${msg("requiredFields")}</div>
+        </#if>
         <#if displayInfo>
             <#nested "info">
         </#if>

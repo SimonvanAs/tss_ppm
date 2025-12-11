@@ -11,10 +11,11 @@ themes/
         ├── theme.properties
         ├── template.ftl
         ├── login.ftl
-        ├── css/
-        │   └── login.css
-        └── img/
-            └── logo.png
+        └── resources/
+            ├── css/
+            │   └── login.css
+            └── img/
+                └── logo.png
 ```
 
 ## Features
@@ -41,9 +42,9 @@ The theme is automatically mounted in Docker Compose. To apply it:
 
 To modify the theme:
 
-1. Edit CSS in `tss-ppm/login/css/login.css`
+1. Edit CSS in `tss-ppm/login/resources/css/login.css`
 2. Edit templates in `tss-ppm/login/*.ftl`
-3. Replace logo in `tss-ppm/login/img/logo.png`
+3. Replace logo in `tss-ppm/login/resources/img/logo.png`
 4. Restart Keycloak container to apply changes
 
 ## Color Reference

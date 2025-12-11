@@ -21,44 +21,167 @@ A web-based HR Performance Review application for Total Specific Solutions. This
 
 ### Prerequisites
 
-- Node.js 18+
-- Python 3.8+ (for voice input)
+- Node.js 20+ (LTS recommended)
+- PostgreSQL 16+ (for API backend)
+- Docker & Docker Compose (optional, for full stack deployment)
 
-### Installation
+### Option 1: Local Development (Frontend Only - No Auth)
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd tss_ppm
-   ```
+Quickest way to run the app for UI development without backend services:
 
-2. **Install frontend dependencies**
-   ```bash
-   cd hr-performance-app
-   npm install
-   ```
+```bash
+# Clone and install
+git clone https://github.com/SimonvanAs/tss_ppm.git
+cd tss_ppm/hr-performance-app
+npm install
 
-3. **Set up voice input server** (optional but recommended)
-   ```bash
-   cd server
-   setup_whisper.bat
-   ```
+# Create local environment (disables auth)
+cat > .env.local << 'EOF'
+VITE_AUTH_ENABLED=false
+VITE_AUTH_ALLOW_ANONYMOUS=true
+VITE_API_URL=http://localhost:3000/api/v1
+VITE_BROWSER_WHISPER_DEFAULT=true
+VITE_DEBUG=true
+EOF
 
-### Running the Application
+# Start frontend
+npm run dev
+```
 
-1. **Start the React app**
-   ```bash
-   cd hr-performance-app
-   npm run dev
-   ```
-   Opens at http://localhost:5173
+Opens at http://localhost:5173 with a mock user (all roles enabled).
 
-2. **Start the Whisper server** (for voice input)
-   ```bash
-   cd hr-performance-app/server
-   start_whisper.bat
-   ```
-   Runs on http://localhost:3001
+### Option 2: Local Development (Full Stack)
+
+Run frontend, API, and database locally for full development:
+
+**1. Start PostgreSQL** (via Docker or local install):
+```bash
+# Using Docker
+docker run -d --name tss-postgres \
+  -e POSTGRES_USER=ppm \
+  -e POSTGRES_PASSWORD=devpassword \
+  -e POSTGRES_DB=tss_ppm \
+  -p 5432:5432 \
+  postgres:16-alpine
+```
+
+**2. Set up the API**:
+```bash
+cd api
+
+# Install dependencies
+npm install
+
+# Create .env file
+cat > .env << 'EOF'
+DATABASE_URL=postgresql://ppm:devpassword@localhost:5432/tss_ppm
+NODE_ENV=development
+PORT=3000
+JWT_SECRET=dev-secret-change-in-production
+AUTH_ENABLED=false
+EOF
+
+# Run database migrations
+npx prisma migrate dev
+
+# Seed initial data (optional)
+npx prisma db seed
+
+# Start API server
+npm run dev
+```
+
+**3. Set up the Frontend**:
+```bash
+cd hr-performance-app
+
+# Install dependencies
+npm install
+
+# Create .env.local
+cat > .env.local << 'EOF'
+VITE_AUTH_ENABLED=false
+VITE_AUTH_ALLOW_ANONYMOUS=true
+VITE_API_URL=http://localhost:3000/api/v1
+VITE_BROWSER_WHISPER_DEFAULT=true
+EOF
+
+# Start frontend
+npm run dev
+```
+
+### Option 3: Docker Compose (Production-Like)
+
+Full stack with PostgreSQL, Keycloak, API, Frontend, and Whisper:
+
+```bash
+# Clone repository
+git clone https://github.com/SimonvanAs/tss_ppm.git
+cd tss_ppm
+
+# Create production .env file
+cat > .env << 'EOF'
+DOMAIN=localhost
+DB_PASSWORD=your-secure-password
+KC_ADMIN=admin
+KC_ADMIN_PASSWORD=your-keycloak-password
+EOF
+
+# Build and start all services
+docker compose up -d --build
+
+# Check status
+docker compose ps
+
+# View logs
+docker compose logs -f
+```
+
+Services will be available at:
+- **Frontend**: https://localhost (via Caddy)
+- **API**: https://localhost/api/v1
+- **Keycloak Admin**: https://localhost/auth/admin
+
+**First-time Keycloak Setup:**
+1. Access https://localhost/auth/admin
+2. Login with admin credentials from .env
+3. Import the realm: Administration → Import → select `keycloak/tss-ppm-realm.json`
+4. Create test users in the `tss-ppm` realm
+
+### Option 4: Development with Keycloak
+
+Run Keycloak for authentication testing while developing locally:
+
+```bash
+# Start only PostgreSQL and Keycloak via Docker
+docker compose up postgres keycloak -d
+
+# Wait for Keycloak to be healthy (~90 seconds)
+docker compose logs -f keycloak
+
+# Run API locally
+cd api
+npm run dev
+
+# Run frontend with auth enabled
+cd hr-performance-app
+cat > .env.local << 'EOF'
+VITE_AUTH_ENABLED=true
+VITE_KEYCLOAK_URL=http://localhost:8080
+VITE_KEYCLOAK_REALM=tss-ppm
+VITE_KEYCLOAK_CLIENT_ID=tss-ppm-frontend
+VITE_API_URL=http://localhost:3000/api/v1
+EOF
+
+npm run dev
+```
+
+**Note:** You'll need to expose Keycloak's port by uncommenting in docker-compose.yml:
+```yaml
+keycloak:
+  ports:
+    - "8080:8080"
+```
 
 ## Project Structure
 
@@ -125,13 +248,67 @@ First-time transcription may be slow as the model loads (~500MB).
 
 ## Technology Stack
 
-- **Frontend**: React 19 + Vite 7 + React Router v7
+### Frontend
+- **Framework**: React 19 + Vite 7
+- **Routing**: React Router v7 with protected routes
 - **Styling**: Custom CSS with Tahoma font
 - **Brand Colors**: Magenta `#CC0E70`, Navy Blue `#004A91`
-- **Storage**: Browser localStorage (+ API when backend connected)
 - **Authentication**: Keycloak JS v26 (OIDC/EntraID federation)
-- **Reports**: DOCX via `docx` package
+- **Reports**: DOCX via `docx` package, Excel via `exceljs`, PDF via `jspdf`
 - **Voice**: Browser Whisper (WebGPU/WASM) or Faster-Whisper server
+
+### Backend
+- **API Framework**: Fastify 5 with TypeScript
+- **ORM**: Prisma 6 with PostgreSQL
+- **Database**: PostgreSQL 16
+- **Authentication**: Keycloak 25 (OIDC/OAuth 2.0)
+- **Validation**: Zod schemas
+
+### Infrastructure
+- **Reverse Proxy**: Caddy (automatic HTTPS)
+- **Containers**: Docker & Docker Compose
+- **CI/CD**: GitHub Actions
+
+## Environment Variables
+
+### Frontend (`hr-performance-app/.env.local`)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VITE_AUTH_ENABLED` | `true` | Enable/disable Keycloak authentication |
+| `VITE_AUTH_ALLOW_ANONYMOUS` | `false` | Allow anonymous access (dev only) |
+| `VITE_KEYCLOAK_URL` | `http://localhost:8080` | Keycloak server URL |
+| `VITE_KEYCLOAK_REALM` | `tss-ppm` | Keycloak realm name |
+| `VITE_KEYCLOAK_CLIENT_ID` | `tss-ppm-frontend` | Keycloak client ID |
+| `VITE_API_URL` | `/api/v1` | Backend API base URL |
+| `VITE_BROWSER_WHISPER_DEFAULT` | `true` | Use browser Whisper by default |
+| `VITE_DEBUG` | `false` | Enable debug logging |
+
+### Backend API (`api/.env`)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DATABASE_URL` | - | PostgreSQL connection string |
+| `NODE_ENV` | `development` | Environment (development/production) |
+| `PORT` | `3000` | API server port |
+| `AUTH_ENABLED` | `true` | Enable JWT authentication |
+| `KEYCLOAK_URL` | `http://localhost:8080` | Keycloak server URL |
+| `KEYCLOAK_REALM` | `tss-ppm` | Keycloak realm name |
+| `KEYCLOAK_CLIENT_ID` | `tss-ppm-api` | Keycloak client ID for API |
+| `CORS_ORIGINS` | `http://localhost:5173` | Allowed CORS origins |
+| `LOG_LEVEL` | `info` | Logging level |
+
+### Docker Compose (`.env`)
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `DOMAIN` | `localhost` | Domain for Caddy SSL |
+| `DB_PASSWORD` | `changeme` | PostgreSQL password |
+| `KC_ADMIN` | `admin` | Keycloak admin username |
+| `KC_ADMIN_PASSWORD` | `changeme` | Keycloak admin password |
+| `WHISPER_MODEL` | `small` | Whisper model size |
+| `WHISPER_COMPUTE_TYPE` | `int8` | Compute precision |
+| `WHISPER_WORKERS` | `2` | Gunicorn workers |
 
 ## Session Management
 
@@ -251,29 +428,29 @@ curl https://your-domain.com
 
 The application is now available at `https://your-domain.com` with automatic HTTPS!
 
-### Architecture
+### Architecture (v2.0)
 
 ```
-┌─────────────────────────────────────────────────────┐
-│              Caddy (ports 80/443)                   │
-│         Automatic HTTPS + Reverse Proxy             │
-└─────────────────────────────────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────┐
-│                   nginx (internal)                   │
-│  ┌─────────────────┐    ┌────────────────────┐      │
-│  │  Static Files   │    │  /transcribe proxy │      │
-│  │  (React App)    │    │  → whisper:3001    │      │
-│  └─────────────────┘    └────────────────────┘      │
-└─────────────────────────────────────────────────────┘
-                           │
-                           ▼
-              ┌─────────────────────────┐
-              │   Whisper Container     │
-              │   (Python + AI Model)   │
-              │   Internal port: 3001   │
-              └─────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Caddy (ports 80/443)                     │
+│              Automatic HTTPS + Reverse Proxy                │
+└─────────────────────────────────────────────────────────────┘
+           │              │              │              │
+           ▼              ▼              ▼              ▼
+      /static        /api/v1         /auth       /transcribe
+           │              │              │              │
+           ▼              ▼              ▼              ▼
+┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
+│   Frontend   │  │     API      │  │   Keycloak   │  │   Whisper    │
+│  (React/Vite)│  │  (Fastify)   │  │   (OIDC)     │  │ (Python AI)  │
+│    nginx     │  │   Prisma     │  │  EntraID SSO │  │ faster-whisper│
+└──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘
+                         │                  │
+                         ▼                  ▼
+                  ┌─────────────────────────────────┐
+                  │         PostgreSQL 16           │
+                  │   tss_ppm DB  │  keycloak DB    │
+                  └─────────────────────────────────┘
 ```
 
 ### Useful Docker Commands
@@ -353,58 +530,74 @@ groups $USER
 
 ## Security
 
-The application implements defense-in-depth security measures appropriate for a client-side HR tool.
+The application implements defense-in-depth security measures for enterprise HR data.
+
+### Authentication & Authorization (v2.0)
+
+| Aspect | Implementation |
+|--------|----------------|
+| **Identity Provider** | Keycloak with OIDC/OAuth 2.0 |
+| **SSO Integration** | EntraID (Azure AD) federation support |
+| **Token Management** | JWT with automatic refresh |
+| **Session Handling** | Silent SSO with secure token storage |
+| **Role-Based Access** | Five roles with hierarchical permissions |
+
+### User Roles
+
+| Role | Permissions |
+|------|-------------|
+| **Employee** | View/edit own reviews, self-assessment |
+| **Manager** | Score team reviews, approve goal changes, view team |
+| **HR** | View all reviews, organization statistics, calibration |
+| **OpCo Admin** | Manage OpCo users, settings, competencies |
+| **TSS Super Admin** | Cross-OpCo management, global configuration |
 
 ### Data Protection
 
 | Aspect | Implementation |
 |--------|----------------|
-| **Storage** | Browser localStorage only - data never leaves user's device |
-| **Encryption** | Not encrypted at rest (documented in Privacy Policy) |
-| **Retention** | Automatic 14-day expiration with cleanup |
-| **Session codes** | 10-character alphanumeric, not guessable |
+| **Storage** | PostgreSQL with tenant isolation |
+| **Encryption** | TLS in transit, database encryption at rest |
+| **Multi-Tenancy** | OpCo-level data isolation |
+| **Audit Trail** | All changes logged with user and timestamp |
+| **Retention** | Configurable per organization |
 
 ### OWASP Top 10 Compliance
 
 | Vulnerability | Status | Notes |
 |---------------|--------|-------|
-| A01 Broken Access Control | N/A | No server-side auth, client-only |
-| A02 Cryptographic Failures | Documented | No encryption, disclosed in Privacy Policy |
-| A03 Injection (XSS) | ✅ Protected | React escapes output + `sanitizeInput()` on save |
-| A04 Insecure Design | ✅ Safe | Simple client-side app, minimal attack surface |
-| A05 Security Misconfiguration | ✅ Safe | Secure Vite/React defaults |
-| A06 Vulnerable Components | ✅ Monitored | Regular `npm audit` checks |
-| A07 Auth Failures | N/A | No authentication system |
-| A08 Data Integrity Failures | ✅ Safe | No deserialization of untrusted data |
-| A09 Logging Failures | N/A | Client-side only |
-| A10 SSRF | N/A | Only local Whisper server call |
+| A01 Broken Access Control | ✅ Protected | RBAC + route guards + API authorization |
+| A02 Cryptographic Failures | ✅ Protected | TLS, JWT signing, secure password storage |
+| A03 Injection (XSS/SQLi) | ✅ Protected | React escaping + Prisma parameterized queries |
+| A04 Insecure Design | ✅ Safe | Defense in depth, principle of least privilege |
+| A05 Security Misconfiguration | ✅ Safe | Secure defaults, environment-based config |
+| A06 Vulnerable Components | ✅ Monitored | Regular `npm audit`, Dependabot alerts |
+| A07 Auth Failures | ✅ Protected | Keycloak handles auth with industry standards |
+| A08 Data Integrity Failures | ✅ Safe | JWT verification, signed tokens |
+| A09 Logging Failures | ✅ Implemented | Structured logging with audit trail |
+| A10 SSRF | ✅ Protected | Allowlisted internal services only |
 
-### XSS Prevention
+### API Security
 
-- **React's default escaping**: All JSX content is automatically escaped
-- **Input sanitization**: All form data is sanitized before localStorage save
-- **No `dangerouslySetInnerHTML`**: Codebase does not use unsafe HTML injection
-- **DOCX generation**: Uses `docx` library which doesn't interpret HTML
-
-### Dependencies
-
-- All dependencies are regularly audited with `npm audit`
-- No known vulnerabilities as of the current version
-- Dev dependencies are not included in production builds
+- **JWT Validation**: All API requests require valid JWT token
+- **Tenant Isolation**: Users can only access data within their OpCo
+- **Rate Limiting**: Protection against abuse (configurable)
+- **CORS**: Strict origin validation
+- **Input Validation**: Schema validation on all endpoints
 
 ### Privacy Features
 
-- No external data transmission (except optional Plausible analytics)
-- Plausible analytics is cookie-free and GDPR compliant
-- Voice input processed locally via Whisper AI
-- Users can use incognito mode for sessions that leave no trace
+- **Plausible Analytics**: Cookie-free, GDPR compliant (optional)
+- **Voice Input**: Browser-based Whisper (no audio sent to external services)
+- **Data Minimization**: Only necessary data collected
+- **GDPR Rights**: Export, deletion, and portability supported
 
-### Recommendations for Users
+### Dependencies
 
-- Download DOCX reports before clearing browser data
-- Use incognito mode for sensitive reviews
-- Don't share session codes via insecure channels
-- Clear browser data after completing reviews on shared computers
+- All dependencies regularly audited with `npm audit`
+- Dependabot enabled for automated security updates
+- No known vulnerabilities as of the current version
+- GitHub Actions security scanning on every push
 
 ## Testing
 

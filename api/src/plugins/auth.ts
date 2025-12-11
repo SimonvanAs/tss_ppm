@@ -182,6 +182,7 @@ const authPluginCallback: FastifyPluginAsync = async (fastify: FastifyInstance) 
       const realmRoles = decoded.realm_access?.roles || [];
       const clientRoles = decoded.resource_access?.[config.keycloak.clientId]?.roles || [];
       const allRoles = [...new Set([...realmRoles, ...clientRoles])];
+      const mappedRole = mapKeycloakRoleToUserRole(allRoles);
 
       // Try to find user in database by keycloakId or email
       let dbUser = await fastify.prisma.user.findUnique({
@@ -206,6 +207,44 @@ const authPluginCallback: FastifyPluginAsync = async (fastify: FastifyInstance) 
         }
       }
 
+      // JIT Provisioning: Auto-create user on first login if they don't exist
+      if (!dbUser && decoded.email) {
+        // Get or create default OpCo based on opco_id claim or use 'tss' as default
+        const opcoName = decoded.opco_id || 'tss';
+        let opco = await fastify.prisma.opCo.findUnique({
+          where: { name: opcoName },
+        });
+
+        // If opco doesn't exist and it's the default, create it
+        if (!opco && opcoName === 'tss') {
+          opco = await fastify.prisma.opCo.create({
+            data: {
+              name: 'tss',
+              displayName: 'Total Specific Solutions',
+              domain: 'tss.eu',
+              settings: {},
+            },
+          });
+          fastify.log.info({ opcoId: opco.id }, 'Created default TSS OpCo');
+        }
+
+        if (opco) {
+          dbUser = await fastify.prisma.user.create({
+            data: {
+              keycloakId,
+              email: decoded.email,
+              firstName: decoded.given_name || 'Unknown',
+              lastName: decoded.family_name || 'User',
+              displayName: decoded.name || `${decoded.given_name || ''} ${decoded.family_name || ''}`.trim() || decoded.email,
+              role: mappedRole,
+              opcoId: opco.id,
+            },
+            select: { id: true, opcoId: true, role: true, keycloakId: true },
+          });
+          fastify.log.info({ userId: dbUser.id, email: decoded.email, role: mappedRole }, 'JIT provisioned new user');
+        }
+      }
+
       request.user = {
         id: dbUser?.id,
         keycloakId,
@@ -214,7 +253,7 @@ const authPluginCallback: FastifyPluginAsync = async (fastify: FastifyInstance) 
         lastName: decoded.family_name,
         opcoId: dbUser?.opcoId || decoded.opco_id,
         roles: allRoles,
-        role: dbUser?.role || mapKeycloakRoleToUserRole(allRoles),
+        role: dbUser?.role || mappedRole,
       };
     } catch (err) {
       fastify.log.warn({ err }, 'Authentication failed');

@@ -52,21 +52,81 @@ function mapKeycloakUser(keycloak, dbUser = null) {
 }
 
 /**
- * Development mode mock user
+ * Development mode mock users for each role
  */
-const mockUser = {
-  id: 'dev-user-id',
-  keycloakId: 'dev-keycloak-id',
-  email: 'dev@example.com',
-  firstName: 'Development',
-  lastName: 'User',
-  displayName: 'Development User',
-  role: UserRole.TSS_SUPER_ADMIN,
-  roles: ['tss-super-admin', 'opco-admin', 'hr', 'manager', 'employee'],
-  opcoId: 'dev-opco-id',
-  opco: { id: 'dev-opco-id', name: 'development', displayName: 'Development OpCo' },
-  directReports: [],
+const mockUsers = {
+  [UserRole.EMPLOYEE]: {
+    id: 'dev-employee-id',
+    keycloakId: 'dev-keycloak-employee',
+    email: 'employee@example.com',
+    firstName: 'Emma',
+    lastName: 'Employee',
+    displayName: 'Emma Employee',
+    role: UserRole.EMPLOYEE,
+    roles: ['employee'],
+    opcoId: 'dev-opco-id',
+    opco: { id: 'dev-opco-id', name: 'development', displayName: 'Development OpCo' },
+    directReports: [],
+  },
+  [UserRole.MANAGER]: {
+    id: 'dev-manager-id',
+    keycloakId: 'dev-keycloak-manager',
+    email: 'manager@example.com',
+    firstName: 'Michael',
+    lastName: 'Manager',
+    displayName: 'Michael Manager',
+    role: UserRole.MANAGER,
+    roles: ['manager', 'employee'],
+    opcoId: 'dev-opco-id',
+    opco: { id: 'dev-opco-id', name: 'development', displayName: 'Development OpCo' },
+    directReports: [
+      { id: 'dev-employee-id', displayName: 'Emma Employee' },
+      { id: 'dev-employee-2', displayName: 'Eric Engineer' },
+    ],
+  },
+  [UserRole.HR]: {
+    id: 'dev-hr-id',
+    keycloakId: 'dev-keycloak-hr',
+    email: 'hr@example.com',
+    firstName: 'Hannah',
+    lastName: 'HR',
+    displayName: 'Hannah HR',
+    role: UserRole.HR,
+    roles: ['hr', 'manager', 'employee'],
+    opcoId: 'dev-opco-id',
+    opco: { id: 'dev-opco-id', name: 'development', displayName: 'Development OpCo' },
+    directReports: [],
+  },
+  [UserRole.OPCO_ADMIN]: {
+    id: 'dev-opco-admin-id',
+    keycloakId: 'dev-keycloak-opco-admin',
+    email: 'opco-admin@example.com',
+    firstName: 'Oliver',
+    lastName: 'OpCo Admin',
+    displayName: 'Oliver OpCo Admin',
+    role: UserRole.OPCO_ADMIN,
+    roles: ['opco-admin', 'hr', 'manager', 'employee'],
+    opcoId: 'dev-opco-id',
+    opco: { id: 'dev-opco-id', name: 'development', displayName: 'Development OpCo' },
+    directReports: [],
+  },
+  [UserRole.TSS_SUPER_ADMIN]: {
+    id: 'dev-super-admin-id',
+    keycloakId: 'dev-keycloak-super-admin',
+    email: 'super-admin@example.com',
+    firstName: 'Sarah',
+    lastName: 'Super Admin',
+    displayName: 'Sarah Super Admin',
+    role: UserRole.TSS_SUPER_ADMIN,
+    roles: ['tss-super-admin', 'opco-admin', 'hr', 'manager', 'employee'],
+    opcoId: 'dev-opco-id',
+    opco: { id: 'dev-opco-id', name: 'development', displayName: 'Development OpCo' },
+    directReports: [],
+  },
 };
+
+// Default mock user (highest role for dev convenience)
+const mockUser = mockUsers[UserRole.TSS_SUPER_ADMIN];
 
 export function AuthProvider({ children }) {
   const [state, setState] = useState(initialState);
@@ -116,7 +176,6 @@ export function AuthProvider({ children }) {
         onLoad: 'login-required',
         checkLoginIframe: false,
         pkceMethod: 'S256',
-        silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
       });
 
       if (authenticated) {
@@ -292,6 +351,32 @@ export function AuthProvider({ children }) {
     return state.user.directReports?.some(dr => dr.id === userId);
   }, [state.user]);
 
+  /**
+   * Check if running in dev mode (no auth)
+   */
+  const isDevMode = !authConfig.features.enabled || authConfig.features.allowAnonymous;
+
+  /**
+   * Switch role in development mode
+   */
+  const switchDevRole = useCallback((role) => {
+    if (!isDevMode) {
+      console.warn('[Auth] switchDevRole only works in development mode');
+      return;
+    }
+
+    const newUser = mockUsers[role];
+    if (!newUser) {
+      console.error('[Auth] Invalid role:', role);
+      return;
+    }
+
+    console.log('[Auth] Switching to role:', role, newUser.displayName);
+    updateState({
+      user: newUser,
+    });
+  }, [isDevMode, updateState]);
+
   const value = {
     // State
     isAuthenticated: state.isAuthenticated,
@@ -309,6 +394,11 @@ export function AuthProvider({ children }) {
     hasMinRole,
     hasRoles,
     isManagerOf,
+
+    // Dev mode
+    isDevMode,
+    switchDevRole,
+    availableRoles: isDevMode ? Object.keys(mockUsers) : [],
   };
 
   return (

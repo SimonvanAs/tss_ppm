@@ -3,6 +3,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useForm } from '../contexts/FormContext';
 import { useWhisperContext } from '../contexts/WhisperContext';
 import { useAuth } from '../contexts/AuthContext';
+import { DevRoleSwitcher } from './DevRoleSwitcher';
 import './Header.css';
 
 export function Header({ onShowSessions }) {
@@ -100,6 +101,7 @@ export function Header({ onShowSessions }) {
           </div>
 
           <div className="header-right">
+            <DevRoleSwitcher />
             <div className="language-version-container">
               <div className="language-selector-wrapper">
                 {availableLanguages.map(lang => (

@@ -669,4 +669,289 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
 
     return opco;
   });
+
+  // ============================================
+  // REVIEW IMPORT
+  // ============================================
+
+  fastify.post('/reviews/import', {
+    schema: {
+      description: 'Import historical performance reviews from Excel file',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      consumes: ['multipart/form-data'],
+    },
+    preHandler: [fastify.authorize(UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    try {
+      const data = await request.file();
+      if (!data) {
+        return reply.status(400).send({
+          error: { message: 'No file provided', statusCode: 400 },
+        });
+      }
+
+      const buffer = await data.toBuffer();
+      const filename = data.filename || 'import.xlsx';
+
+      // Parse Excel file
+      const ExcelJS = await import('exceljs');
+      const workbook = new ExcelJS.Workbook();
+      await workbook.xlsx.load(buffer);
+
+      const worksheet = workbook.getWorksheet(1); // Get first worksheet
+      if (!worksheet) {
+        return reply.status(400).send({
+          error: { message: 'Excel file is empty or invalid', statusCode: 400 },
+        });
+      }
+
+      // Parse header row
+      const headerRow = worksheet.getRow(1);
+      const headers: string[] = [];
+      headerRow.eachCell((cell, colNumber) => {
+        headers[colNumber - 1] = cell.value?.toString() || '';
+      });
+
+      // Expected columns (flexible mapping)
+      const columnMap: Record<string, string> = {};
+      headers.forEach((header, index) => {
+        const normalized = header.toLowerCase().trim();
+        if (normalized.includes('employee') && normalized.includes('email')) {
+          columnMap.email = header;
+        } else if (normalized.includes('employee') && normalized.includes('name')) {
+          columnMap.employeeName = header;
+        } else if (normalized.includes('year')) {
+          columnMap.year = header;
+        } else if (normalized.includes('what') && normalized.includes('score')) {
+          columnMap.whatScore = header;
+        } else if (normalized.includes('how') && normalized.includes('score')) {
+          columnMap.howScore = header;
+        } else if (normalized.includes('tov') || normalized.includes('level')) {
+          columnMap.tovLevel = header;
+        } else if (normalized.includes('status')) {
+          columnMap.status = header;
+        }
+      });
+
+      // Validate required columns
+      if (!columnMap.email && !columnMap.employeeName) {
+        return reply.status(400).send({
+          error: {
+            message: 'Excel file must contain employee email or name column',
+            statusCode: 400,
+          },
+        });
+      }
+      if (!columnMap.year) {
+        return reply.status(400).send({
+          error: { message: 'Excel file must contain year column', statusCode: 400 },
+        });
+      }
+
+      const results = {
+        total: 0,
+        created: 0,
+        updated: 0,
+        skipped: 0,
+        errors: [] as Array<{ row: number; message: string }>,
+      };
+
+      // Process each row
+      for (let rowNum = 2; rowNum <= worksheet.rowCount; rowNum++) {
+        const row = worksheet.getRow(rowNum);
+        if (!row || row.cellCount === 0) continue;
+
+        results.total++;
+
+        try {
+          // Extract data from row
+          const getCellValue = (colName: string): string | null => {
+            const headerIndex = headers.indexOf(columnMap[colName]);
+            if (headerIndex === -1) return null;
+            const cell = row.getCell(headerIndex + 1);
+            return cell.value?.toString()?.trim() || null;
+          };
+
+          const email = getCellValue('email');
+          const employeeName = getCellValue('employeeName');
+          const yearStr = getCellValue('year');
+          const whatScoreStr = getCellValue('whatScore');
+          const howScoreStr = getCellValue('howScore');
+          const tovLevelCode = getCellValue('tovLevel');
+          const statusStr = getCellValue('status');
+
+          if (!yearStr) {
+            results.skipped++;
+            results.errors.push({ row: rowNum, message: 'Missing year' });
+            continue;
+          }
+
+          const year = parseInt(yearStr, 10);
+          if (isNaN(year) || year < 2000 || year > 2100) {
+            results.skipped++;
+            results.errors.push({ row: rowNum, message: `Invalid year: ${yearStr}` });
+            continue;
+          }
+
+          // Find employee
+          let employee;
+          if (email) {
+            employee = await fastify.prisma.user.findFirst({
+              where: {
+                email,
+                ...withTenantFilter(request),
+              },
+            });
+          } else if (employeeName) {
+            const [firstName, ...lastNameParts] = employeeName.split(' ');
+            const lastName = lastNameParts.join(' ');
+            employee = await fastify.prisma.user.findFirst({
+              where: {
+                firstName: { contains: firstName, mode: 'insensitive' },
+                lastName: { contains: lastName, mode: 'insensitive' },
+                ...withTenantFilter(request),
+              },
+            });
+          }
+
+          if (!employee) {
+            results.skipped++;
+            results.errors.push({
+              row: rowNum,
+              message: `Employee not found: ${email || employeeName}`,
+            });
+            continue;
+          }
+
+          // Find or get default TOV level
+          let tovLevelId = employee.tovLevelId;
+          if (tovLevelCode) {
+            const tovLevel = await fastify.prisma.tovLevel.findFirst({
+              where: {
+                code: { equals: tovLevelCode, mode: 'insensitive' },
+                ...withTenantFilter(request),
+                isActive: true,
+              },
+            });
+            if (tovLevel) {
+              tovLevelId = tovLevel.id;
+            }
+          }
+
+          if (!tovLevelId) {
+            // Get default TOV level for OpCo
+            const defaultTovLevel = await fastify.prisma.tovLevel.findFirst({
+              where: {
+                ...withTenantFilter(request),
+                isActive: true,
+              },
+              orderBy: { sortOrder: 'asc' },
+            });
+            if (defaultTovLevel) {
+              tovLevelId = defaultTovLevel.id;
+            } else {
+              results.skipped++;
+              results.errors.push({ row: rowNum, message: 'No TOV level available' });
+              continue;
+            }
+          }
+
+          // Parse scores
+          const whatScore = whatScoreStr ? parseFloat(whatScoreStr) : null;
+          const howScore = howScoreStr ? parseFloat(howScoreStr) : null;
+
+          // Determine status
+          let status = 'COMPLETED';
+          if (statusStr) {
+            const normalizedStatus = statusStr.toUpperCase().replace(/[^A-Z_]/g, '_');
+            if (['DRAFT', 'GOAL_SETTING', 'MID_YEAR_REVIEW', 'END_YEAR_REVIEW', 'COMPLETED'].includes(normalizedStatus)) {
+              status = normalizedStatus;
+            }
+          }
+
+          // Check if review exists
+          const existing = await fastify.prisma.reviewCycle.findFirst({
+            where: {
+              employeeId: employee.id,
+              year,
+              ...withTenantFilter(request),
+            },
+          });
+
+          // Get competency levels
+          const competencyLevels = await fastify.prisma.competencyLevel.findMany({
+            where: {
+              tovLevelId,
+              ...withTenantFilter(request),
+              isActive: true,
+            },
+            orderBy: { sortOrder: 'asc' },
+          });
+
+          if (existing) {
+            // Update existing review
+            await fastify.prisma.reviewCycle.update({
+              where: { id: existing.id },
+              data: {
+                whatScoreEndYear: whatScore ?? existing.whatScoreEndYear,
+                howScoreEndYear: howScore ?? existing.howScoreEndYear,
+                status,
+                tovLevelId,
+              },
+            });
+            results.updated++;
+          } else {
+            // Create new review
+            await fastify.prisma.reviewCycle.create({
+              data: {
+                opcoId: request.tenant.opcoId,
+                employeeId: employee.id,
+                managerId: employee.managerId,
+                year,
+                tovLevelId,
+                status,
+                whatScoreEndYear: whatScore,
+                howScoreEndYear: howScore,
+                stages: {
+                  create: [
+                    { stageType: 'GOAL_SETTING', status: 'COMPLETE' },
+                    { stageType: 'MID_YEAR_REVIEW', status: 'COMPLETE' },
+                    { stageType: 'END_YEAR_REVIEW', status: status === 'COMPLETED' ? 'COMPLETE' : 'PENDING' },
+                  ],
+                },
+                competencyScores: {
+                  create: competencyLevels.map(cl => ({
+                    competencyLevelId: cl.id,
+                    scoreEndYear: howScore ? Math.round(howScore) : null,
+                  })),
+                },
+              },
+            });
+            results.created++;
+          }
+        } catch (err: any) {
+          results.skipped++;
+          results.errors.push({
+            row: rowNum,
+            message: err.message || 'Unknown error',
+          });
+        }
+      }
+
+      return reply.status(200).send({
+        success: true,
+        filename,
+        results,
+      });
+    } catch (err: any) {
+      fastify.log.error(err);
+      return reply.status(500).send({
+        error: {
+          message: err.message || 'Failed to import reviews',
+          statusCode: 500,
+        },
+      });
+    }
+  });
 };

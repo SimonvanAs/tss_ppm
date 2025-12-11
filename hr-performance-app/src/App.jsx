@@ -25,6 +25,7 @@ import {
   HRDashboard,
   AllReviews,
   HistoryDashboard,
+  AnalyticsDashboard,
   AdminLayout,
   AdminDashboard,
   UserManagement,
@@ -348,6 +349,24 @@ function AppRouter() {
                 <FormProvider>
                   <PageWrapper>
                     <HistoryDashboard />
+                  </PageWrapper>
+                </FormProvider>
+              </WhisperProvider>
+            </LanguageProvider>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Analytics Dashboard - HR+ only */}
+      <Route
+        path="/analytics"
+        element={
+          <ProtectedRoute roles={['HR', 'OPCO_ADMIN', 'TSS_SUPER_ADMIN']}>
+            <LanguageProvider>
+              <WhisperProvider>
+                <FormProvider>
+                  <PageWrapper>
+                    <AnalyticsDashboard />
                   </PageWrapper>
                 </FormProvider>
               </WhisperProvider>

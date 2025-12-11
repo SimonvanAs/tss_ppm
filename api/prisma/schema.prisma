@@ -31,6 +31,7 @@ model OpCo {
   tovLevels        TovLevel[]
   competencyLevels CompetencyLevel[]
   reviewCycles     ReviewCycle[]
+  businessUnits    BusinessUnit[]
 
   @@map("opcos")
 }
@@ -63,6 +64,11 @@ model User {
   manager       User?  @relation("ManagerEmployee", fields: [managerId], references: [id])
   directReports User[] @relation("ManagerEmployee")
 
+  // Business Unit membership
+  businessUnitId      String?
+  businessUnit        BusinessUnit?   @relation("BUMembership", fields: [businessUnitId], references: [id])
+  headOfBusinessUnits BusinessUnit[]  @relation("BUHead")
+
   // Relations
   employeeReviews    ReviewCycle[]       @relation("EmployeeReviews")
   managerReviews     ReviewCycle[]       @relation("ManagerReviews")
@@ -74,6 +80,7 @@ model User {
   @@unique([opcoId, email])
   @@index([opcoId])
   @@index([managerId])
+  @@index([businessUnitId])
   @@map("users")
 }
 
@@ -83,6 +90,43 @@ enum UserRole {
   HR
   OPCO_ADMIN
   TSS_SUPER_ADMIN
+}
+
+// ============================================
+// BUSINESS UNIT HIERARCHY
+// ============================================
+
+/// Business Unit for organizational hierarchy (e.g., departments, divisions)
+model BusinessUnit {
+  id          String   @id @default(uuid())
+  code        String   // e.g., "TECH", "SALES", "OPS"
+  name        String   // e.g., "Technology", "Sales & Marketing"
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Tenant
+  opcoId String
+  opco   OpCo   @relation(fields: [opcoId], references: [id])
+
+  // Optional hierarchy (for nested BUs)
+  parentId String?
+  parent   BusinessUnit?  @relation("BUHierarchy", fields: [parentId], references: [id])
+  children BusinessUnit[] @relation("BUHierarchy")
+
+  // BU Head (manager responsible for this BU)
+  headId String?
+  head   User?  @relation("BUHead", fields: [headId], references: [id])
+
+  // Users in this BU
+  users User[] @relation("BUMembership")
+
+  @@unique([opcoId, code])
+  @@index([opcoId])
+  @@index([parentId])
+  @@map("business_units")
 }
 
 // ============================================

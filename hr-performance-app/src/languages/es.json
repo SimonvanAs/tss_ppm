@@ -6,6 +6,7 @@
     "approvals": "Aprobaciones",
     "hrDashboard": "Panel de RRHH",
     "allReviews": "Todas las Evaluaciones",
+    "analytics": "Análisis",
     "admin": "Administrar"
   },
   "pages": {
@@ -136,6 +137,56 @@
       "viewHistory": "Ver Historial",
       "metric": "Métrica",
       "status": "Estado"
+    },
+    "analytics": {
+      "title": "Análisis de Desempeño",
+      "subtitle": "Distribución de la Matriz 9 en su organización",
+      "levels": {
+        "manager": "Equipo",
+        "bu": "Unidad de Negocio",
+        "company": "Empresa"
+      },
+      "selectBUPrompt": "Seleccione una Unidad de Negocio para ver análisis",
+      "selectManagerPrompt": "Seleccione un gerente para filtrar por equipo",
+      "endYear": "Fin de Año",
+      "midYear": "Medio Año",
+      "gridTitle": "Distribución de Matriz 9",
+      "distributionTitle": "Distribución de Desempeño",
+      "clickToView": "Haga clic en una celda para ver empleados",
+      "legend": "Leyenda de la Matriz",
+      "noData": "No hay datos de análisis disponibles",
+      "employees": "empleados",
+      "stats": {
+        "totalEmployees": "Total de Empleados",
+        "scoredEmployees": "Puntuados",
+        "completionRate": "Tasa de Completación",
+        "avgWhat": "Prom. QUÉ",
+        "avgHow": "Prom. CÓMO",
+        "topTalent": "Talento Superior"
+      },
+      "grid": {
+        "topTalent": "Talento Superior",
+        "solidPerformer": "Desempeño Sólido",
+        "needsAttention": "Necesita Atención",
+        "concern": "Preocupación"
+      },
+      "drillDown": {
+        "title": "Empleados en {position}",
+        "noEmployees": "No hay empleados en esta posición",
+        "viewReview": "Ver"
+      },
+      "trends": {
+        "title": "Tendencias de Distribución"
+      },
+      "compare": {
+        "title": "Comparar",
+        "byBU": "Por Unidad de Negocio",
+        "byYear": "Por Año"
+      },
+      "export": {
+        "excel": "Exportar a Excel",
+        "pdf": "Exportar a PDF"
+      }
     }
   },
   "review": {

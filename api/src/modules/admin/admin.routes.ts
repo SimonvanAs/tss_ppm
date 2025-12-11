@@ -106,6 +106,233 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
   });
 
   // ============================================
+  // BUSINESS UNITS
+  // ============================================
+
+  fastify.get('/business-units', {
+    schema: {
+      description: 'List business units for current OpCo',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request) => {
+    const businessUnits = await fastify.prisma.businessUnit.findMany({
+      where: {
+        ...withTenantFilter(request),
+        isActive: true,
+      },
+      include: {
+        head: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
+        parent: {
+          select: { id: true, name: true, code: true },
+        },
+        _count: {
+          select: { users: true, children: true },
+        },
+      },
+      orderBy: { sortOrder: 'asc' },
+    });
+    return businessUnits;
+  });
+
+  fastify.post('/business-units', {
+    schema: {
+      description: 'Create a business unit',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        properties: {
+          code: { type: 'string', description: 'Short unique code (e.g., TECH, SALES)' },
+          name: { type: 'string', description: 'Display name' },
+          description: { type: 'string' },
+          parentId: { type: 'string', description: 'Parent BU for hierarchy' },
+          headId: { type: 'string', description: 'User ID of BU head' },
+          sortOrder: { type: 'integer' },
+        },
+        required: ['code', 'name'],
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const body = request.body as {
+      code: string;
+      name: string;
+      description?: string;
+      parentId?: string;
+      headId?: string;
+      sortOrder?: number;
+    };
+
+    // Check for duplicate code within OpCo
+    const existing = await fastify.prisma.businessUnit.findFirst({
+      where: {
+        ...withTenantFilter(request),
+        code: body.code,
+      },
+    });
+
+    if (existing) {
+      return reply.status(409).send({
+        error: { message: 'A business unit with this code already exists', statusCode: 409 },
+      });
+    }
+
+    const businessUnit = await fastify.prisma.businessUnit.create({
+      data: {
+        opcoId: request.tenant.opcoId,
+        code: body.code,
+        name: body.name,
+        description: body.description,
+        parentId: body.parentId || null,
+        headId: body.headId || null,
+        sortOrder: body.sortOrder || 0,
+      },
+      include: {
+        head: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+        parent: {
+          select: { id: true, name: true, code: true },
+        },
+      },
+    });
+
+    return reply.status(201).send(businessUnit);
+  });
+
+  fastify.patch('/business-units/:id', {
+    schema: {
+      description: 'Update a business unit',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const body = request.body as Partial<{
+      code: string;
+      name: string;
+      description: string;
+      parentId: string | null;
+      headId: string | null;
+      sortOrder: number;
+      isActive: boolean;
+    }>;
+
+    // Verify BU exists in this tenant
+    const existing = await fastify.prisma.businessUnit.findFirst({
+      where: {
+        id,
+        ...withTenantFilter(request),
+      },
+    });
+
+    if (!existing) {
+      return reply.status(404).send({
+        error: { message: 'Business unit not found', statusCode: 404 },
+      });
+    }
+
+    // Check for duplicate code if code is being changed
+    if (body.code && body.code !== existing.code) {
+      const duplicate = await fastify.prisma.businessUnit.findFirst({
+        where: {
+          ...withTenantFilter(request),
+          code: body.code,
+          id: { not: id },
+        },
+      });
+
+      if (duplicate) {
+        return reply.status(409).send({
+          error: { message: 'A business unit with this code already exists', statusCode: 409 },
+        });
+      }
+    }
+
+    // Prevent circular parent reference
+    if (body.parentId === id) {
+      return reply.status(400).send({
+        error: { message: 'A business unit cannot be its own parent', statusCode: 400 },
+      });
+    }
+
+    const businessUnit = await fastify.prisma.businessUnit.update({
+      where: { id },
+      data: body,
+      include: {
+        head: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+        parent: {
+          select: { id: true, name: true, code: true },
+        },
+      },
+    });
+
+    return businessUnit;
+  });
+
+  fastify.delete('/business-units/:id', {
+    schema: {
+      description: 'Delete a business unit (soft delete)',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+
+    // Verify BU exists in this tenant
+    const existing = await fastify.prisma.businessUnit.findFirst({
+      where: {
+        id,
+        ...withTenantFilter(request),
+      },
+      include: {
+        _count: { select: { users: true, children: true } },
+      },
+    });
+
+    if (!existing) {
+      return reply.status(404).send({
+        error: { message: 'Business unit not found', statusCode: 404 },
+      });
+    }
+
+    // Check if BU has users or children
+    if (existing._count.users > 0) {
+      return reply.status(400).send({
+        error: {
+          message: `Cannot delete business unit: ${existing._count.users} users are assigned to it`,
+          statusCode: 400,
+        },
+      });
+    }
+
+    if (existing._count.children > 0) {
+      return reply.status(400).send({
+        error: {
+          message: `Cannot delete business unit: ${existing._count.children} child units exist`,
+          statusCode: 400,
+        },
+      });
+    }
+
+    // Soft delete
+    await fastify.prisma.businessUnit.update({
+      where: { id },
+      data: { isActive: false },
+    });
+
+    return reply.status(204).send();
+  });
+
+  // ============================================
   // TOV LEVELS
   // ============================================
 
@@ -320,6 +547,9 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
         manager: {
           select: { id: true, firstName: true, lastName: true },
         },
+        businessUnit: {
+          select: { id: true, name: true, code: true },
+        },
       },
       orderBy: { lastName: 'asc' },
     });
@@ -328,9 +558,20 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
 
   fastify.patch('/users/:id', {
     schema: {
-      description: 'Update user (role, manager, function title, etc.)',
+      description: 'Update user (role, manager, function title, business unit, etc.)',
       tags: ['Admin'],
       security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        properties: {
+          role: { type: 'string', enum: ['EMPLOYEE', 'MANAGER', 'HR', 'OPCO_ADMIN', 'TSS_SUPER_ADMIN'] },
+          managerId: { type: 'string' },
+          functionTitleId: { type: 'string' },
+          tovLevelId: { type: 'string' },
+          businessUnitId: { type: 'string', description: 'Business unit assignment' },
+          isActive: { type: 'boolean' },
+        },
+      },
     },
     preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
   }, async (request) => {
@@ -340,12 +581,23 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       managerId: string;
       functionTitleId: string;
       tovLevelId: string;
+      businessUnitId: string;
       isActive: boolean;
     }>;
 
     const user = await fastify.prisma.user.update({
       where: { id },
       data: body,
+      include: {
+        functionTitle: true,
+        tovLevel: true,
+        businessUnit: {
+          select: { id: true, name: true, code: true },
+        },
+        manager: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
     });
 
     return user;

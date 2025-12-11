@@ -6,6 +6,7 @@
     "approvals": "Approvals",
     "hrDashboard": "HR Dashboard",
     "allReviews": "All Reviews",
+    "analytics": "Analytics",
     "admin": "Admin"
   },
   "pages": {
@@ -136,6 +137,56 @@
       "viewHistory": "View History",
       "metric": "Metric",
       "status": "Status"
+    },
+    "analytics": {
+      "title": "Performance Analytics",
+      "subtitle": "9-Grid distribution across your organization",
+      "levels": {
+        "manager": "Team",
+        "bu": "Business Unit",
+        "company": "Company"
+      },
+      "selectBUPrompt": "Please select a Business Unit to view analytics",
+      "selectManagerPrompt": "Select a manager to filter by team",
+      "endYear": "End Year",
+      "midYear": "Mid Year",
+      "gridTitle": "9-Grid Distribution",
+      "distributionTitle": "Performance Distribution",
+      "clickToView": "Click a cell to view employees",
+      "legend": "Grid Legend",
+      "noData": "No analytics data available",
+      "employees": "employees",
+      "stats": {
+        "totalEmployees": "Total Employees",
+        "scoredEmployees": "Scored",
+        "completionRate": "Completion Rate",
+        "avgWhat": "Avg WHAT",
+        "avgHow": "Avg HOW",
+        "topTalent": "Top Talent"
+      },
+      "grid": {
+        "topTalent": "Top Talent",
+        "solidPerformer": "Solid Performer",
+        "needsAttention": "Needs Attention",
+        "concern": "Concern"
+      },
+      "drillDown": {
+        "title": "Employees in {position}",
+        "noEmployees": "No employees in this position",
+        "viewReview": "View"
+      },
+      "trends": {
+        "title": "Distribution Trends"
+      },
+      "compare": {
+        "title": "Compare",
+        "byBU": "By Business Unit",
+        "byYear": "By Year"
+      },
+      "export": {
+        "excel": "Export to Excel",
+        "pdf": "Export to PDF"
+      }
     }
   },
   "review": {

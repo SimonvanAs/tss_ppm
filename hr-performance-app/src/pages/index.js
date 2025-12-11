@@ -4,6 +4,7 @@ export { Approvals } from './Approvals';
 export { HRDashboard } from './HRDashboard';
 export { AllReviews } from './AllReviews';
 export { HistoryDashboard } from './HistoryDashboard';
+export { AnalyticsDashboard } from './AnalyticsDashboard';
 
 // Admin pages
 export {

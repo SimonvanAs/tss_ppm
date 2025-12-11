@@ -6,6 +6,7 @@
     "approvals": "Goedkeuringen",
     "hrDashboard": "HR Dashboard",
     "allReviews": "Alle Beoordelingen",
+    "analytics": "Analytics",
     "admin": "Beheer"
   },
   "pages": {
@@ -136,6 +137,56 @@
       "viewHistory": "Bekijk Geschiedenis",
       "metric": "Metriek",
       "status": "Status"
+    },
+    "analytics": {
+      "title": "Prestatie Analytics",
+      "subtitle": "9-Grid verdeling over uw organisatie",
+      "levels": {
+        "manager": "Team",
+        "bu": "Business Unit",
+        "company": "Bedrijf"
+      },
+      "selectBUPrompt": "Selecteer een Business Unit om analytics te bekijken",
+      "selectManagerPrompt": "Selecteer een manager om op team te filteren",
+      "endYear": "Eindjaar",
+      "midYear": "Halfjaar",
+      "gridTitle": "9-Grid Verdeling",
+      "distributionTitle": "Prestatie Verdeling",
+      "clickToView": "Klik op een cel om medewerkers te bekijken",
+      "legend": "Grid Legenda",
+      "noData": "Geen analytics data beschikbaar",
+      "employees": "medewerkers",
+      "stats": {
+        "totalEmployees": "Totaal Medewerkers",
+        "scoredEmployees": "Gescoord",
+        "completionRate": "Voltooiingspercentage",
+        "avgWhat": "Gem. WAT",
+        "avgHow": "Gem. HOE",
+        "topTalent": "Top Talent"
+      },
+      "grid": {
+        "topTalent": "Top Talent",
+        "solidPerformer": "Solide Presteerder",
+        "needsAttention": "Aandacht Nodig",
+        "concern": "Zorgpunt"
+      },
+      "drillDown": {
+        "title": "Medewerkers in {position}",
+        "noEmployees": "Geen medewerkers in deze positie",
+        "viewReview": "Bekijken"
+      },
+      "trends": {
+        "title": "Verdeling Trends"
+      },
+      "compare": {
+        "title": "Vergelijken",
+        "byBU": "Per Business Unit",
+        "byYear": "Per Jaar"
+      },
+      "export": {
+        "excel": "Exporteer naar Excel",
+        "pdf": "Exporteer naar PDF"
+      }
     }
   },
   "review": {

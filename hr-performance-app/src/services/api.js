@@ -231,6 +231,27 @@ export const adminApi = {
   getOpCos: () => apiClient.get('/admin/opcos'),
   createOpCo: (data) => apiClient.post('/admin/opcos', data),
   updateOpCo: (id, data) => apiClient.patch(`/admin/opcos/${id}`, data),
+
+  // Business Units
+  getBusinessUnits: () => apiClient.get('/admin/business-units'),
+  createBusinessUnit: (data) => apiClient.post('/admin/business-units', data),
+  updateBusinessUnit: (id, data) => apiClient.patch(`/admin/business-units/${id}`, data),
+  deleteBusinessUnit: (id) => apiClient.delete(`/admin/business-units/${id}`),
+};
+
+// Analytics
+export const analyticsApi = {
+  // 9-Grid analytics at different levels
+  get9Grid: (params = {}) => apiClient.get('/analytics/9grid', params),
+
+  // Drill-down: employees in a specific grid position
+  getGridEmployees: (boxKey, params = {}) => apiClient.get(`/analytics/9grid/${boxKey}/employees`, params),
+
+  // Historical trends
+  getTrends: (params = {}) => apiClient.get('/analytics/9grid/trends', params),
+
+  // Business units with analytics summary
+  getBusinessUnitsSummary: (params = {}) => apiClient.get('/analytics/business-units', params),
 };
 
 export default apiClient;

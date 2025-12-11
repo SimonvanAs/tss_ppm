@@ -122,14 +122,17 @@ docker compose logs -f
 
 ### Services Overview
 
-| Service | Port (Internal) | Port (External) | Purpose |
-|---------|-----------------|-----------------|---------|
-| caddy | 80, 443 | 80, 443 | Reverse proxy, HTTPS |
-| frontend | 80 | - | React SPA (nginx) |
-| api | 3000 | - | Fastify backend |
-| whisper | 3001 | - | Speech-to-text |
-| postgres | 5432 | - | Database |
-| keycloak | 8080 | - | Authentication |
+Services are exposed on localhost ports for use with an external reverse proxy:
+
+| Service | Local Port | Purpose |
+|---------|------------|---------|
+| frontend | 127.0.0.1:3080 | React SPA (nginx) |
+| api | 127.0.0.1:3000 | Fastify backend |
+| whisper | 127.0.0.1:3001 | Speech-to-text |
+| keycloak | 127.0.0.1:8080 | Authentication |
+| postgres | (internal only) | Database |
+
+**Note:** You need to configure your own reverse proxy (Nginx, Traefik, etc.) to forward traffic to these services. See `nginx.conf.example` for a complete Nginx configuration.
 
 ### Docker Commands
 
@@ -213,19 +216,41 @@ chmod 600 .env
 docker compose -f docker-compose.yml up -d --build
 ```
 
-### 3. SSL/TLS Configuration
+### 3. Reverse Proxy Configuration
 
-Caddy automatically obtains Let's Encrypt certificates when:
-- Port 80 and 443 are accessible from the internet
-- `DOMAIN` environment variable is set to your actual domain
-- DNS is configured to point to your server
+Copy and configure the Nginx example:
 
 ```bash
-# Verify certificate status
-docker compose exec caddy caddy list-certificates
+# Copy example config
+sudo cp nginx.conf.example /etc/nginx/sites-available/tss-ppm
+
+# Edit with your domain
+sudo nano /etc/nginx/sites-available/tss-ppm
+
+# Enable the site
+sudo ln -s /etc/nginx/sites-available/tss-ppm /etc/nginx/sites-enabled/
+
+# Test configuration
+sudo nginx -t
+
+# Reload Nginx
+sudo systemctl reload nginx
 ```
 
-### 4. Firewall Configuration
+### 4. SSL/TLS with Let's Encrypt
+
+```bash
+# Install Certbot
+sudo apt install certbot python3-certbot-nginx
+
+# Obtain certificate (replace with your domain)
+sudo certbot --nginx -d ppm.example.com
+
+# Verify auto-renewal
+sudo certbot renew --dry-run
+```
+
+### 5. Firewall Configuration
 
 ```bash
 # Allow HTTP/HTTPS traffic
@@ -430,11 +455,17 @@ docker compose exec api nc -zv postgres 5432
 #### SSL Certificate Issues
 
 ```bash
-# Check Caddy logs
-docker compose logs caddy
+# Check Nginx configuration
+sudo nginx -t
 
-# Force certificate renewal
-docker compose exec caddy caddy reload
+# Check certificate status
+sudo certbot certificates
+
+# Renew certificates
+sudo certbot renew
+
+# Reload Nginx
+sudo systemctl reload nginx
 ```
 
 #### Whisper Memory Issues

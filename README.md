@@ -112,7 +112,7 @@ npm run dev
 
 ### Option 3: Docker Compose (Full Stack)
 
-Full stack with PostgreSQL, Keycloak, API, Frontend, and Whisper:
+Full stack with PostgreSQL, Keycloak, API, Frontend, and Whisper. Services are exposed on localhost ports for use with your own reverse proxy (Nginx, Traefik, etc.):
 
 ```bash
 # Clone repository
@@ -121,7 +121,7 @@ cd tss_ppm
 
 # Create .env file
 cat > .env << 'EOF'
-DOMAIN=localhost
+DOMAIN=ppm.example.com
 DB_PASSWORD=your-secure-password
 KC_ADMIN=admin
 KC_ADMIN_PASSWORD=your-keycloak-password
@@ -137,18 +137,25 @@ docker compose ps
 docker compose logs -f
 ```
 
-Services will be available at:
-- **Frontend**: https://localhost (via Caddy)
-- **API**: https://localhost/api/v1
-- **Keycloak Admin**: https://localhost/auth/admin
+Services exposed on localhost (configure your reverse proxy to forward to these):
+
+| Service | Local Port | Path |
+|---------|------------|------|
+| Frontend | 127.0.0.1:3080 | `/` |
+| API | 127.0.0.1:3000 | `/api/` |
+| Whisper | 127.0.0.1:3001 | `/whisper/` |
+| Keycloak | 127.0.0.1:8080 | `/auth/` |
+
+**Nginx Configuration:**
+See `nginx.conf.example` for a complete Nginx reverse proxy configuration.
 
 **First-time Keycloak Setup:**
-1. Access https://localhost/auth/admin
+1. Access https://your-domain/auth/admin
 2. Login with admin credentials from .env
 3. Import the realm: Administration → Import → select `keycloak/tss-ppm-realm.json`
 4. Create test users in the `tss-ppm` realm
 
-> **For production deployment** with SSL certificates, custom domain, security hardening, and backup configuration, see the [Deployment Guide](docs/DEPLOYMENT.md).
+> **For production deployment** with SSL certificates, security hardening, and backup configuration, see the [Deployment Guide](docs/DEPLOYMENT.md).
 
 ### Option 4: Development with Keycloak
 
@@ -207,11 +214,11 @@ tss_ppm/
 ├── api/                         # Backend API (Fastify + Prisma)
 │   ├── src/                     # API source code
 │   └── prisma/                  # Database schema
-├── docker-compose.yml           # Production deployment
+├── docker-compose.yml           # Docker services orchestration
 ├── Dockerfile.whisper           # Faster-Whisper container
 ├── Dockerfile.frontend          # React app container
-├── nginx.conf                   # Frontend nginx config
-├── Caddyfile                    # Reverse proxy config
+├── nginx.conf                   # Frontend nginx config (internal)
+├── nginx.conf.example           # Example reverse proxy config
 ├── ROADMAP.md                   # Implementation roadmap
 ├── CLAUDE.md                    # Development guidelines
 └── README.md                    # This file
@@ -267,7 +274,7 @@ First-time transcription may be slow as the model loads (~500MB).
 - **Validation**: Zod schemas
 
 ### Infrastructure
-- **Reverse Proxy**: Caddy (automatic HTTPS)
+- **Reverse Proxy**: Nginx (external, see `nginx.conf.example`)
 - **Containers**: Docker & Docker Compose
 - **CI/CD**: GitHub Actions
 
@@ -304,7 +311,7 @@ First-time transcription may be slow as the model loads (~500MB).
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DOMAIN` | `localhost` | Domain for Caddy SSL |
+| `DOMAIN` | `localhost` | Domain for Keycloak hostname |
 | `DB_PASSWORD` | `changeme` | PostgreSQL password |
 | `KC_ADMIN` | `admin` | Keycloak admin username |
 | `KC_ADMIN_PASSWORD` | `changeme` | Keycloak admin password |
@@ -399,13 +406,13 @@ docker compose up -d --build
 ```
 
 This will:
-1. Start Caddy (reverse proxy with automatic HTTPS)
-2. Build the frontend container (React app served by nginx)
+1. Build the frontend container (React app served by nginx)
+2. Build the API container (Fastify + Prisma)
 3. Build the Whisper container (Python speech-to-text server)
-4. Download the Whisper AI model (~500MB, first time only)
-5. Automatically obtain SSL certificate from Let's Encrypt
+4. Start PostgreSQL and Keycloak
+5. Download the Whisper AI model (~500MB, first time only)
 
-**Note:** First build takes 5-10 minutes. The Whisper model download happens during the build.
+**Note:** First build takes 5-10 minutes. Configure your external Nginx using `nginx.conf.example`.
 
 ### Step 5: Verify deployment
 
@@ -420,24 +427,24 @@ docker compose logs -f
 curl https://your-domain.com
 ```
 
-The application is now available at `https://your-domain.com` with automatic HTTPS!
+The application is now available at `https://your-domain.com` (after configuring Nginx).
 
 ### Architecture (v2.0)
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    Caddy (ports 80/443)                     │
-│              Automatic HTTPS + Reverse Proxy                │
+│                 Your Nginx (ports 80/443)                   │
+│                   HTTPS + Reverse Proxy                     │
 └─────────────────────────────────────────────────────────────┘
            │              │              │              │
            ▼              ▼              ▼              ▼
-      /static        /api/v1         /auth       /transcribe
+          /           /api/v1         /auth        /whisper
            │              │              │              │
            ▼              ▼              ▼              ▼
 ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
 │   Frontend   │  │     API      │  │   Keycloak   │  │   Whisper    │
 │  (React/Vite)│  │  (Fastify)   │  │   (OIDC)     │  │ (Python AI)  │
-│    nginx     │  │   Prisma     │  │  EntraID SSO │  │ faster-whisper│
+│  :3080       │  │  :3000       │  │  :8080       │  │  :3001       │
 └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘
                          │                  │
                          ▼                  ▼

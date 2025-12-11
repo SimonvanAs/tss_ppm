@@ -47,10 +47,11 @@ npm run test:e2e:ui # Interactive UI
 # Build and run all services
 docker compose up --build
 
-# Services:
-# - caddy: Reverse proxy with auto-HTTPS (ports 80, 443)
-# - frontend: React app served via nginx
-# - whisper: Python server with faster-whisper for speech-to-text
+# Services exposed on localhost (use your own reverse proxy):
+# - frontend: 127.0.0.1:3080 (React app served via nginx)
+# - api: 127.0.0.1:3000 (Fastify backend)
+# - whisper: 127.0.0.1:3001 (Speech-to-text)
+# - keycloak: 127.0.0.1:8080 (Authentication)
 ```
 
 ## Technology Stack
@@ -96,7 +97,7 @@ tss_ppm/
 ├── Dockerfile.frontend       # Frontend container
 ├── Dockerfile.whisper        # Whisper server container
 ├── docker-compose.yml        # Multi-service orchestration
-├── Caddyfile                 # Reverse proxy config
+├── nginx.conf.example        # Example Nginx reverse proxy config
 ├── ROADMAP.md                # Implementation roadmap
 └── .github/workflows/        # CI/CD pipelines
 ```
@@ -216,7 +217,7 @@ The app supports two speech-to-text backends:
 ### Docker/Server
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `DOMAIN` | localhost | Domain for Caddy SSL |
+| `DOMAIN` | localhost | Domain for Keycloak hostname |
 | `WHISPER_MODEL` | small | Whisper model size |
 | `WHISPER_COMPUTE_TYPE` | int8 | Compute precision |
 | `WHISPER_WORKERS` | 2 | Gunicorn workers |

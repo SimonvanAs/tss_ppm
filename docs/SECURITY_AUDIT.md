@@ -66,18 +66,17 @@ where: { ...withTenantFilter(request) }
 **Risk Level:** Low
 
 **Implementation:**
-- ✅ HTTPS enforced via Caddy reverse proxy
+- ✅ HTTPS enforced via external Nginx reverse proxy
 - ✅ JWT tokens signed with RS256 (Keycloak) or HS256 (development)
 - ✅ Password hashing via Keycloak (bcrypt/PBKDF2)
 - ✅ TLS 1.2+ for all external communications
 - ✅ All data stored in PostgreSQL database (no client-side storage)
 
 **Current Controls:**
-```caddyfile
-# Caddy automatic HTTPS with Let's Encrypt
-{$DOMAIN} {
-    # TLS automatically configured
-}
+```nginx
+# Nginx with Let's Encrypt (see nginx.conf.example)
+ssl_protocols TLSv1.2 TLSv1.3;
+ssl_prefer_server_ciphers off;
 ```
 
 **Recommendations:**
@@ -161,7 +160,7 @@ const schema = z.object({
 **Current Configuration:**
 
 ✅ **Implemented:**
-- Security headers via Caddy
+- Security headers via Nginx (see nginx.conf.example)
 - CORS restrictions in production
 - Non-root container execution
 - Environment-based configuration
@@ -173,14 +172,11 @@ const schema = z.object({
 - HSTS not enabled
 
 **Current Headers:**
-```caddyfile
-header {
-    X-Content-Type-Options nosniff
-    X-Frame-Options SAMEORIGIN
-    Referrer-Policy strict-origin-when-cross-origin
-    X-XSS-Protection "1; mode=block"
-    -Server
-}
+```nginx
+add_header X-Content-Type-Options nosniff always;
+add_header X-Frame-Options SAMEORIGIN always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header Referrer-Policy strict-origin-when-cross-origin always;
 ```
 
 **Recommendations:**
@@ -289,7 +285,7 @@ const refreshed = await keycloak.updateToken(authConfig.minTokenValidity);
 **Risk Level:** Medium
 
 **Current Logging:**
-- ✅ Caddy access logs
+- ✅ Nginx access logs
 - ✅ API request logging (Pino)
 - ✅ Database audit timestamps
 - ⚠️ No centralized logging

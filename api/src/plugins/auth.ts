@@ -156,12 +156,21 @@ const authPluginCallback: FastifyPluginAsync = async (fastify: FastifyInstance) 
   // Authentication decorator - requires valid token
   fastify.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      // In production with JWKS, decode: { complete: true } returns { header, payload, signature }
-      // In development, it returns just the payload
+      // jwtVerify() returns different structures depending on decode options:
+      // - With decode: { complete: true }: { header, payload, signature }
+      // - Without: just the payload object
       const verified = await request.jwtVerify();
-      const decoded: KeycloakToken = useKeycloak
-        ? (verified as { payload: KeycloakToken }).payload
-        : (verified as KeycloakToken);
+
+      // Handle both complete token and payload-only responses
+      let decoded: KeycloakToken;
+      if ('payload' in (verified as object) && typeof (verified as { payload: unknown }).payload === 'object') {
+        decoded = (verified as { payload: KeycloakToken }).payload;
+      } else if ('sub' in (verified as object)) {
+        decoded = verified as KeycloakToken;
+      } else {
+        fastify.log.error({ verified: JSON.stringify(verified) }, 'Unexpected JWT structure');
+        throw new Error('Invalid token structure');
+      }
 
       // Extract roles from Keycloak token
       const realmRoles = decoded.realm_access?.roles || [];

@@ -7,14 +7,6 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { WhisperLoadingBanner } from './components/WhisperLoadingBanner';
-import { EmployeeInfo } from './components/EmployeeInfo';
-import { SummarySection } from './components/SummarySection';
-import { WhatAxis } from './components/WhatAxis';
-import { HowAxis } from './components/HowAxis';
-import { PerformanceGrid } from './components/PerformanceGrid';
-import { SelfAssessment } from './components/SelfAssessment';
-import { Comments } from './components/Comments';
-import { Actions } from './components/Actions';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
 import {
   MyReviews,
@@ -102,42 +94,6 @@ function PageWrapper({ children, showNav = true }) {
   );
 }
 
-// Form page wrapper (with nav, for the review form itself)
-function FormPageWrapper({ children }) {
-  const navigate = useNavigate();
-
-  return (
-    <div className="app">
-      <Header />
-      <Navigation />
-      <main className="main-content">
-        {children}
-      </main>
-      <footer className="app-footer">
-        <span className="app-footer-ai">Made with AI assistance</span>
-        <div className="app-footer-links">
-          <button
-            className="app-footer-link privacy-link"
-            onClick={() => navigate('/privacy')}
-          >
-            Privacy Policy
-          </button>
-          <span className="app-footer-separator">|</span>
-          <a
-            href="https://github.com/SimonvanAs/tss_ppm"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="app-footer-link"
-          >
-            View source code on GitHub
-          </a>
-        </div>
-      </footer>
-      <WhisperLoadingBanner />
-    </div>
-  );
-}
-
 // Privacy page component
 function PrivacyPage() {
   const navigate = useNavigate();
@@ -161,26 +117,7 @@ function AppRouter() {
       {/* Protected routes */}
       <Route
         path="/"
-        element={
-          <ProtectedRoute>
-            <LanguageProvider>
-              <WhisperProvider>
-                <FormProvider>
-                  <FormPageWrapper>
-                    <EmployeeInfo />
-                    <SummarySection />
-                    <WhatAxis />
-                    <HowAxis />
-                    <PerformanceGrid />
-                    <SelfAssessment />
-                    <Comments />
-                    <Actions />
-                  </FormPageWrapper>
-                </FormProvider>
-              </WhisperProvider>
-            </LanguageProvider>
-          </ProtectedRoute>
-        }
+        element={<Navigate to="/my-reviews" replace />}
       />
 
       <Route
@@ -437,7 +374,7 @@ function AppRouter() {
       />
 
       {/* Catch-all redirect */}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to="/my-reviews" replace />} />
     </Routes>
   );
 }

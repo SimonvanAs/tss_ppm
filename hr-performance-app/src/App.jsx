@@ -28,6 +28,7 @@ import {
   Competencies,
   OpCoManagement,
   GlobalDashboard,
+  ImportReviews,
 } from './pages';
 import './App.css';
 
@@ -334,6 +335,7 @@ function AppRouter() {
         <Route path="function-titles" element={<FunctionTitles />} />
         <Route path="tov-levels" element={<TovLevels />} />
         <Route path="competencies" element={<Competencies />} />
+        <Route path="import" element={<ImportReviews />} />
         <Route
           path="opcos"
           element={

@@ -53,6 +53,12 @@ const GlobalIcon = () => (
   </svg>
 );
 
+const ImportIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+  </svg>
+);
+
 const MenuIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor">
     <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
@@ -76,6 +82,7 @@ export function AdminLayout() {
     if (path.includes('/function-titles')) return t('admin.nav.functionTitles');
     if (path.includes('/tov-levels')) return t('admin.nav.tovLevels');
     if (path.includes('/competencies')) return t('admin.nav.competencies');
+    if (path.includes('/import')) return t('admin.nav.import');
     if (path.includes('/opcos')) return t('admin.nav.opcos');
     if (path.includes('/global')) return t('admin.nav.global');
     return 'Admin';
@@ -161,6 +168,15 @@ export function AdminLayout() {
             >
               <span className="admin-nav-icon"><CompetencyIcon /></span>
               {t('admin.nav.competencies')}
+            </NavLink>
+
+            <NavLink
+              to="/admin/import"
+              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+              onClick={closeSidebar}
+            >
+              <span className="admin-nav-icon"><ImportIcon /></span>
+              {t('admin.nav.import')}
             </NavLink>
           </div>
 

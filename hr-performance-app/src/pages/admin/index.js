@@ -7,3 +7,4 @@ export { TovLevels } from './TovLevels';
 export { Competencies } from './Competencies';
 export { OpCoManagement } from './OpCoManagement';
 export { GlobalDashboard } from './GlobalDashboard';
+export { ImportReviews } from './ImportReviews';

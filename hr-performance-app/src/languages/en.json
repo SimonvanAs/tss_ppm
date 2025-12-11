@@ -533,7 +533,14 @@
     "search": "Search",
     "error": "Error",
     "accessDenied": "Access Denied",
-    "goBack": "Go Back"
+    "goBack": "Go Back",
+    "year": "Year",
+    "status": "Status",
+    "businessUnit": "Business Unit",
+    "date": "Date",
+    "all": "All",
+    "selectOption": "Select...",
+    "create": "Create"
   },
   "admin": {
     "title": "Admin Portal",
@@ -542,13 +549,14 @@
       "configuration": "Configuration",
       "superAdmin": "Super Admin"
     },
-    "nav": {
+      "nav": {
       "dashboard": "Dashboard",
       "users": "Users",
       "orgChart": "Org Chart",
       "functionTitles": "Function Titles",
       "tovLevels": "TOV Levels",
       "competencies": "Competencies",
+      "import": "Import Reviews",
       "opcos": "OpCos",
       "global": "Global"
     },
@@ -685,6 +693,29 @@
       "noItemsDesc": "Create competencies to define evaluation criteria",
       "addFirst": "Add First Competency",
       "error": "Failed to load competencies"
+    },
+    "import": {
+      "title": "Import Historical Reviews",
+      "subtitle": "Upload an Excel file to import previous performance reviews into the system.",
+      "instructions": "File Format Requirements",
+      "formatDescription": "Your Excel file should contain the following columns:",
+      "note": "Note: Column names are flexible and will be automatically detected. The first row should contain headers.",
+      "uploadTitle": "Upload File",
+      "selectFile": "Select File",
+      "upload": "Upload and Import",
+      "uploading": "Uploading...",
+      "invalidFileType": "Invalid file type. Please upload an Excel (.xlsx, .xls) or CSV file.",
+      "fileTooLarge": "File size exceeds 10MB limit.",
+      "noFileSelected": "Please select a file to upload.",
+      "uploadError": "Failed to upload file. Please try again.",
+      "complete": "Import Complete!",
+      "totalRows": "Total Rows",
+      "created": "Created",
+      "updated": "Updated",
+      "skipped": "Skipped",
+      "errors": "Errors",
+      "importAnother": "Import Another File",
+      "remove": "Remove"
     },
     "opcos": {
       "title": "OpCo Management",

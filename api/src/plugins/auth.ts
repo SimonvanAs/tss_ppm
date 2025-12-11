@@ -156,7 +156,12 @@ const authPluginCallback: FastifyPluginAsync = async (fastify: FastifyInstance) 
   // Authentication decorator - requires valid token
   fastify.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
     try {
-      const decoded = await request.jwtVerify<KeycloakToken>();
+      // In production with JWKS, decode: { complete: true } returns { header, payload, signature }
+      // In development, it returns just the payload
+      const verified = await request.jwtVerify();
+      const decoded: KeycloakToken = useKeycloak
+        ? (verified as { payload: KeycloakToken }).payload
+        : (verified as KeycloakToken);
 
       // Extract roles from Keycloak token
       const realmRoles = decoded.realm_access?.roles || [];

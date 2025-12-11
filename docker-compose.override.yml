@@ -1,0 +1,23 @@
+# Production override to connect services to external proxy network
+services:
+  frontend:
+    container_name: ppm-frontend
+    networks:
+      - tss-ppm
+      - proxy
+
+  api:
+    container_name: ppm-api
+    networks:
+      - tss-ppm
+      - proxy
+
+  keycloak:
+    container_name: ppm-keycloak
+    networks:
+      - tss-ppm
+      - proxy
+
+networks:
+  proxy:
+    external: true

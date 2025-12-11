@@ -343,7 +343,8 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       tags: ['Admin'],
       security: [{ bearerAuth: [] }],
     },
-    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+    // HR needs read access for creating reviews
+    preHandler: [fastify.authorize(UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
   }, async (request) => {
     const tovLevels = await fastify.prisma.tovLevel.findMany({
       where: {

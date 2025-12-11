@@ -87,7 +87,7 @@ Multi-tenant, multi-stage performance review system with Keycloak/EntraID authen
 - [x] Add user menu with role display and logout
 - [x] Create environment variables example file
 - [x] Create silent SSO check file for Keycloak
-- [ ] Refactor `FormContext` to use API instead of localStorage (deferred to Phase 5)
+- [x] Refactor `FormContext` to use API instead of localStorage ✅
 
 **Key Files Created:**
 - `src/services/api.js` - API client with token injection
@@ -399,7 +399,7 @@ Multi-tenant, multi-stage performance review system with Keycloak/EntraID authen
 | Goal changes | Editable with manager approval |
 | Admin portal | Integrated in same React app |
 | Voice input | Keep both browser + server options |
-| Data migration | Fresh start (no localStorage import) |
+| Data migration | Database-only (localStorage removed in v2.0) |
 
 ---
 

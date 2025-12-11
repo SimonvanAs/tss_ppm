@@ -9,8 +9,8 @@ This is an **HR Performance Scoring Web Application** (v2.0.0) for Total Specifi
 - Multi-language support (English, Spanish, Dutch)
 - Browser-based and server-based speech-to-text via Whisper
 - Automatic DOCX report generation
-- Session-based auto-save with 14-day retention
-- Sessions list page for managing multiple reviews
+- Database-backed reviews with full audit trail
+- My Reviews page for managing personal reviews
 - **Keycloak authentication** with role-based access control (Phase 4)
 - **Role-based UI** with navigation for Employee, Manager, HR, and Admin roles (Phase 5)
 
@@ -59,7 +59,7 @@ docker compose up --build
 - **Routing**: React Router v7
 - **Styling**: Custom CSS with Tahoma font
 - **Brand Colors**: Magenta `#CC0E70`, Navy Blue `#004A91` (as accents)
-- **Storage**: Browser localStorage (14-day max retention) + API (when backend connected)
+- **Storage**: PostgreSQL database via API backend
 - **Authentication**: Keycloak JS adapter v26 (OIDC/EntraID federation)
 - **Output**: DOCX generation via `docx` package
 - **Voice Input**:
@@ -114,8 +114,7 @@ tss_ppm/
 | `PerformanceGrid.jsx` | 9-grid visualization |
 | `SelfAssessment.jsx` | Employee self-assessment section |
 | `Comments.jsx` | Manager comments section |
-| `Actions.jsx` | Download DOCX, session management |
-| `SessionsList.jsx` | View/manage all saved sessions |
+| `Actions.jsx` | Download DOCX, form actions |
 | `VoiceInputButton.jsx` | Hold-to-dictate voice input |
 | `WhisperLoadingBanner.jsx` | Model download progress indicator |
 
@@ -134,7 +133,7 @@ tss_ppm/
 | Context | Purpose |
 |---------|---------|
 | `AuthContext` | Keycloak authentication, login/logout, user state, role checks |
-| `FormContext` | Form state management, auto-save, session handling (localStorage) |
+| `FormContext` | Form state management for the review form |
 | `ReviewContext` | API-backed review state management (for future use) |
 | `LanguageContext` | i18n translations, language switching |
 | `WhisperContext` | Shared Whisper model loading, transcription |
@@ -190,17 +189,16 @@ The app supports two speech-to-text backends:
 
 - All goals with content must be scored AND weighted before download
 - Weight percentages must sum to exactly 100%
-- Session codes: 10 alphanumeric characters, 14-day expiration
 - Voice input appends to existing text (does not replace)
 - Only selected TOV-level description shown in app and report
-- Auto-save triggers after 2.5 seconds of inactivity
+- All reviews are stored in the database with full audit trail
 
 ## Multi-Language Support
 
 - UI and reports: English (en), Spanish (es), Dutch (nl)
 - Translations in `src/languages/` directory
 - Voice input supports all three languages
-- Language selector with flag icons persists with session
+- Language selector with flag icons
 
 ## Testing
 

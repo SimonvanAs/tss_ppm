@@ -304,17 +304,17 @@ The application supports speech-to-text:
 4. Wait for transcription (progress shown)
 5. Text appends to the current field
 
-### Session Management
+### Data Storage
 
-Your work is automatically saved:
-- Auto-save occurs every 2.5 seconds
-- Session codes allow you to resume later
-- Sessions expire after 14 days
+Your work is securely stored in the database:
+- All changes are saved automatically
+- Access your reviews from any device after login
+- Full history of changes is maintained
 
-**To Resume a Session:**
-1. Click "Resume Another Session"
-2. Enter your 10-character session code
-3. Click "Resume"
+**To Access Your Reviews:**
+1. Log in to the application
+2. Navigate to "My Reviews" from the menu
+3. Select the review you want to continue
 
 ### Accessibility
 

@@ -11,7 +11,7 @@ A web-based HR Performance Review application for Total Specific Solutions. This
 - **9-Grid Performance Scoring** - WHAT-axis (Goals & Results) × HOW-axis (Competencies)
 - **Multi-Language Support** - English, Dutch, and Spanish
 - **Voice Input** - Hold-to-dictate functionality using local Whisper AI (browser or server)
-- **Auto-Save** - Session-based with 14-day retention
+- **Auto-Save** - Database-backed with automatic persistence
 - **DOCX Report Generation** - Professional, editable Word documents
 - **Drag & Drop** - Reorder goals easily
 - **Authentication** - Keycloak integration with EntraID federation support
@@ -310,24 +310,16 @@ First-time transcription may be slow as the model loads (~500MB).
 | `WHISPER_COMPUTE_TYPE` | `int8` | Compute precision |
 | `WHISPER_WORKERS` | `2` | Gunicorn workers |
 
-## Session Management
+## Data Storage
 
-> **⚠️ IMPORTANT: Browser-Based Storage**
->
-> Session data is stored in the **browser's localStorage**, not on the server.
->
-> - ✅ Data survives browser refreshes and container restarts
-> - ✅ Data persists for 14 days
-> - ❌ Data is **lost** if user clears browser data
-> - ❌ Data is **not shared** between browsers or devices
-> - ❌ Data is **not backed up** on the server
->
-> **Recommendation:** Users should download their report (DOCX) before clearing browser data or switching devices.
+All review data is stored in the PostgreSQL database via the API backend:
 
-- Sessions are saved automatically every 2.5 seconds
-- Each session has a unique 10-character code
-- Sessions expire after 14 days
-- Users can resume sessions using the session code (same browser only)
+- ✅ Data persists across devices and browsers
+- ✅ Data is backed up and recoverable
+- ✅ Reviews are accessible from any device after login
+- ✅ Full audit trail of all changes
+
+Users can access their reviews from the "My Reviews" page after authentication.
 
 ## Building for Production
 
@@ -683,7 +675,7 @@ Major release introducing enterprise authentication, role-based access control, 
 - Expires December 2026
 
 ### v1.0.12
-- Apply `sanitizeInput()` to all form data before localStorage save
+- Apply `sanitizeInput()` to all form data before save
 - Add comprehensive Security section to README
 - Document OWASP Top 10 compliance
 
@@ -701,7 +693,7 @@ Major release introducing enterprise authentication, role-based access control, 
 
 ### v1.0.8
 - Add Privacy Policy page with full translations (EN, NL, ES)
-- Covers: local storage, session codes, voice input, Plausible analytics
+- Covers: data storage, voice input, Plausible analytics
 - Link in footer next to GitHub link
 
 ### v1.0.7
@@ -740,7 +732,7 @@ Major release introducing enterprise authentication, role-based access control, 
 - Multi-language support (EN, NL, ES)
 - Voice input with local Whisper AI
 - DOCX report generation
-- Session-based auto-save (14-day retention)
+- Auto-save functionality
 - Drag-and-drop goal reordering
 
 ## License

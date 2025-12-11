@@ -70,7 +70,7 @@ where: { ...withTenantFilter(request) }
 - ✅ JWT tokens signed with RS256 (Keycloak) or HS256 (development)
 - ✅ Password hashing via Keycloak (bcrypt/PBKDF2)
 - ✅ TLS 1.2+ for all external communications
-- ⚠️ localStorage data is unencrypted (legacy feature)
+- ✅ All data stored in PostgreSQL database (no client-side storage)
 
 **Current Controls:**
 ```caddyfile

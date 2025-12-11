@@ -138,7 +138,12 @@ const authPluginCallback: FastifyPluginAsync = async (fastify: FastifyInstance) 
       },
       verify: {
         algorithms: ['RS256'],
-        allowedIss: [`${config.keycloak.url}/realms/${config.keycloak.realm}`],
+        // Allow both internal and external issuer URLs
+        allowedIss: [
+          `${config.keycloak.url}/realms/${config.keycloak.realm}`,
+          // External issuer from CORS origins (production domain)
+          ...config.corsOrigins.map(origin => `${origin}/auth/realms/${config.keycloak.realm}`),
+        ],
       },
     });
   } else {

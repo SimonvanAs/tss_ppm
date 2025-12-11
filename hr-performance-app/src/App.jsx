@@ -1,12 +1,11 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { LanguageProvider } from './contexts/LanguageContext';
-import { FormProvider, useForm } from './contexts/FormContext';
+import { FormProvider } from './contexts/FormContext';
 import { WhisperProvider } from './contexts/WhisperContext';
-import { ProtectedRoute, ManagerGuard, HRGuard, AdminGuard } from './components/ProtectedRoute';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
-import { StorageWarning } from './components/StorageWarning';
 import { WhisperLoadingBanner } from './components/WhisperLoadingBanner';
 import { EmployeeInfo } from './components/EmployeeInfo';
 import { SummarySection } from './components/SummarySection';
@@ -17,7 +16,6 @@ import { SelfAssessment } from './components/SelfAssessment';
 import { Comments } from './components/Comments';
 import { Actions } from './components/Actions';
 import { PrivacyPolicy } from './components/PrivacyPolicy';
-import { SessionsList } from './components/SessionsList';
 import {
   MyReviews,
   TeamOverview,
@@ -68,36 +66,13 @@ function AuthErrorScreen({ error, onRetry }) {
   );
 }
 
-// The legacy form component (localStorage-based) for backwards compatibility
-function LegacyReviewForm() {
-  const navigate = useNavigate();
-
-  return (
-    <>
-      <StorageWarning />
-      <Header onShowSessions={() => navigate('/sessions')} />
-      <main className="main-content">
-        <EmployeeInfo />
-        <SummarySection />
-        <WhatAxis />
-        <HowAxis />
-        <PerformanceGrid />
-        <SelfAssessment />
-        <Comments />
-        <Actions />
-      </main>
-      <WhisperLoadingBanner />
-    </>
-  );
-}
-
 // Page wrapper with footer
 function PageWrapper({ children, showNav = true }) {
   const navigate = useNavigate();
 
   return (
     <div className="app">
-      <Header onShowSessions={() => navigate('/sessions')} />
+      <Header />
       {showNav && <Navigation />}
       <main className="main-content">
         {children}
@@ -127,14 +102,14 @@ function PageWrapper({ children, showNav = true }) {
   );
 }
 
-// Form page wrapper (without nav, for the review form itself)
+// Form page wrapper (with nav, for the review form itself)
 function FormPageWrapper({ children }) {
   const navigate = useNavigate();
 
   return (
     <div className="app">
-      <StorageWarning />
-      <Header onShowSessions={() => navigate('/sessions')} />
+      <Header />
+      <Navigation />
       <main className="main-content">
         {children}
       </main>
@@ -160,24 +135,6 @@ function FormPageWrapper({ children }) {
       </footer>
       <WhisperLoadingBanner />
     </div>
-  );
-}
-
-// Sessions page component
-function SessionsPage() {
-  const navigate = useNavigate();
-  const { resumeSession } = useForm();
-
-  const handleResume = (code) => {
-    resumeSession(code);
-    navigate('/');
-  };
-
-  return (
-    <SessionsList
-      onBack={() => navigate(-1)}
-      onResumeSession={handleResume}
-    />
   );
 }
 
@@ -221,19 +178,6 @@ function AppRouter() {
                   </FormPageWrapper>
                 </FormProvider>
               </WhisperProvider>
-            </LanguageProvider>
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
-        path="/sessions"
-        element={
-          <ProtectedRoute>
-            <LanguageProvider>
-              <FormProvider>
-                <SessionsPage />
-              </FormProvider>
             </LanguageProvider>
           </ProtectedRoute>
         }

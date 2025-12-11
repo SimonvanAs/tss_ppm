@@ -29,7 +29,7 @@ export function CalibrationDistributionBar({
   if (total === 0) {
     return (
       <div className="distribution-bar-empty">
-        {t('calibration.noData') || 'No data available'}
+        No data available
       </div>
     );
   }
@@ -39,28 +39,28 @@ export function CalibrationDistributionBar({
   const segments = [
     {
       key: 'topTalent',
-      label: t('calibration.distribution.topTalent') || 'Top Talent',
+      label: t('pages.calibration.distribution.topTalent'),
       count: distribution.topTalent || 0,
       color: TIER_COLORS.topTalent,
       target: target?.topTalent,
     },
     {
       key: 'solidPerformer',
-      label: t('calibration.distribution.solidPerformer') || 'Solid Performer',
+      label: t('pages.calibration.distribution.solidPerformer'),
       count: distribution.solidPerformer || 0,
       color: TIER_COLORS.solidPerformer,
       target: target?.solid,
     },
     {
       key: 'needsAttention',
-      label: t('calibration.distribution.needsAttention') || 'Needs Attention',
+      label: t('pages.calibration.distribution.needsAttention'),
       count: distribution.needsAttention || 0,
       color: TIER_COLORS.needsAttention,
       target: target?.needsAttention,
     },
     {
       key: 'concern',
-      label: t('calibration.distribution.concern') || 'Concern',
+      label: t('pages.calibration.distribution.concern'),
       count: distribution.concern || 0,
       color: TIER_COLORS.concern,
       target: target?.concern,
@@ -136,7 +136,7 @@ export function CalibrationDistributionBar({
               </span>
               {segment.target && (
                 <span className="legend-target">
-                  ({t('calibration.distribution.target') || 'Target'}: {segment.target}%)
+                  ({t('pages.calibration.distribution.target')}: {segment.target}%)
                 </span>
               )}
             </div>
@@ -157,7 +157,7 @@ export function DistributionComparison({ original, calibrated, target = null }) 
     <div className="distribution-comparison">
       <div className="comparison-row">
         <div className="comparison-label">
-          {t('calibration.adjustment.original') || 'Original'}
+          {t('pages.calibration.distribution.original')}
         </div>
         <div className="comparison-bar">
           <CalibrationDistributionBar
@@ -170,7 +170,7 @@ export function DistributionComparison({ original, calibrated, target = null }) 
       </div>
       <div className="comparison-row">
         <div className="comparison-label highlight">
-          {t('calibration.adjustment.calibrated') || 'Calibrated'}
+          {t('pages.calibration.distribution.calibrated')}
         </div>
         <div className="comparison-bar">
           <CalibrationDistributionBar
@@ -197,10 +197,10 @@ export function DistributionComparison({ original, calibrated, target = null }) 
               className={`change-badge ${diff > 0 ? 'increase' : 'decrease'}`}
               style={{ borderColor: TIER_COLORS[tier] }}
             >
-              {tier === 'topTalent' ? (t('calibration.distribution.topTalent') || 'Top Talent') :
-                tier === 'solidPerformer' ? (t('calibration.distribution.solidPerformer') || 'Solid') :
-                  tier === 'needsAttention' ? (t('calibration.distribution.needsAttention') || 'Needs Attention') :
-                    (t('calibration.distribution.concern') || 'Concern')}:
+              {tier === 'topTalent' ? t('pages.calibration.distribution.topTalent') :
+                tier === 'solidPerformer' ? t('pages.calibration.distribution.solidPerformer') :
+                  tier === 'needsAttention' ? t('pages.calibration.distribution.needsAttention') :
+                    t('pages.calibration.distribution.concern')}:
               {' '}{diff > 0 ? '+' : ''}{diff}
             </span>
           );

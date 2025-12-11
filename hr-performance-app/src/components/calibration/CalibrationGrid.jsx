@@ -175,7 +175,7 @@ export function CalibrationGridComparison({ items = [] }) {
   return (
     <div className="grid-comparison">
       <div className="grid-comparison-panel">
-        <h4>{t('calibration.adjustment.original') || 'Original'}</h4>
+        <h4>{t('pages.calibration.distribution.original')}</h4>
         <CalibrationGrid
           items={items}
           useCalibrated={false}
@@ -190,7 +190,7 @@ export function CalibrationGridComparison({ items = [] }) {
         </svg>
       </div>
       <div className="grid-comparison-panel">
-        <h4>{t('calibration.adjustment.calibrated') || 'Calibrated'}</h4>
+        <h4>{t('pages.calibration.distribution.calibrated')}</h4>
         <CalibrationGrid
           items={items}
           useCalibrated={true}

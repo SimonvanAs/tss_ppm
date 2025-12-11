@@ -166,11 +166,11 @@ export function CalibrationEmployeeCard({
           {/* Adjustment notes */}
           {item.adjustmentNotes && (
             <div className="adjustment-notes">
-              <strong>{t('calibration.adjustment.notes') || 'Adjustment Notes'}:</strong>
+              <strong>{t('pages.calibration.adjustment.notes')}:</strong>
               <p>{item.adjustmentNotes}</p>
               {item.adjustedBy && item.adjustedAt && (
                 <span className="adjusted-meta">
-                  {t('calibration.adjustment.adjustedBy') || 'Adjusted by'} {item.adjustedBy} on{' '}
+                  {t('pages.calibration.adjustment.adjustedBy')} {item.adjustedBy} on{' '}
                   {new Date(item.adjustedAt).toLocaleString()}
                 </span>
               )}
@@ -189,7 +189,7 @@ export function CalibrationEmployeeCard({
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
                       <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
                     </svg>
-                    {t('calibration.actions.adjust') || 'Adjust Rating'}
+                    {t('pages.calibration.actions.adjust')}
                   </button>
                   <button
                     className={`btn btn-sm ${item.flaggedForReview ? 'btn-warning' : 'btn-secondary'}`}
@@ -199,8 +199,8 @@ export function CalibrationEmployeeCard({
                       <path d="M14.4 6L14 4H5v17h2v-7h5.6l.4 2h7V6z" />
                     </svg>
                     {item.flaggedForReview
-                      ? (t('calibration.actions.unflag') || 'Remove Flag')
-                      : (t('calibration.actions.flag') || 'Flag for Review')
+                      ? t('pages.calibration.actions.unflag')
+                      : t('pages.calibration.actions.flag')
                     }
                   </button>
                 </>
@@ -237,14 +237,14 @@ export function CalibrationEmployeeCard({
                     </div>
                   </div>
                   <div className="notes-input">
-                    <label>{t('calibration.adjustment.notes') || 'Notes'}</label>
+                    <label>{t('pages.calibration.adjustment.notes')}</label>
                     <textarea
                       value={adjustmentValues.notes}
                       onChange={(e) => setAdjustmentValues({
                         ...adjustmentValues,
                         notes: e.target.value,
                       })}
-                      placeholder={t('calibration.adjustment.notesPlaceholder') || 'Reason for adjustment...'}
+                      placeholder={t('pages.calibration.adjustment.notesPlaceholder')}
                       rows={2}
                     />
                   </div>

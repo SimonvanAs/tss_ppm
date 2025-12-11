@@ -37,10 +37,7 @@ export function AnomalyAlertItem({ anomaly, onClick }) {
         <div className="anomaly-header">
           <strong className="anomaly-manager">{anomaly.managerName}</strong>
           <span className={`anomaly-severity ${anomaly.severity}`}>
-            {anomaly.severity === 'alert'
-              ? (t('calibration.anomalies.alert') || 'Alert')
-              : (t('calibration.anomalies.warning') || 'Warning')
-            }
+            {anomaly.severity === 'alert' ? 'Alert' : 'Warning'}
           </span>
         </div>
         <p className="anomaly-description">{anomaly.description}</p>
@@ -75,10 +72,10 @@ export function AnomalyAlertPanel({
           <svg viewBox="0 0 24 24" width="24" height="24" fill="#28A745">
             <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
           </svg>
-          <span>{t('calibration.anomalies.noAnomalies') || 'No anomalies detected'}</span>
+          <span>{t('pages.calibration.anomalies.noAnomalies')}</span>
         </div>
         <p className="anomaly-empty-text">
-          {t('calibration.anomalies.allNormal') || 'Rating patterns appear normal across all managers'}
+          {t('pages.calibration.anomalies.allClear')}
         </p>
       </div>
     );
@@ -91,14 +88,14 @@ export function AnomalyAlertPanel({
           <svg viewBox="0 0 24 24" width="24" height="24" fill="#FFA500">
             <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />
           </svg>
-          <span>{t('calibration.anomalies.title') || 'Anomalies Detected'}</span>
+          <span>{t('pages.calibration.anomalies.title')}</span>
         </div>
         <div className="anomaly-counts">
           {alertCount > 0 && (
-            <span className="count-badge alert">{alertCount} {t('calibration.anomalies.alerts') || 'alerts'}</span>
+            <span className="count-badge alert">{alertCount} {t('pages.calibration.anomalies.alerts')}</span>
           )}
           {warningCount > 0 && (
-            <span className="count-badge warning">{warningCount} {t('calibration.anomalies.warnings') || 'warnings'}</span>
+            <span className="count-badge warning">{warningCount} {t('pages.calibration.anomalies.warnings')}</span>
           )}
           <svg
             viewBox="0 0 24 24"

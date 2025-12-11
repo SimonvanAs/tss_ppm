@@ -4,11 +4,181 @@
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
 
+// Check if we're in dev mode without backend
+const isDevMode = import.meta.env.VITE_AUTH_ENABLED === 'false';
+
+// Mock data for dev mode
+const MOCK_DATA = {
+  reviews: [
+    {
+      id: 'mock-review-1',
+      year: 2024,
+      status: 'END_YEAR_REVIEW',
+      whatScoreEndYear: 2.35,
+      howScoreEndYear: 2.50,
+      whatScoreMidYear: 2.20,
+      howScoreMidYear: 2.30,
+      updatedAt: new Date().toISOString(),
+      employee: { firstName: 'Current', lastName: 'User' },
+    },
+    {
+      id: 'mock-review-2',
+      year: 2023,
+      status: 'COMPLETED',
+      whatScoreEndYear: 2.65,
+      howScoreEndYear: 2.80,
+      whatScoreMidYear: 2.50,
+      howScoreMidYear: 2.60,
+      updatedAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
+      employee: { firstName: 'Current', lastName: 'User' },
+    },
+  ],
+  teamMembers: [
+    {
+      id: 'mock-emp-1',
+      displayName: 'Alice Johnson',
+      email: 'alice@example.com',
+      functionTitle: { name: 'Software Engineer' },
+      tovLevel: { code: 'B', name: 'Professional' },
+      currentReview: {
+        id: 'mock-team-review-1',
+        year: 2024,
+        status: 'END_YEAR_REVIEW',
+        whatScoreEndYear: 2.80,
+        howScoreEndYear: 2.65,
+      },
+    },
+    {
+      id: 'mock-emp-2',
+      displayName: 'Bob Smith',
+      email: 'bob@example.com',
+      functionTitle: { name: 'Senior Developer' },
+      tovLevel: { code: 'C', name: 'Senior' },
+      currentReview: {
+        id: 'mock-team-review-2',
+        year: 2024,
+        status: 'MID_YEAR_COMPLETE',
+        whatScoreMidYear: 2.40,
+        howScoreMidYear: 2.55,
+      },
+    },
+    {
+      id: 'mock-emp-3',
+      displayName: 'Carol Davis',
+      email: 'carol@example.com',
+      functionTitle: { name: 'Product Manager' },
+      tovLevel: { code: 'C', name: 'Senior' },
+      currentReview: null,
+    },
+  ],
+  calibrationSessions: [
+    {
+      id: 'mock-cal-1',
+      name: 'Q4 2024 End-Year Calibration',
+      year: 2024,
+      status: 'IN_PROGRESS',
+      scope: 'BUSINESS_UNIT',
+      businessUnit: { name: 'Engineering' },
+      itemCount: 15,
+      createdBy: 'HR Manager',
+      createdAt: new Date().toISOString(),
+      startedAt: new Date().toISOString(),
+    },
+    {
+      id: 'mock-cal-2',
+      name: 'Q4 2023 Calibration',
+      year: 2023,
+      status: 'COMPLETED',
+      scope: 'COMPANY',
+      businessUnit: null,
+      itemCount: 42,
+      createdBy: 'HR Director',
+      createdAt: new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString(),
+      completedAt: new Date(Date.now() - 350 * 24 * 60 * 60 * 1000).toISOString(),
+    },
+  ],
+  calibrationItems: [
+    {
+      id: 'mock-item-1',
+      employee: { name: 'Alice Johnson', functionTitle: 'Software Engineer', businessUnit: 'Engineering', manager: 'Michael Manager' },
+      original: { whatScore: 2.80, howScore: 2.65, gridPos: 'B2' },
+      calibrated: null,
+      isAdjusted: false,
+      flaggedForReview: false,
+    },
+    {
+      id: 'mock-item-2',
+      employee: { name: 'Bob Smith', functionTitle: 'Senior Developer', businessUnit: 'Engineering', manager: 'Michael Manager' },
+      original: { whatScore: 2.40, howScore: 2.55, gridPos: 'B2' },
+      calibrated: { whatScore: 2.60, howScore: 2.55, gridPos: 'B2' },
+      isAdjusted: true,
+      adjustedBy: 'HR Manager',
+      adjustedAt: new Date().toISOString(),
+      adjustmentNotes: 'Adjusted based on Q4 project delivery',
+      flaggedForReview: false,
+    },
+    {
+      id: 'mock-item-3',
+      employee: { name: 'David Lee', functionTitle: 'Junior Developer', businessUnit: 'Engineering', manager: 'Michael Manager' },
+      original: { whatScore: 1.80, howScore: 2.20, gridPos: 'C2' },
+      calibrated: null,
+      isAdjusted: false,
+      flaggedForReview: true,
+      flagReason: 'First year employee - needs context',
+    },
+  ],
+  functionTitles: [
+    { id: 'ft-1', name: 'Software Engineer', description: 'Develops software applications', tovLevelId: 'tov-b', sortOrder: 1 },
+    { id: 'ft-2', name: 'Senior Developer', description: 'Senior software developer', tovLevelId: 'tov-c', sortOrder: 2 },
+    { id: 'ft-3', name: 'Tech Lead', description: 'Technical team lead', tovLevelId: 'tov-d', sortOrder: 3 },
+    { id: 'ft-4', name: 'Product Manager', description: 'Manages product development', tovLevelId: 'tov-c', sortOrder: 4 },
+  ],
+  tovLevels: [
+    { id: 'tov-a', code: 'A', name: 'Entry', description: 'Entry level position', sortOrder: 1 },
+    { id: 'tov-b', code: 'B', name: 'Professional', description: 'Professional level', sortOrder: 2 },
+    { id: 'tov-c', code: 'C', name: 'Senior', description: 'Senior level', sortOrder: 3 },
+    { id: 'tov-d', code: 'D', name: 'Lead', description: 'Leadership level', sortOrder: 4 },
+  ],
+  businessUnits: [
+    { id: 'bu-1', name: 'Engineering', description: 'Software Engineering' },
+    { id: 'bu-2', name: 'Product', description: 'Product Management' },
+    { id: 'bu-3', name: 'Sales', description: 'Sales Department' },
+  ],
+  users: [
+    { id: 'user-1', displayName: 'Alice Johnson', email: 'alice@example.com', role: 'EMPLOYEE', functionTitle: { name: 'Software Engineer' }, tovLevel: { code: 'B' }, isActive: true },
+    { id: 'user-2', displayName: 'Bob Smith', email: 'bob@example.com', role: 'EMPLOYEE', functionTitle: { name: 'Senior Developer' }, tovLevel: { code: 'C' }, isActive: true },
+    { id: 'user-3', displayName: 'Carol Davis', email: 'carol@example.com', role: 'MANAGER', functionTitle: { name: 'Tech Lead' }, tovLevel: { code: 'D' }, isActive: true },
+    { id: 'user-4', displayName: 'HR Admin', email: 'hr@example.com', role: 'HR', functionTitle: { name: 'HR Manager' }, tovLevel: { code: 'C' }, isActive: true },
+  ],
+  analytics9Grid: {
+    grid: {
+      'A1': { count: 1, percentage: 5 },
+      'A2': { count: 2, percentage: 10 },
+      'A3': { count: 3, percentage: 15 },
+      'B1': { count: 2, percentage: 10 },
+      'B2': { count: 6, percentage: 30 },
+      'B3': { count: 2, percentage: 10 },
+      'C1': { count: 1, percentage: 5 },
+      'C2': { count: 2, percentage: 10 },
+      'C3': { count: 1, percentage: 5 },
+    },
+    stats: {
+      totalEmployees: 20,
+      scoredEmployees: 20,
+      avgWhat: 2.35,
+      avgHow: 2.45,
+      topTalentCount: 6,
+      topTalentPercentage: 30,
+    },
+  },
+};
+
 class ApiClient {
   constructor() {
     this.baseUrl = API_BASE_URL;
     this.accessToken = null;
     this.onUnauthorized = null;
+    this.useMockData = isDevMode;
   }
 
   /**
@@ -80,63 +250,140 @@ class ApiClient {
       }
     });
 
-    const response = await fetch(url.toString(), {
-      method: 'GET',
-      headers: this.getHeaders(),
-    });
+    try {
+      const response = await fetch(url.toString(), {
+        method: 'GET',
+        headers: this.getHeaders(),
+      });
+      return this.handleResponse(response);
+    } catch (err) {
+      // In dev mode without backend, return mock empty data
+      if (this.useMockData && err.message === 'Failed to fetch') {
+        console.warn(`[DevMode] API unavailable for GET ${endpoint}, returning mock data`);
+        return this.getMockData(endpoint);
+      }
+      throw err;
+    }
+  }
 
-    return this.handleResponse(response);
+  /**
+   * Get mock data for dev mode when API is unavailable
+   */
+  getMockData(endpoint) {
+    // Return appropriate mock data based on endpoint
+    if (endpoint.includes('/reviews')) return { reviews: MOCK_DATA.reviews };
+    if (endpoint.includes('/users/me')) return MOCK_DATA.users[0];
+    if (endpoint.match(/\/users\/[^/]+\/team/)) return { teamMembers: MOCK_DATA.teamMembers };
+    if (endpoint.includes('/users')) return { users: MOCK_DATA.users };
+    if (endpoint.match(/\/calibration\/sessions\/[^/]+\/items/)) return { items: MOCK_DATA.calibrationItems };
+    if (endpoint.match(/\/calibration\/sessions\/[^/]+\/distribution/)) return {
+      original: { tiers: { topTalent: 5, solidPerformer: 8, needsAttention: 4, concern: 3 } },
+      calibrated: { tiers: { topTalent: 6, solidPerformer: 7, needsAttention: 5, concern: 2 } },
+    };
+    if (endpoint.match(/\/calibration\/sessions\/[^/]+\/anomalies/)) return {
+      anomalies: [
+        { managerId: 'm1', managerName: 'John Doe', type: 'HIGH_RATINGS', severity: 'warning', description: '45% of team rated as top talent (avg: 25%)' },
+      ],
+    };
+    if (endpoint.match(/\/calibration\/sessions\/[^/]+\/comparison/)) return {
+      managers: [
+        { managerId: 'm1', managerName: 'Michael Manager', teamSize: 5, avgWhatScore: 2.45, avgHowScore: 2.55, topTalentPercentage: 20, concernPercentage: 10 },
+        { managerId: 'm2', managerName: 'Sarah Senior', teamSize: 8, avgWhatScore: 2.65, avgHowScore: 2.70, topTalentPercentage: 35, concernPercentage: 5 },
+      ],
+      companyAverages: { whatScore: 2.40, howScore: 2.50 },
+    };
+    if (endpoint.match(/\/calibration\/sessions\/[^/]+$/)) return {
+      ...MOCK_DATA.calibrationSessions[0],
+      targetDistribution: { topTalent: 20, solid: 70, concern: 10 },
+    };
+    if (endpoint.includes('/calibration/sessions')) return { sessions: MOCK_DATA.calibrationSessions };
+    if (endpoint.includes('/function-titles')) return { functionTitles: MOCK_DATA.functionTitles };
+    if (endpoint.includes('/tov-levels')) return { tovLevels: MOCK_DATA.tovLevels };
+    if (endpoint.includes('/competencies')) return { competencies: [] };
+    if (endpoint.includes('/business-units')) return { businessUnits: MOCK_DATA.businessUnits };
+    if (endpoint.includes('/opcos')) return { opcos: [{ id: 'opco-1', name: 'demo-opco', displayName: 'Demo OpCo', domain: 'example.com', isActive: true }] };
+    if (endpoint.includes('/9grid')) return MOCK_DATA.analytics9Grid;
+    if (endpoint.includes('/analytics')) return MOCK_DATA.analytics9Grid;
+    return {};
   }
 
   /**
    * Make a POST request
    */
   async post(endpoint, body = {}) {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: 'POST',
-      headers: this.getHeaders(),
-      body: JSON.stringify(body),
-    });
-
-    return this.handleResponse(response);
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: 'POST',
+        headers: this.getHeaders(),
+        body: JSON.stringify(body),
+      });
+      return this.handleResponse(response);
+    } catch (err) {
+      if (this.useMockData && err.message === 'Failed to fetch') {
+        console.warn(`[DevMode] API unavailable for POST ${endpoint}, returning mock success`);
+        return { success: true, id: `mock-${Date.now()}`, ...body };
+      }
+      throw err;
+    }
   }
 
   /**
    * Make a PATCH request
    */
   async patch(endpoint, body = {}) {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: 'PATCH',
-      headers: this.getHeaders(),
-      body: JSON.stringify(body),
-    });
-
-    return this.handleResponse(response);
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: 'PATCH',
+        headers: this.getHeaders(),
+        body: JSON.stringify(body),
+      });
+      return this.handleResponse(response);
+    } catch (err) {
+      if (this.useMockData && err.message === 'Failed to fetch') {
+        console.warn(`[DevMode] API unavailable for PATCH ${endpoint}, returning mock success`);
+        return { success: true, ...body };
+      }
+      throw err;
+    }
   }
 
   /**
    * Make a PUT request
    */
   async put(endpoint, body = {}) {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: 'PUT',
-      headers: this.getHeaders(),
-      body: JSON.stringify(body),
-    });
-
-    return this.handleResponse(response);
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: 'PUT',
+        headers: this.getHeaders(),
+        body: JSON.stringify(body),
+      });
+      return this.handleResponse(response);
+    } catch (err) {
+      if (this.useMockData && err.message === 'Failed to fetch') {
+        console.warn(`[DevMode] API unavailable for PUT ${endpoint}, returning mock success`);
+        return { success: true, ...body };
+      }
+      throw err;
+    }
   }
 
   /**
    * Make a DELETE request
    */
   async delete(endpoint) {
-    const response = await fetch(`${this.baseUrl}${endpoint}`, {
-      method: 'DELETE',
-      headers: this.getHeaders(),
-    });
-
-    return this.handleResponse(response);
+    try {
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: 'DELETE',
+        headers: this.getHeaders(),
+      });
+      return this.handleResponse(response);
+    } catch (err) {
+      if (this.useMockData && err.message === 'Failed to fetch') {
+        console.warn(`[DevMode] API unavailable for DELETE ${endpoint}, returning mock success`);
+        return { success: true };
+      }
+      throw err;
+    }
   }
 }
 

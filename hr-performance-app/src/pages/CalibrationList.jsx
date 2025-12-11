@@ -85,9 +85,9 @@ export function CalibrationList() {
     <div className="page">
       <div className="page-header">
         <div>
-          <h1 className="page-title">{t('calibration.title') || 'Calibration Sessions'}</h1>
+          <h1 className="page-title">{t('pages.calibration.title')}</h1>
           <p className="page-subtitle">
-            {t('calibration.subtitle') || 'Manage rating calibration across teams'}
+            {t('pages.calibration.subtitle')}
           </p>
         </div>
         <button
@@ -97,7 +97,7 @@ export function CalibrationList() {
           <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style={{ marginRight: 8 }}>
             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z" />
           </svg>
-          {t('calibration.createSession') || 'Create Session'}
+          {t('pages.calibration.createSession')}
         </button>
       </div>
 
@@ -131,12 +131,12 @@ export function CalibrationList() {
               className="filter-select"
             >
               <option value="">{t('common.all') || 'All'}</option>
-              <option value="DRAFT">{t('calibration.status.draft') || 'Draft'}</option>
-              <option value="SCHEDULED">{t('calibration.status.scheduled') || 'Scheduled'}</option>
-              <option value="IN_PROGRESS">{t('calibration.status.inProgress') || 'In Progress'}</option>
-              <option value="PENDING_APPROVAL">{t('calibration.status.pendingApproval') || 'Pending Approval'}</option>
-              <option value="COMPLETED">{t('calibration.status.completed') || 'Completed'}</option>
-              <option value="CANCELLED">{t('calibration.status.cancelled') || 'Cancelled'}</option>
+              <option value="DRAFT">{t('pages.calibration.status.draft')}</option>
+              <option value="SCHEDULED">{t('pages.calibration.status.scheduled')}</option>
+              <option value="IN_PROGRESS">{t('pages.calibration.status.inProgress')}</option>
+              <option value="PENDING_APPROVAL">{t('pages.calibration.status.pendingApproval')}</option>
+              <option value="COMPLETED">{t('pages.calibration.status.completed')}</option>
+              <option value="CANCELLED">{t('pages.calibration.status.cancelled')}</option>
             </select>
           </div>
 
@@ -170,25 +170,25 @@ export function CalibrationList() {
             <svg viewBox="0 0 24 24" width="48" height="48" fill="#ccc" style={{ marginBottom: 16 }}>
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z" />
             </svg>
-            <p>{t('calibration.noSessions') || 'No calibration sessions found'}</p>
+            <p>{t('pages.calibration.noSessions')}</p>
             <button
               className="btn btn-primary"
               onClick={() => setShowCreateModal(true)}
               style={{ marginTop: 16 }}
             >
-              {t('calibration.createFirst') || 'Create your first session'}
+              {t('pages.calibration.createSession')}
             </button>
           </div>
         ) : (
           <table className="data-table">
             <thead>
               <tr>
-                <th>{t('calibration.sessionName') || 'Session Name'}</th>
-                <th>{t('common.status') || 'Status'}</th>
-                <th>{t('calibration.scope.title') || 'Scope'}</th>
+                <th>{t('pages.calibration.sessionName')}</th>
+                <th>{t('pages.calibration.status.title')}</th>
+                <th>{t('pages.calibration.scope.title')}</th>
                 <th>{t('common.businessUnit') || 'Business Unit'}</th>
-                <th>{t('calibration.itemCount') || 'Reviews'}</th>
-                <th>{t('common.createdBy') || 'Created By'}</th>
+                <th>{t('pages.calibration.session.totalEmployees')}</th>
+                <th>{t('pages.calibration.session.createdBy')}</th>
                 <th>{t('common.date') || 'Date'}</th>
               </tr>
             </thead>
@@ -215,12 +215,12 @@ export function CalibrationList() {
                         borderColor: getStatusColor(session.status),
                       }}
                     >
-                      {t(`calibration.status.${session.status.toLowerCase()}`) || session.status}
+                      {t(`pages.calibration.status.${session.status.toLowerCase()}`) || session.status}
                     </span>
                   </td>
                   <td>
                     <span className="scope-badge">
-                      {t(`calibration.scope.${session.scope.toLowerCase()}`) || session.scope}
+                      {t(`pages.calibration.scope.${session.scope.toLowerCase()}`) || session.scope}
                     </span>
                   </td>
                   <td>{session.businessUnit?.name || '-'}</td>
@@ -279,7 +279,7 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name.trim()) {
-      setError(t('calibration.errors.nameRequired') || 'Session name is required');
+      setError('Session name is required');
       return;
     }
 
@@ -316,7 +316,7 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
     <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal-content" style={{ maxWidth: 500 }}>
         <div className="modal-header">
-          <h2>{t('calibration.createSession') || 'Create Calibration Session'}</h2>
+          <h2>{t('pages.calibration.createSession')}</h2>
           <button className="modal-close" onClick={onClose}>×</button>
         </div>
 
@@ -329,12 +329,12 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
             )}
 
             <div className="form-group">
-              <label>{t('calibration.sessionName') || 'Session Name'} *</label>
+              <label>{t('pages.calibration.sessionName')} *</label>
               <input
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder={t('calibration.sessionNamePlaceholder') || 'e.g., Q4 2024 End-Year Calibration'}
+                placeholder={t('pages.calibration.sessionNamePlaceholder')}
                 className="form-input"
                 autoFocus
               />
@@ -355,14 +355,14 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
               </div>
 
               <div className="form-group">
-                <label>{t('calibration.scope.title') || 'Scope'}</label>
+                <label>{t('pages.calibration.scope.title')}</label>
                 <select
                   value={formData.scope}
                   onChange={(e) => setFormData({ ...formData, scope: e.target.value })}
                   className="form-input"
                 >
-                  <option value="BUSINESS_UNIT">{t('calibration.scope.businessUnit') || 'Business Unit'}</option>
-                  <option value="COMPANY">{t('calibration.scope.company') || 'Company-Wide'}</option>
+                  <option value="BUSINESS_UNIT">{t('pages.calibration.scope.businessUnit')}</option>
+                  <option value="COMPANY">{t('pages.calibration.scope.company')}</option>
                 </select>
               </div>
             </div>
@@ -390,10 +390,10 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
                   checked={formData.enforceDistribution}
                   onChange={(e) => setFormData({ ...formData, enforceDistribution: e.target.checked })}
                 />
-                {t('calibration.enableTargetDistribution') || 'Enable target distribution'}
+                {t('pages.calibration.distribution.enforceTarget')}
               </label>
               <p style={{ fontSize: '0.75rem', color: '#666', marginTop: 4 }}>
-                {t('calibration.targetDistributionHelp') || 'Set target percentages for each performance tier'}
+                {t('pages.calibration.distribution.targetHelp')}
               </p>
             </div>
 
@@ -401,7 +401,7 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
               <div className="distribution-inputs" style={{ display: 'flex', gap: 12, marginTop: 12 }}>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label style={{ fontSize: '0.75rem' }}>
-                    {t('calibration.distribution.topTalent') || 'Top Talent'} %
+                    {t('pages.calibration.distribution.topTalent')} %
                   </label>
                   <input
                     type="number"
@@ -420,7 +420,7 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
                 </div>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label style={{ fontSize: '0.75rem' }}>
-                    {t('calibration.distribution.solidPerformer') || 'Solid'} %
+                    {t('pages.calibration.distribution.solidPerformer')} %
                   </label>
                   <input
                     type="number"
@@ -439,7 +439,7 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
                 </div>
                 <div className="form-group" style={{ flex: 1 }}>
                   <label style={{ fontSize: '0.75rem' }}>
-                    {t('calibration.distribution.concern') || 'Concern'} %
+                    {t('pages.calibration.distribution.concern')} %
                   </label>
                   <input
                     type="number"

@@ -78,7 +78,7 @@ export function CalibrationSession() {
   };
 
   const handleCompleteSession = async () => {
-    if (!confirm(t('calibration.confirmComplete') || 'Are you sure you want to complete this calibration? All adjusted scores will be applied to the reviews.')) {
+    if (!confirm('Are you sure you want to complete this calibration? All adjusted scores will be applied to the reviews.')) {
       return;
     }
 
@@ -163,7 +163,7 @@ export function CalibrationSession() {
     return (
       <div className="page">
         <div className="error-state">
-          <p>{t('calibration.notFound') || 'Calibration session not found'}</p>
+          <p>{t('pages.calibration.error')}</p>
           <Link to="/calibration" className="btn btn-primary">
             {t('common.goBack') || 'Go Back'}
           </Link>
@@ -189,8 +189,8 @@ export function CalibrationSession() {
           <div>
             <h1 className="page-title">{session.name}</h1>
             <p className="page-subtitle">
-              {session.year} • {session.businessUnit?.name || (t(`calibration.scope.${session.scope.toLowerCase()}`) || session.scope)}
-              {session.itemCount > 0 && ` • ${session.itemCount} ${t('calibration.reviews') || 'reviews'}`}
+              {session.year} • {session.businessUnit?.name || (t(`pages.calibration.scope.${session.scope.toLowerCase()}`) || session.scope)}
+              {session.itemCount > 0 && ` • ${session.itemCount} ${t('pages.calibration.session.totalEmployees')}`}
             </p>
           </div>
         </div>
@@ -203,7 +203,7 @@ export function CalibrationSession() {
               borderColor: getStatusColor(session.status),
             }}
           >
-            {t(`calibration.status.${session.status.toLowerCase()}`) || session.status}
+            {t(`pages.calibration.status.${session.status.toLowerCase()}`) || session.status}
           </span>
 
           {canStart && (
@@ -219,7 +219,7 @@ export function CalibrationSession() {
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style={{ marginRight: 8 }}>
                     <path d="M8 5v14l11-7z" />
                   </svg>
-                  {t('calibration.actions.start') || 'Start Session'}
+                  {t('pages.calibration.actions.start')}
                 </>
               )}
             </button>
@@ -238,7 +238,7 @@ export function CalibrationSession() {
                   <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style={{ marginRight: 8 }}>
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
                   </svg>
-                  {t('calibration.actions.complete') || 'Complete Calibration'}
+                  {t('pages.calibration.actions.complete')}
                 </>
               )}
             </button>
@@ -252,7 +252,7 @@ export function CalibrationSession() {
               <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style={{ marginRight: 8 }}>
                 <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z" />
               </svg>
-              {t('calibration.actions.exportReport') || 'View Report'}
+              {t('pages.calibration.actions.exportReport')}
             </Link>
           )}
         </div>
@@ -270,9 +270,9 @@ export function CalibrationSession() {
           <svg viewBox="0 0 24 24" width="64" height="64" fill="#004A91" style={{ marginBottom: 16 }}>
             <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z" />
           </svg>
-          <h2>{t('calibration.readyToStart') || 'Ready to Start Calibration'}</h2>
+          <h2>Ready to Start Calibration</h2>
           <p style={{ color: '#666', maxWidth: 500, margin: '16px auto' }}>
-            {t('calibration.startDescription') || 'Starting the calibration will snapshot all end-year review scores for the selected scope. You can then review and adjust ratings as needed.'}
+            Starting the calibration will snapshot all end-year review scores for the selected scope. You can then review and adjust ratings as needed.
           </p>
           <button
             className="btn btn-primary btn-large"
@@ -287,7 +287,7 @@ export function CalibrationSession() {
                 <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" style={{ marginRight: 8 }}>
                   <path d="M8 5v14l11-7z" />
                 </svg>
-                {t('calibration.actions.start') || 'Start Calibration Session'}
+                {t('pages.calibration.actions.start')}
               </>
             )}
           </button>
@@ -313,7 +313,7 @@ export function CalibrationSession() {
             <div className="calibration-sidebar">
               <div className="card">
                 <div className="card-header">
-                  <h3 className="card-title">{t('calibration.distribution.title') || 'Rating Distribution'}</h3>
+                  <h3 className="card-title">{t('pages.calibration.distribution.title')}</h3>
                 </div>
                 <CalibrationGrid
                   items={items}
@@ -326,7 +326,7 @@ export function CalibrationSession() {
               {distribution && (
                 <div className="card" style={{ marginTop: 16 }}>
                   <div className="card-header">
-                    <h3 className="card-title">{t('calibration.comparison') || 'Before / After'}</h3>
+                    <h3 className="card-title">{t('pages.calibration.comparison.title')}</h3>
                   </div>
                   <DistributionComparison
                     original={distribution.original?.tiers || {}}
@@ -345,13 +345,13 @@ export function CalibrationSession() {
                   className={`tab-btn ${activeTab === 'grid' ? 'active' : ''}`}
                   onClick={() => setActiveTab('grid')}
                 >
-                  {t('calibration.tabs.grid') || 'Grid View'}
+                  {t('pages.calibration.grid.title')}
                 </button>
                 <button
                   className={`tab-btn ${activeTab === 'list' ? 'active' : ''}`}
                   onClick={() => setActiveTab('list')}
                 >
-                  {t('calibration.tabs.list') || 'Employee List'}
+                  {t('pages.calibration.employees.title')}
                   <span className="tab-count">{filteredItems.length}</span>
                 </button>
                 {comparison && (
@@ -359,7 +359,7 @@ export function CalibrationSession() {
                     className={`tab-btn ${activeTab === 'managers' ? 'active' : ''}`}
                     onClick={() => setActiveTab('managers')}
                   >
-                    {t('calibration.tabs.managers') || 'By Manager'}
+                    {t('pages.calibration.comparison.title')}
                     <span className="tab-count">{comparison.managers?.length || 0}</span>
                   </button>
                 )}
@@ -373,18 +373,18 @@ export function CalibrationSession() {
                       <>
                         <div className="selected-cell-header">
                           <h4>
-                            {t('calibration.employeesInCell') || 'Employees in'} {selectedCell.replace('-', '')}
+                            {t('pages.calibration.employees.title')} {selectedCell.replace('-', '')}
                           </h4>
                           <button
                             className="btn btn-sm btn-ghost"
                             onClick={() => setSelectedCell(null)}
                           >
-                            {t('common.clearFilter') || 'Clear Filter'}
+                            Clear Filter
                           </button>
                         </div>
                         {filteredItems.length === 0 ? (
                           <div className="empty-state">
-                            <p>{t('calibration.noEmployeesInCell') || 'No employees in this cell'}</p>
+                            <p>{t('pages.calibration.employees.noEmployees')}</p>
                           </div>
                         ) : (
                           <div className="employee-list">
@@ -407,7 +407,7 @@ export function CalibrationSession() {
                         <svg viewBox="0 0 24 24" width="48" height="48" fill="#ccc">
                           <path d="M13 7h-2v4H7v2h4v4h2v-4h4v-2h-4V7zm-1-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
                         </svg>
-                        <p>{t('calibration.selectCellInstruction') || 'Click on a grid cell to view and adjust employees in that position'}</p>
+                        <p>{t('pages.calibration.grid.clickToSelect')}</p>
                       </div>
                     )}
                   </div>
@@ -417,10 +417,10 @@ export function CalibrationSession() {
                   <div className="list-view-panel">
                     <div className="list-header">
                       <span className="list-count">
-                        {filteredItems.length} {t('calibration.employees') || 'employees'}
+                        {filteredItems.length} {t('pages.calibration.grid.employees')}
                         {items.filter(i => i.isAdjusted).length > 0 && (
                           <span className="adjusted-count">
-                            ({items.filter(i => i.isAdjusted).length} {t('calibration.adjusted') || 'adjusted'})
+                            ({items.filter(i => i.isAdjusted).length} {t('pages.calibration.grid.adjusted')})
                           </span>
                         )}
                       </span>
@@ -429,7 +429,7 @@ export function CalibrationSession() {
                           className="btn btn-sm btn-ghost"
                           onClick={() => setSelectedCell(null)}
                         >
-                          {t('common.showAll') || 'Show All'}
+                          Show All
                         </button>
                       )}
                     </div>
@@ -452,7 +452,7 @@ export function CalibrationSession() {
                 {activeTab === 'managers' && comparison && (
                   <div className="managers-view-panel">
                     <div className="manager-stats-header">
-                      <span>{t('calibration.companyAverages') || 'Company Averages'}:</span>
+                      <span>Company Averages:</span>
                       <span className="avg-score">WHAT: {comparison.companyAverages?.whatScore?.toFixed(2) || '-'}</span>
                       <span className="avg-score">HOW: {comparison.companyAverages?.howScore?.toFixed(2) || '-'}</span>
                     </div>
@@ -461,7 +461,7 @@ export function CalibrationSession() {
                         <div key={manager.managerId} className="manager-card">
                           <div className="manager-info">
                             <strong>{manager.managerName}</strong>
-                            <span className="team-size">{manager.teamSize} {t('calibration.directReports') || 'direct reports'}</span>
+                            <span className="team-size">{manager.teamSize} {t('pages.calibration.comparison.teamSize')}</span>
                           </div>
                           <div className="manager-scores">
                             <div className="score-item">
@@ -477,13 +477,13 @@ export function CalibrationSession() {
                               </span>
                             </div>
                             <div className="score-item">
-                              <span className="score-label">{t('calibration.distribution.topTalent') || 'Top'}</span>
+                              <span className="score-label">{t('pages.calibration.distribution.topTalent')}</span>
                               <span className={`score-value ${manager.topTalentPercentage > 40 ? 'high' : ''}`}>
                                 {manager.topTalentPercentage}%
                               </span>
                             </div>
                             <div className="score-item">
-                              <span className="score-label">{t('calibration.distribution.concern') || 'Concern'}</span>
+                              <span className="score-label">{t('pages.calibration.distribution.concern')}</span>
                               <span className={`score-value ${manager.concernPercentage > 30 ? 'high' : ''}`}>
                                 {manager.concernPercentage}%
                               </span>

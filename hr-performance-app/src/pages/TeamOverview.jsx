@@ -576,21 +576,33 @@ export function TeamOverview() {
                           )}
                         </td>
                         <td className="actions-cell">
-                          {member.currentReview ? (
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            {member.currentReview ? (
+                              <Link
+                                to={`/review/${member.currentReview.id}`}
+                                className="btn btn-sm btn-primary"
+                              >
+                                {t('pages.team.viewReview')}
+                              </Link>
+                            ) : (
+                              <button
+                                className="btn btn-sm btn-secondary"
+                                onClick={() => handleStartReview(member.id)}
+                              >
+                                {t('pages.team.startReview')}
+                              </button>
+                            )}
                             <Link
-                              to={`/review/${member.currentReview.id}`}
-                              className="btn btn-sm btn-primary"
-                            >
-                              {t('pages.team.viewReview')}
-                            </Link>
-                          ) : (
-                            <button
+                              to={`/history/${member.id}`}
                               className="btn btn-sm btn-secondary"
-                              onClick={() => handleStartReview(member.id)}
+                              title={t('pages.history.viewHistory')}
+                              style={{ padding: '4px 8px' }}
                             >
-                              {t('pages.team.startReview')}
-                            </button>
-                          )}
+                              <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+                                <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99l1.5 1.5z"/>
+                              </svg>
+                            </Link>
+                          </div>
                         </td>
                       </tr>
                     );

@@ -86,6 +86,12 @@ export function MyReviews() {
       <div className="page-header">
         <h1 className="page-title">{t('pages.myReviews.title')}</h1>
         <div className="page-actions">
+          <Link to="/history" className="btn btn-secondary" style={{ marginRight: '8px' }}>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M3.5 18.49l6-6.01 4 4L22 6.92l-1.41-1.41-7.09 7.97-4-4L2 16.99l1.5 1.5z"/>
+            </svg>
+            {t('pages.history.viewHistory')}
+          </Link>
           <Link to="/review/new" className="btn btn-primary">
             <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
               <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>

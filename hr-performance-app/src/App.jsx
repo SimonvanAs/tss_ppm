@@ -24,6 +24,7 @@ import {
   Approvals,
   HRDashboard,
   AllReviews,
+  HistoryDashboard,
   AdminLayout,
   AdminDashboard,
   UserManagement,
@@ -311,6 +312,42 @@ function AppRouter() {
                 <FormProvider>
                   <PageWrapper>
                     <AllReviews />
+                  </PageWrapper>
+                </FormProvider>
+              </WhisperProvider>
+            </LanguageProvider>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* History Dashboard - own history */}
+      <Route
+        path="/history"
+        element={
+          <ProtectedRoute>
+            <LanguageProvider>
+              <WhisperProvider>
+                <FormProvider>
+                  <PageWrapper>
+                    <HistoryDashboard />
+                  </PageWrapper>
+                </FormProvider>
+              </WhisperProvider>
+            </LanguageProvider>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* History Dashboard - view other user (Manager+) */}
+      <Route
+        path="/history/:userId"
+        element={
+          <ProtectedRoute roles={['MANAGER', 'HR', 'OPCO_ADMIN', 'TSS_SUPER_ADMIN']}>
+            <LanguageProvider>
+              <WhisperProvider>
+                <FormProvider>
+                  <PageWrapper>
+                    <HistoryDashboard />
                   </PageWrapper>
                 </FormProvider>
               </WhisperProvider>

@@ -1,6 +1,7 @@
 {
   "nav": {
     "myReviews": "My Reviews",
+    "history": "History",
     "team": "Team",
     "approvals": "Approvals",
     "hrDashboard": "HR Dashboard",
@@ -96,6 +97,45 @@
       "department": "Department",
       "search": "Search employee...",
       "export": "Export"
+    },
+    "history": {
+      "title": "Performance History",
+      "subtitleOwn": "Track your performance scores and trends over time",
+      "subtitleOther": "Performance history for {{name}}",
+      "totalReviews": "Total Reviews",
+      "yearsSpan": "Years Span",
+      "avgWhat": "Avg. WHAT",
+      "avgHow": "Avg. HOW",
+      "latestPosition": "Latest Position",
+      "trend": "Trend",
+      "scoreTrend": "Score Trend Over Time",
+      "yearComparison": "Year-over-Year Comparison",
+      "noData": "No Performance Data",
+      "noDataDesc": "No completed reviews found for this employee",
+      "noAccess": "You do not have permission to view this employee's history",
+      "yearRange": "Year Range",
+      "allYears": "All Years",
+      "showMidYear": "Include Mid-Year Reviews",
+      "export": "Export",
+      "exportExcel": "Export to Excel",
+      "exportPDF": "Export to PDF",
+      "exporting": "Exporting...",
+      "year": "Year",
+      "phase": "Phase",
+      "whatScore": "WHAT",
+      "howScore": "HOW",
+      "gridPosition": "Grid",
+      "change": "Change",
+      "endYear": "End Year",
+      "midYear": "Mid Year",
+      "improving": "Improving",
+      "declining": "Declining",
+      "stable": "Stable",
+      "noChange": "No Change",
+      "gridHistory": "Grid Position History",
+      "viewHistory": "View History",
+      "metric": "Metric",
+      "status": "Status"
     }
   },
   "review": {
@@ -294,7 +334,10 @@
     "add": "Add",
     "remove": "Remove",
     "retry": "Retry",
-    "search": "Search"
+    "search": "Search",
+    "error": "Error",
+    "accessDenied": "Access Denied",
+    "goBack": "Go Back"
   },
   "admin": {
     "title": "Admin Portal",

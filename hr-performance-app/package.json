@@ -19,11 +19,14 @@
     "@huggingface/transformers": "^3.8.1",
     "docx": "^9.5.1",
     "file-saver": "^2.0.5",
+    "jspdf": "^3.0.4",
     "keycloak-js": "^26.0.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.1.1",
-    "uuid": "^13.0.0"
+    "recharts": "^3.5.1",
+    "uuid": "^13.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

@@ -1,6 +1,7 @@
 {
   "nav": {
     "myReviews": "Mijn Beoordelingen",
+    "history": "Geschiedenis",
     "team": "Team",
     "approvals": "Goedkeuringen",
     "hrDashboard": "HR Dashboard",
@@ -96,6 +97,45 @@
       "department": "Afdeling",
       "search": "Zoek medewerker...",
       "export": "Exporteren"
+    },
+    "history": {
+      "title": "Prestatie Geschiedenis",
+      "subtitleOwn": "Volg uw prestatiescores en trends door de tijd",
+      "subtitleOther": "Prestatie geschiedenis voor {{name}}",
+      "totalReviews": "Totaal Beoordelingen",
+      "yearsSpan": "Jaren Bereik",
+      "avgWhat": "Gem. WAT",
+      "avgHow": "Gem. HOE",
+      "latestPosition": "Laatste Positie",
+      "trend": "Trend",
+      "scoreTrend": "Score Trend Over Tijd",
+      "yearComparison": "Jaar-op-Jaar Vergelijking",
+      "noData": "Geen Prestatie Data",
+      "noDataDesc": "Geen voltooide beoordelingen gevonden voor deze medewerker",
+      "noAccess": "U heeft geen toestemming om de geschiedenis van deze medewerker te bekijken",
+      "yearRange": "Jaar Bereik",
+      "allYears": "Alle Jaren",
+      "showMidYear": "Inclusief Halfjaar Beoordelingen",
+      "export": "Exporteren",
+      "exportExcel": "Exporteer naar Excel",
+      "exportPDF": "Exporteer naar PDF",
+      "exporting": "Exporteren...",
+      "year": "Jaar",
+      "phase": "Fase",
+      "whatScore": "WAT",
+      "howScore": "HOE",
+      "gridPosition": "Grid",
+      "change": "Wijziging",
+      "endYear": "Eindjaar",
+      "midYear": "Halfjaar",
+      "improving": "Verbeterend",
+      "declining": "Afnemend",
+      "stable": "Stabiel",
+      "noChange": "Geen Wijziging",
+      "gridHistory": "Grid Positie Geschiedenis",
+      "viewHistory": "Bekijk Geschiedenis",
+      "metric": "Metriek",
+      "status": "Status"
     }
   },
   "review": {
@@ -294,7 +334,10 @@
     "add": "Toevoegen",
     "remove": "Verwijderen",
     "retry": "Opnieuw",
-    "search": "Zoeken"
+    "search": "Zoeken",
+    "error": "Fout",
+    "accessDenied": "Toegang Geweigerd",
+    "goBack": "Terug"
   },
   "admin": {
     "title": "Beheerportaal",

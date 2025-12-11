@@ -3,6 +3,7 @@ export { TeamOverview } from './TeamOverview';
 export { Approvals } from './Approvals';
 export { HRDashboard } from './HRDashboard';
 export { AllReviews } from './AllReviews';
+export { HistoryDashboard } from './HistoryDashboard';
 
 // Admin pages
 export {

@@ -1,6 +1,7 @@
 {
   "nav": {
     "myReviews": "Mis Evaluaciones",
+    "history": "Historial",
     "team": "Equipo",
     "approvals": "Aprobaciones",
     "hrDashboard": "Panel de RRHH",
@@ -96,6 +97,45 @@
       "department": "Departamento",
       "search": "Buscar empleado...",
       "export": "Exportar"
+    },
+    "history": {
+      "title": "Historial de Desempeño",
+      "subtitleOwn": "Siga sus puntuaciones y tendencias de desempeño a lo largo del tiempo",
+      "subtitleOther": "Historial de desempeño de {{name}}",
+      "totalReviews": "Total de Evaluaciones",
+      "yearsSpan": "Rango de Años",
+      "avgWhat": "Prom. QUÉ",
+      "avgHow": "Prom. CÓMO",
+      "latestPosition": "Última Posición",
+      "trend": "Tendencia",
+      "scoreTrend": "Tendencia de Puntuación en el Tiempo",
+      "yearComparison": "Comparación Año a Año",
+      "noData": "Sin Datos de Desempeño",
+      "noDataDesc": "No se encontraron evaluaciones completadas para este empleado",
+      "noAccess": "No tiene permiso para ver el historial de este empleado",
+      "yearRange": "Rango de Años",
+      "allYears": "Todos los Años",
+      "showMidYear": "Incluir Evaluaciones de Medio Año",
+      "export": "Exportar",
+      "exportExcel": "Exportar a Excel",
+      "exportPDF": "Exportar a PDF",
+      "exporting": "Exportando...",
+      "year": "Año",
+      "phase": "Fase",
+      "whatScore": "QUÉ",
+      "howScore": "CÓMO",
+      "gridPosition": "Matriz",
+      "change": "Cambio",
+      "endYear": "Fin de Año",
+      "midYear": "Medio Año",
+      "improving": "Mejorando",
+      "declining": "Declinando",
+      "stable": "Estable",
+      "noChange": "Sin Cambio",
+      "gridHistory": "Historial de Posición en Matriz",
+      "viewHistory": "Ver Historial",
+      "metric": "Métrica",
+      "status": "Estado"
     }
   },
   "review": {
@@ -294,7 +334,10 @@
     "add": "Agregar",
     "remove": "Quitar",
     "retry": "Reintentar",
-    "search": "Buscar"
+    "search": "Buscar",
+    "error": "Error",
+    "accessDenied": "Acceso Denegado",
+    "goBack": "Volver"
   },
   "admin": {
     "title": "Portal de Administración",

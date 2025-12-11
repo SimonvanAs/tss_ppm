@@ -22,4 +22,5 @@ export {
   Competencies,
   OpCoManagement,
   GlobalDashboard,
+  ImportReviews,
 } from './admin';

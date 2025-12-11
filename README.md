@@ -110,7 +110,7 @@ EOF
 npm run dev
 ```
 
-### Option 3: Docker Compose (Production-Like)
+### Option 3: Docker Compose (Full Stack)
 
 Full stack with PostgreSQL, Keycloak, API, Frontend, and Whisper:
 
@@ -119,7 +119,7 @@ Full stack with PostgreSQL, Keycloak, API, Frontend, and Whisper:
 git clone https://github.com/SimonvanAs/tss_ppm.git
 cd tss_ppm
 
-# Create production .env file
+# Create .env file
 cat > .env << 'EOF'
 DOMAIN=localhost
 DB_PASSWORD=your-secure-password
@@ -147,6 +147,8 @@ Services will be available at:
 2. Login with admin credentials from .env
 3. Import the realm: Administration → Import → select `keycloak/tss-ppm-realm.json`
 4. Create test users in the `tss-ppm` realm
+
+> **For production deployment** with SSL certificates, custom domain, security hardening, and backup configuration, see the [Deployment Guide](docs/DEPLOYMENT.md).
 
 ### Option 4: Development with Keycloak
 

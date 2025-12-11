@@ -51,4 +51,4 @@ services:
   # Expose Whisper for debugging
   whisper:
     ports:
-      - "3002:3001"
+      - "3051:3001"

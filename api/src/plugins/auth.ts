@@ -165,11 +165,17 @@ const authPluginCallback: FastifyPluginAsync = async (fastify: FastifyInstance) 
       let decoded: KeycloakToken;
       if ('payload' in (verified as object) && typeof (verified as { payload: unknown }).payload === 'object') {
         decoded = (verified as { payload: KeycloakToken }).payload;
-      } else if ('sub' in (verified as object)) {
-        decoded = verified as KeycloakToken;
       } else {
-        fastify.log.error({ verified: JSON.stringify(verified) }, 'Unexpected JWT structure');
-        throw new Error('Invalid token structure');
+        // Direct payload object (may or may not have 'sub' depending on Keycloak config)
+        decoded = verified as KeycloakToken;
+      }
+
+      // Keycloak tokens should have 'sub', but some configurations may omit it
+      // Fall back to using jti (JWT ID) or email as unique identifier
+      const keycloakId = decoded.sub || decoded.jti || decoded.email;
+      if (!keycloakId) {
+        fastify.log.error({ decoded: JSON.stringify(decoded) }, 'Token missing user identifier (sub, jti, or email)');
+        throw new Error('Invalid token: missing user identifier');
       }
 
       // Extract roles from Keycloak token
@@ -177,15 +183,32 @@ const authPluginCallback: FastifyPluginAsync = async (fastify: FastifyInstance) 
       const clientRoles = decoded.resource_access?.[config.keycloak.clientId]?.roles || [];
       const allRoles = [...new Set([...realmRoles, ...clientRoles])];
 
-      // Try to find user in database
-      const dbUser = await fastify.prisma.user.findUnique({
-        where: { keycloakId: decoded.sub },
-        select: { id: true, opcoId: true, role: true },
+      // Try to find user in database by keycloakId or email
+      let dbUser = await fastify.prisma.user.findUnique({
+        where: { keycloakId },
+        select: { id: true, opcoId: true, role: true, keycloakId: true },
       });
+
+      // If not found by keycloakId and we have email, try finding by email
+      if (!dbUser && decoded.email) {
+        const userByEmail = await fastify.prisma.user.findFirst({
+          where: { email: decoded.email },
+          select: { id: true, opcoId: true, role: true, keycloakId: true },
+        });
+        if (userByEmail) {
+          // Update user with keycloakId for future lookups
+          dbUser = await fastify.prisma.user.update({
+            where: { id: userByEmail.id },
+            data: { keycloakId },
+            select: { id: true, opcoId: true, role: true, keycloakId: true },
+          });
+          fastify.log.info({ userId: dbUser.id, keycloakId }, 'Linked user to Keycloak ID');
+        }
+      }
 
       request.user = {
         id: dbUser?.id,
-        keycloakId: decoded.sub,
+        keycloakId,
         email: decoded.email || decoded.preferred_username || '',
         firstName: decoded.given_name,
         lastName: decoded.family_name,

@@ -2,10 +2,26 @@
  * Authentication configuration
  */
 
+// Determine Keycloak URL - use relative /auth in production, localhost in dev
+const getKeycloakUrl = () => {
+  // If explicitly set via env var, use that
+  if (import.meta.env.VITE_KEYCLOAK_URL) {
+    return import.meta.env.VITE_KEYCLOAK_URL;
+  }
+  // In production (served over HTTPS or non-localhost), use relative path
+  if (typeof window !== 'undefined' &&
+      (window.location.protocol === 'https:' ||
+       !window.location.hostname.includes('localhost'))) {
+    return '/auth';
+  }
+  // Default for local development
+  return 'http://localhost:8080';
+};
+
 export const authConfig = {
   // Keycloak configuration
   keycloak: {
-    url: import.meta.env.VITE_KEYCLOAK_URL || 'http://localhost:8080',
+    url: getKeycloakUrl(),
     realm: import.meta.env.VITE_KEYCLOAK_REALM || 'tss-ppm',
     clientId: import.meta.env.VITE_KEYCLOAK_CLIENT_ID || 'tss-ppm-frontend',
   },

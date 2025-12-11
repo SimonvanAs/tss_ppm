@@ -202,6 +202,11 @@ export const reviewsApi = {
   createChangeRequest: (reviewId, data) => apiClient.post(`/reviews/${reviewId}/change-requests`, data),
   approveChangeRequest: (reviewId, requestId, data = {}) => apiClient.post(`/reviews/${reviewId}/change-requests/${requestId}/approve`, data),
   rejectChangeRequest: (reviewId, requestId, data = {}) => apiClient.post(`/reviews/${reviewId}/change-requests/${requestId}/reject`, data),
+
+  // Signatures
+  getSignatureStatus: (reviewId) => apiClient.get(`/reviews/${reviewId}/signature-status`),
+  signAsEmployee: (reviewId, data) => apiClient.post(`/reviews/${reviewId}/sign/employee`, data),
+  signAsManager: (reviewId, data) => apiClient.post(`/reviews/${reviewId}/sign/manager`, data),
 };
 
 // Admin

@@ -189,6 +189,34 @@
       }
     }
   },
+  "signature": {
+    "title": "Estado de Firma",
+    "employeeTitle": "Reconocimiento del Empleado",
+    "managerTitle": "Contrafirma del Gerente",
+    "reviewSummary": "Resumen de Evaluación",
+    "status": {
+      "pendingEmployee": "Esperando Firma del Empleado",
+      "pendingManager": "Esperando Firma del Gerente",
+      "completed": "Evaluación Completamente Firmada"
+    },
+    "acknowledgment": {
+      "employee": "Reconozco que he revisado y discutido esta evaluación de desempeño con mi gerente.",
+      "manager": "Confirmo que esta evaluación de desempeño ha sido discutida con el empleado y representa mi evaluación de su desempeño."
+    },
+    "comment": "Comentarios Adicionales (Opcional)",
+    "commentPlaceholder": "Ingrese cualquier comentario adicional...",
+    "checkbox": "Entiendo y acepto firmar esta evaluación",
+    "signButton": "Firmar Evaluación",
+    "counterSignButton": "Contrafirmar Evaluación",
+    "signNow": "Firmar Ahora",
+    "counterSign": "Contrafirmar",
+    "downloadPDF": "Descargar PDF",
+    "signed": "Firmado",
+    "pending": "Pendiente",
+    "awaitingEmployee": "Esperando Firma del Empleado",
+    "mustAcknowledge": "Debe reconocer antes de firmar.",
+    "error": "Error al firmar la evaluación"
+  },
   "review": {
     "stages": {
       "DRAFT": "Borrador",
@@ -197,6 +225,8 @@
       "MID_YEAR_REVIEW": "Evaluación de Medio Año",
       "MID_YEAR_COMPLETE": "Medio Año Completado",
       "END_YEAR_REVIEW": "Evaluación de Fin de Año",
+      "PENDING_EMPLOYEE_SIGNATURE": "Esperando Firma del Empleado",
+      "PENDING_MANAGER_SIGNATURE": "Esperando Firma del Gerente",
       "COMPLETED": "Completado"
     },
     "status": {

@@ -238,6 +238,14 @@ model ReviewCycle {
   // Executive summary
   summary String? @db.Text
 
+  // Signature tracking
+  employeeSignedAt    DateTime?
+  employeeSignature   String?   // Acknowledgment statement
+  employeeSignComment String?   @db.Text
+  managerSignedAt     DateTime?
+  managerSignature    String?   // Acknowledgment statement
+  managerSignComment  String?   @db.Text
+
   // Metadata
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -276,6 +284,8 @@ enum CycleStatus {
   MID_YEAR_REVIEW
   MID_YEAR_COMPLETE
   END_YEAR_REVIEW
+  PENDING_EMPLOYEE_SIGNATURE
+  PENDING_MANAGER_SIGNATURE
   COMPLETED
   ARCHIVED
 }

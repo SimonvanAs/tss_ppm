@@ -4,6 +4,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { usersApi, reviewsApi } from '../services/api';
 import { roundToGridPosition, getGridColor } from '../utils/scoring';
+import { SignatureStatus } from '../components/SignatureStatus';
 import './Pages.css';
 
 // Grid position labels
@@ -336,8 +337,25 @@ export function TeamOverview() {
       case 'DRAFT': return 'draft';
       case 'COMPLETED': return 'completed';
       case 'ARCHIVED': return 'completed';
+      case 'PENDING_EMPLOYEE_SIGNATURE': return 'signature-pending';
+      case 'PENDING_MANAGER_SIGNATURE': return 'signature-pending';
       default: return 'in-progress';
     }
+  };
+
+  const isSignatureStatus = (status) => {
+    return ['PENDING_EMPLOYEE_SIGNATURE', 'PENDING_MANAGER_SIGNATURE', 'COMPLETED'].includes(status);
+  };
+
+  const handleSignatureStatusChange = (memberId, reviewId, newStatus) => {
+    setTeamMembers(prev =>
+      prev.map(m => {
+        if (m.id === memberId && m.currentReview?.id === reviewId) {
+          return { ...m, currentReview: { ...m.currentReview, status: newStatus } };
+        }
+        return m;
+      })
+    );
   };
 
   const getScoreClass = (score) => {
@@ -514,6 +532,7 @@ export function TeamOverview() {
                     <SortHeader field="how">HOW</SortHeader>
                     <th>{t('pages.team.grid')}</th>
                     <SortHeader field="status">{t('pages.team.status')}</SortHeader>
+                    <th>{t('signature.title') || 'Signature'}</th>
                     <th className="actions-cell">{t('pages.team.actions')}</th>
                   </tr>
                 </thead>
@@ -567,12 +586,32 @@ export function TeamOverview() {
                         <td>
                           {member.currentReview ? (
                             <span className={`status-badge ${getStatusClass(member.currentReview.status)}`}>
-                              {t(`review.stages.${member.currentReview.status}`)}
+                              {t(`review.stages.${member.currentReview.status}`) || member.currentReview.status}
                             </span>
                           ) : (
                             <span style={{ color: '#999', fontSize: '0.875rem' }}>
                               {t('pages.team.noActiveReview')}
                             </span>
+                          )}
+                        </td>
+                        <td>
+                          {member.currentReview && isSignatureStatus(member.currentReview.status) ? (
+                            <SignatureStatus
+                              reviewId={member.currentReview.id}
+                              reviewStatus={member.currentReview.status}
+                              reviewSummary={{
+                                employeeName: `${member.firstName} ${member.lastName}`,
+                                year: member.currentReview.year || yearFilter,
+                                whatScore: whatScore,
+                                howScore: howScore,
+                              }}
+                              onStatusChange={(newStatus) =>
+                                handleSignatureStatusChange(member.id, member.currentReview.id, newStatus)
+                              }
+                              compact
+                            />
+                          ) : (
+                            <span className="text-muted">-</span>
                           )}
                         </td>
                         <td className="actions-cell">

@@ -189,6 +189,34 @@
       }
     }
   },
+  "signature": {
+    "title": "Signature Status",
+    "employeeTitle": "Employee Acknowledgment",
+    "managerTitle": "Manager Counter-Signature",
+    "reviewSummary": "Review Summary",
+    "status": {
+      "pendingEmployee": "Awaiting Employee Signature",
+      "pendingManager": "Awaiting Manager Signature",
+      "completed": "Review Fully Signed"
+    },
+    "acknowledgment": {
+      "employee": "I acknowledge that I have reviewed and discussed this performance evaluation with my manager.",
+      "manager": "I confirm that this performance review has been discussed with the employee and represents my assessment of their performance."
+    },
+    "comment": "Additional Comments (Optional)",
+    "commentPlaceholder": "Enter any additional comments...",
+    "checkbox": "I understand and agree to sign this review",
+    "signButton": "Sign Review",
+    "counterSignButton": "Counter-Sign Review",
+    "signNow": "Sign Now",
+    "counterSign": "Counter-Sign",
+    "downloadPDF": "Download PDF",
+    "signed": "Signed",
+    "pending": "Pending",
+    "awaitingEmployee": "Awaiting Employee Signature",
+    "mustAcknowledge": "You must acknowledge before signing.",
+    "error": "Failed to sign review"
+  },
   "review": {
     "stages": {
       "DRAFT": "Draft",
@@ -197,6 +225,8 @@
       "MID_YEAR_REVIEW": "Mid-Year Review",
       "MID_YEAR_COMPLETE": "Mid-Year Complete",
       "END_YEAR_REVIEW": "End-Year Review",
+      "PENDING_EMPLOYEE_SIGNATURE": "Awaiting Employee Signature",
+      "PENDING_MANAGER_SIGNATURE": "Awaiting Manager Signature",
       "COMPLETED": "Completed"
     },
     "status": {

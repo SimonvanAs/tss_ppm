@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { reviewsApi } from '../services/api';
+import { SignatureStatus } from '../components/SignatureStatus';
 import './Pages.css';
 
 export function MyReviews() {
@@ -34,8 +35,20 @@ export function MyReviews() {
     switch (status) {
       case 'DRAFT': return 'draft';
       case 'COMPLETED': return 'completed';
+      case 'PENDING_EMPLOYEE_SIGNATURE': return 'signature-pending';
+      case 'PENDING_MANAGER_SIGNATURE': return 'signature-pending';
       default: return 'in-progress';
     }
+  };
+
+  const isSignatureStatus = (status) => {
+    return ['PENDING_EMPLOYEE_SIGNATURE', 'PENDING_MANAGER_SIGNATURE'].includes(status);
+  };
+
+  const handleStatusChange = (reviewId, newStatus) => {
+    setReviews(prev =>
+      prev.map(r => (r.id === reviewId ? { ...r, status: newStatus } : r))
+    );
   };
 
   const getScoreClass = (score) => {
@@ -121,9 +134,9 @@ export function MyReviews() {
               <tr>
                 <th>{t('pages.myReviews.year')}</th>
                 <th>{t('pages.myReviews.stage')}</th>
-                <th>{t('pages.myReviews.status')}</th>
                 <th>{t('pages.myReviews.whatScore')}</th>
                 <th>{t('pages.myReviews.howScore')}</th>
+                <th>{t('signature.title') || 'Signature'}</th>
                 <th>{t('pages.myReviews.lastUpdated')}</th>
                 <th className="actions-cell">{t('pages.myReviews.actions')}</th>
               </tr>
@@ -136,14 +149,7 @@ export function MyReviews() {
                   </td>
                   <td>
                     <span className={`status-badge ${getStatusClass(review.status)}`}>
-                      {t(`review.stages.${review.status}`)}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`status-badge ${getStatusClass(review.status)}`}>
-                      {review.status === 'COMPLETED'
-                        ? t('review.status.completed')
-                        : t('review.status.inProgress')}
+                      {t(`review.stages.${review.status}`) || review.status}
                     </span>
                   </td>
                   <td>
@@ -162,6 +168,26 @@ export function MyReviews() {
                       </span>
                     ) : (
                       <span className="score-badge">-</span>
+                    )}
+                  </td>
+                  <td>
+                    {isSignatureStatus(review.status) || review.status === 'COMPLETED' ? (
+                      <SignatureStatus
+                        reviewId={review.id}
+                        reviewStatus={review.status}
+                        reviewSummary={{
+                          employeeName: review.employee?.firstName
+                            ? `${review.employee.firstName} ${review.employee.lastName}`
+                            : user?.name,
+                          year: review.year,
+                          whatScore: review.whatScoreEndYear || review.whatScoreMidYear,
+                          howScore: review.howScoreEndYear || review.howScoreMidYear,
+                        }}
+                        onStatusChange={(newStatus) => handleStatusChange(review.id, newStatus)}
+                        compact
+                      />
+                    ) : (
+                      <span className="text-muted">-</span>
                     )}
                   </td>
                   <td>

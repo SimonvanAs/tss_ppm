@@ -28,7 +28,9 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
   GOAL_SETTING_COMPLETE: ['MID_YEAR_REVIEW'],
   MID_YEAR_REVIEW: ['MID_YEAR_COMPLETE'],
   MID_YEAR_COMPLETE: ['END_YEAR_REVIEW'],
-  END_YEAR_REVIEW: ['COMPLETED'],
+  END_YEAR_REVIEW: ['PENDING_EMPLOYEE_SIGNATURE'],
+  PENDING_EMPLOYEE_SIGNATURE: ['PENDING_MANAGER_SIGNATURE'],
+  PENDING_MANAGER_SIGNATURE: ['COMPLETED'],
   COMPLETED: ['ARCHIVED'],
   ARCHIVED: [],
 };
@@ -37,7 +39,7 @@ const VALID_TRANSITIONS: Record<string, string[]> = {
 const STAGE_STATUS_MAP: Record<string, { start: string; complete: string }> = {
   GOAL_SETTING: { start: 'GOAL_SETTING', complete: 'GOAL_SETTING_COMPLETE' },
   MID_YEAR_REVIEW: { start: 'MID_YEAR_REVIEW', complete: 'MID_YEAR_COMPLETE' },
-  END_YEAR_REVIEW: { start: 'END_YEAR_REVIEW', complete: 'COMPLETED' },
+  END_YEAR_REVIEW: { start: 'END_YEAR_REVIEW', complete: 'PENDING_EMPLOYEE_SIGNATURE' },
 };
 
 export const reviewsRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
@@ -722,6 +724,306 @@ export const reviewsRoutes: FastifyPluginAsync = async (fastify: FastifyInstance
       stage: stageType,
       status: 'COMPLETED',
       scores: stageType !== 'GOAL_SETTING' ? { whatScore, howScore } : undefined,
+    };
+  });
+
+  // ============================================
+  // SIGNATURE WORKFLOW
+  // ============================================
+
+  // Get signature status
+  fastify.get('/:id/signature-status', {
+    schema: {
+      description: 'Get signature status for a review cycle',
+      tags: ['Reviews', 'Signatures'],
+      security: [{ bearerAuth: [] }],
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+    },
+    preHandler: [fastify.authenticate],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+
+    const review = await fastify.prisma.reviewCycle.findFirst({
+      where: {
+        id,
+        ...withTenantFilter(request),
+      },
+      include: {
+        employee: {
+          select: { id: true, firstName: true, lastName: true, email: true, keycloakId: true },
+        },
+        manager: {
+          select: { id: true, firstName: true, lastName: true, email: true, keycloakId: true },
+        },
+      },
+    });
+
+    if (!review) {
+      return reply.status(404).send({
+        error: { message: 'Review cycle not found', statusCode: 404 },
+      });
+    }
+
+    // Check access based on role
+    const userId = request.user.keycloakId;
+    const isEmployee = review.employee.keycloakId === userId;
+    const isManager = review.manager.keycloakId === userId;
+    const isAdmin = [UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN].includes(request.user.role);
+
+    if (!isEmployee && !isManager && !isAdmin) {
+      return reply.status(403).send({
+        error: { message: 'Forbidden', statusCode: 403 },
+      });
+    }
+
+    return {
+      status: review.status,
+      employee: {
+        signedAt: review.employeeSignedAt,
+        signature: review.employeeSignature,
+        comment: review.employeeSignComment,
+        name: `${review.employee.firstName} ${review.employee.lastName}`,
+      },
+      manager: {
+        signedAt: review.managerSignedAt,
+        signature: review.managerSignature,
+        comment: review.managerSignComment,
+        name: `${review.manager.firstName} ${review.manager.lastName}`,
+      },
+      permissions: {
+        canSignAsEmployee: isEmployee && review.status === 'PENDING_EMPLOYEE_SIGNATURE',
+        canSignAsManager: (isManager || isAdmin) && review.status === 'PENDING_MANAGER_SIGNATURE',
+        isFullySigned: review.status === 'COMPLETED' && !!review.employeeSignedAt && !!review.managerSignedAt,
+      },
+    };
+  });
+
+  // Employee sign review
+  fastify.post('/:id/sign/employee', {
+    schema: {
+      description: 'Employee signs their performance review',
+      tags: ['Reviews', 'Signatures'],
+      security: [{ bearerAuth: [] }],
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+      body: {
+        type: 'object',
+        properties: {
+          acknowledgment: { type: 'boolean' },
+          comment: { type: 'string', maxLength: 2000 },
+        },
+        required: ['acknowledgment'],
+      },
+    },
+    preHandler: [fastify.authenticate],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const body = request.body as { acknowledgment: boolean; comment?: string };
+
+    // Acknowledgment must be true
+    if (!body.acknowledgment) {
+      return reply.status(400).send({
+        error: { message: 'Acknowledgment is required to sign the review', statusCode: 400 },
+      });
+    }
+
+    const review = await fastify.prisma.reviewCycle.findFirst({
+      where: {
+        id,
+        ...withTenantFilter(request),
+      },
+      include: {
+        employee: {
+          select: { id: true, firstName: true, lastName: true, keycloakId: true },
+        },
+      },
+    });
+
+    if (!review) {
+      return reply.status(404).send({
+        error: { message: 'Review cycle not found', statusCode: 404 },
+      });
+    }
+
+    // Verify user is the employee
+    if (review.employee.keycloakId !== request.user.keycloakId) {
+      return reply.status(403).send({
+        error: { message: 'Only the review employee can sign as employee', statusCode: 403 },
+      });
+    }
+
+    // Verify status is PENDING_EMPLOYEE_SIGNATURE
+    if (review.status !== 'PENDING_EMPLOYEE_SIGNATURE') {
+      return reply.status(400).send({
+        error: {
+          message: `Cannot sign: Review status is ${review.status}. Expected: PENDING_EMPLOYEE_SIGNATURE`,
+          statusCode: 400,
+        },
+      });
+    }
+
+    const signatureStatement = `I, ${review.employee.firstName} ${review.employee.lastName}, acknowledge that I have reviewed and discussed this performance evaluation with my manager.`;
+
+    // Update review with employee signature
+    const updatedReview = await fastify.prisma.reviewCycle.update({
+      where: { id },
+      data: {
+        status: 'PENDING_MANAGER_SIGNATURE',
+        employeeSignedAt: new Date(),
+        employeeSignature: signatureStatement,
+        employeeSignComment: body.comment || null,
+      },
+    });
+
+    // Audit log
+    await fastify.audit.logFromRequest(request, {
+      entityType: 'ReviewCycle',
+      entityId: id,
+      action: 'EMPLOYEE_SIGN',
+      reviewCycleId: id,
+      metadata: {
+        employeeName: `${review.employee.firstName} ${review.employee.lastName}`,
+        hasComment: !!body.comment,
+      },
+    });
+    markAsAudited(request);
+
+    return {
+      success: true,
+      status: updatedReview.status,
+      signedAt: updatedReview.employeeSignedAt,
+      signature: updatedReview.employeeSignature,
+    };
+  });
+
+  // Manager counter-sign review
+  fastify.post('/:id/sign/manager', {
+    schema: {
+      description: 'Manager counter-signs the performance review',
+      tags: ['Reviews', 'Signatures'],
+      security: [{ bearerAuth: [] }],
+      params: {
+        type: 'object',
+        properties: {
+          id: { type: 'string' },
+        },
+        required: ['id'],
+      },
+      body: {
+        type: 'object',
+        properties: {
+          acknowledgment: { type: 'boolean' },
+          comment: { type: 'string', maxLength: 2000 },
+        },
+        required: ['acknowledgment'],
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.MANAGER, UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const body = request.body as { acknowledgment: boolean; comment?: string };
+
+    // Acknowledgment must be true
+    if (!body.acknowledgment) {
+      return reply.status(400).send({
+        error: { message: 'Acknowledgment is required to counter-sign the review', statusCode: 400 },
+      });
+    }
+
+    const review = await fastify.prisma.reviewCycle.findFirst({
+      where: {
+        id,
+        ...withTenantFilter(request),
+      },
+      include: {
+        manager: {
+          select: { id: true, firstName: true, lastName: true, keycloakId: true },
+        },
+        employee: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
+    });
+
+    if (!review) {
+      return reply.status(404).send({
+        error: { message: 'Review cycle not found', statusCode: 404 },
+      });
+    }
+
+    // Verify user is the manager or has admin role
+    const isManager = review.manager.keycloakId === request.user.keycloakId;
+    const isAdmin = [UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN].includes(request.user.role);
+
+    if (!isManager && !isAdmin) {
+      return reply.status(403).send({
+        error: { message: 'Only the review manager or HR/Admin can counter-sign', statusCode: 403 },
+      });
+    }
+
+    // Verify status is PENDING_MANAGER_SIGNATURE
+    if (review.status !== 'PENDING_MANAGER_SIGNATURE') {
+      return reply.status(400).send({
+        error: {
+          message: `Cannot counter-sign: Review status is ${review.status}. Expected: PENDING_MANAGER_SIGNATURE`,
+          statusCode: 400,
+        },
+      });
+    }
+
+    // Get signing user's name
+    const signingUser = await fastify.prisma.user.findUnique({
+      where: { keycloakId: request.user.keycloakId },
+      select: { firstName: true, lastName: true },
+    });
+
+    const signerName = signingUser
+      ? `${signingUser.firstName} ${signingUser.lastName}`
+      : `${review.manager.firstName} ${review.manager.lastName}`;
+
+    const signatureStatement = `I, ${signerName}, confirm that this performance review has been discussed with the employee and represents my assessment of their performance.`;
+
+    // Update review with manager signature and set status to COMPLETED
+    const updatedReview = await fastify.prisma.reviewCycle.update({
+      where: { id },
+      data: {
+        status: 'COMPLETED',
+        managerSignedAt: new Date(),
+        managerSignature: signatureStatement,
+        managerSignComment: body.comment || null,
+      },
+    });
+
+    // Audit log
+    await fastify.audit.logFromRequest(request, {
+      entityType: 'ReviewCycle',
+      entityId: id,
+      action: 'MANAGER_SIGN',
+      reviewCycleId: id,
+      metadata: {
+        managerName: signerName,
+        employeeName: `${review.employee.firstName} ${review.employee.lastName}`,
+        hasComment: !!body.comment,
+      },
+    });
+    markAsAudited(request);
+
+    return {
+      success: true,
+      status: updatedReview.status,
+      signedAt: updatedReview.managerSignedAt,
+      signature: updatedReview.managerSignature,
     };
   });
 

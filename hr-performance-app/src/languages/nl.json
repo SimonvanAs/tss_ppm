@@ -189,6 +189,34 @@
       }
     }
   },
+  "signature": {
+    "title": "Handtekening Status",
+    "employeeTitle": "Medewerker Erkenning",
+    "managerTitle": "Manager Tegenondertekening",
+    "reviewSummary": "Beoordeling Samenvatting",
+    "status": {
+      "pendingEmployee": "Wacht op Medewerker Handtekening",
+      "pendingManager": "Wacht op Manager Handtekening",
+      "completed": "Volledig Ondertekend"
+    },
+    "acknowledgment": {
+      "employee": "Ik erken dat ik deze prestatie-evaluatie heb beoordeeld en besproken met mijn manager.",
+      "manager": "Ik bevestig dat deze prestatiebeoordeling is besproken met de medewerker en mijn beoordeling van hun prestaties vertegenwoordigt."
+    },
+    "comment": "Aanvullende Opmerkingen (Optioneel)",
+    "commentPlaceholder": "Voer eventuele aanvullende opmerkingen in...",
+    "checkbox": "Ik begrijp en ga akkoord met het ondertekenen van deze beoordeling",
+    "signButton": "Onderteken Beoordeling",
+    "counterSignButton": "Tegenonderteken Beoordeling",
+    "signNow": "Nu Ondertekenen",
+    "counterSign": "Tegenondertekenen",
+    "downloadPDF": "Download PDF",
+    "signed": "Ondertekend",
+    "pending": "In Afwachting",
+    "awaitingEmployee": "Wacht op Medewerker Handtekening",
+    "mustAcknowledge": "U moet erkennen voordat u ondertekent.",
+    "error": "Ondertekening mislukt"
+  },
   "review": {
     "stages": {
       "DRAFT": "Concept",
@@ -197,6 +225,8 @@
       "MID_YEAR_REVIEW": "Halfjaarlijkse Beoordeling",
       "MID_YEAR_COMPLETE": "Halfjaar Afgerond",
       "END_YEAR_REVIEW": "Eindejaars Beoordeling",
+      "PENDING_EMPLOYEE_SIGNATURE": "Wacht op Medewerker Handtekening",
+      "PENDING_MANAGER_SIGNATURE": "Wacht op Manager Handtekening",
       "COMPLETED": "Afgerond"
     },
     "status": {

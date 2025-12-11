@@ -1,11 +1,10 @@
 <#import "template.ftl" as layout>
-<@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??>
-    <#nested "header">
+<@layout.registrationLayout displayMessage=!messagesPerField.existsError('username','password') displayInfo=realm.password && realm.registrationAllowed && !registrationDisabled??; section>
+    <#if section = "header">
         <div class="kc-logo-wrapper">
             <img src="${url.resourcesPath}/img/logo.png" alt="Total Specific Solutions" class="kc-logo" onerror="this.style.display='none'">
         </div>
-    </#nested>
-    <#nested "form">
+    <#elseif section = "form">
         <div id="kc-form">
             <div id="kc-form-wrapper">
                 <#if realm.password>
@@ -73,8 +72,7 @@
                 </#if>
             </div>
         </div>
-    </#nested>
-    <#nested "info">
+    <#elseif section = "info" >
         <#if realm.password && realm.registrationAllowed && !registrationDisabled??>
             <div id="kc-registration-container">
                 <div id="kc-registration">
@@ -82,5 +80,5 @@
                 </div>
             </div>
         </#if>
-    </#nested>
+    </#if>
 </@layout.registrationLayout>

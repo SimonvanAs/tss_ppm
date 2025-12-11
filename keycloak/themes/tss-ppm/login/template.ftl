@@ -1,4 +1,4 @@
-<#macro registrationLayout bodyClass="" displayInfo=false displayMessage=true displayRequiredFields=false>
+<#macro registrationLayout bodyClass="" displayInfo=false displayMessage=true displayRequiredFields=false; section>
 <!DOCTYPE html>
 <html class="${properties.kcHtmlClass!}"<#if realm.internationalizationEnabled> lang="${locale.currentLanguageTag}"</#if>>
 <head>
@@ -22,18 +22,22 @@
 <body class="${bodyClass}">
 <div class="login-container">
     <div class="login-card">
-        <#nested "header">
+        <#if section = "header">
+            <#nested>
+        </#if>
         <#if displayMessage && message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
             <div class="alert alert-${message.type}">
                 <span class="kc-feedback-text">${kcSanitize(message.summary)?no_esc}</span>
             </div>
         </#if>
-        <#nested "form">
+        <#if section = "form">
+            <#nested>
+        </#if>
         <#if displayRequiredFields>
             <div class="kc-required-fields">${msg("requiredFields")}</div>
         </#if>
-        <#if displayInfo>
-            <#nested "info">
+        <#if section = "info" && displayInfo>
+            <#nested>
         </#if>
     </div>
 </div>

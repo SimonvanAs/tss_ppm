@@ -54,23 +54,44 @@ html, body {
   box-shadow: 0 2px 8px rgba(204, 14, 112, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(204, 14, 112, 0.1);
   backdrop-filter: blur(10px);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-sizing: border-box;
 }
 
 /* Logo */
 .kc-logo-wrapper {
   text-align: center;
   margin-bottom: 32px;
+  width: 100%;
 }
 
 .kc-logo {
   max-height: 60px;
   width: auto;
-  margin-bottom: 16px;
+  margin: 0 auto 16px;
+  display: block;
 }
 
 /* Form Elements */
+#kc-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#kc-form-wrapper {
+  width: 100%;
+  max-width: 100%;
+}
+
 .form-group {
   margin-bottom: 20px;
+  width: 100%;
+  display: block;
 }
 
 .form-group label {
@@ -79,6 +100,8 @@ html, body {
   font-weight: 500;
   color: var(--color-text);
   font-size: 0.875rem;
+  width: 100%;
+  text-align: left;
 }
 
 .form-group input[type="text"],
@@ -93,6 +116,48 @@ html, body {
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
   background-color: var(--color-bg);
   color: var(--color-text);
+  box-sizing: border-box;
+  display: block;
+}
+
+/* Override Keycloak default classes */
+[class*="kcFormGroup"],
+[class*="kcFormSetting"],
+[class*="kcFormOptions"] {
+  width: 100% !important;
+  display: block !important;
+  box-sizing: border-box !important;
+}
+
+[class*="kcLabelClass"] {
+  display: block !important;
+  width: 100% !important;
+  text-align: left !important;
+  margin-bottom: 8px !important;
+}
+
+[class*="kcInputClass"] {
+  width: 100% !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  padding: 12px 14px !important;
+}
+
+/* Ensure form wrapper is centered */
+#kc-form-wrapper > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fix any inline styles or misaligned elements */
+form#kc-form-login {
+  width: 100%;
+  display: block;
+}
+
+form#kc-form-login > * {
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .form-group input:focus {
@@ -148,10 +213,13 @@ html, body {
 /* Buttons */
 #kc-form-buttons {
   margin-top: 24px;
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
 }
 
 #kc-login {
-  width: 100%;
+  width: 100% !important;
   padding: 12px 24px;
   background: linear-gradient(135deg, var(--color-magenta), var(--color-magenta-dark));
   color: white;
@@ -162,6 +230,14 @@ html, body {
   font-family: var(--font-family);
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  display: block;
+  margin: 0;
+}
+
+[class*="kcButtonBlock"] {
+  width: 100% !important;
+  display: block !important;
 }
 
 #kc-login:hover {
@@ -186,6 +262,13 @@ html, body {
   align-items: center;
   margin-bottom: 16px;
   font-size: 0.875rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+[class*="kcFormOptionsWrapper"] {
+  width: auto !important;
+  display: inline-block !important;
 }
 
 .checkbox {
@@ -222,6 +305,10 @@ a:hover {
 }
 
 /* Registration Link */
+#kc-registration-container {
+  width: 100%;
+}
+
 #kc-registration {
   text-align: center;
   margin-top: 24px;
@@ -229,6 +316,7 @@ a:hover {
   border-top: 1px solid rgba(204, 14, 112, 0.1);
   font-size: 0.875rem;
   color: var(--color-text-light);
+  width: 100%;
 }
 
 #kc-registration a {

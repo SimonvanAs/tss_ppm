@@ -3,6 +3,7 @@
   "realm": "tss-ppm",
   "displayName": "TSS PPM",
   "enabled": true,
+  "loginTheme": "tss-ppm",
   "sslRequired": "external",
   "registrationAllowed": false,
   "loginWithEmailAllowed": true,

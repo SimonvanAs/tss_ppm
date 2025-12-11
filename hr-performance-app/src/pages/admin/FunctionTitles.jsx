@@ -2,10 +2,11 @@ import { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { adminApi } from '../../services/api';
 
-function FunctionTitleModal({ functionTitle, onSave, onClose, t }) {
+function FunctionTitleModal({ functionTitle, tovLevels, onSave, onClose, t }) {
   const [formData, setFormData] = useState({
     name: functionTitle?.name || '',
     description: functionTitle?.description || '',
+    tovLevelId: functionTitle?.tovLevelId || '',
     sortOrder: functionTitle?.sortOrder || 0,
   });
   const [saving, setSaving] = useState(false);
@@ -21,7 +22,12 @@ function FunctionTitleModal({ functionTitle, onSave, onClose, t }) {
     setSaving(true);
     setError(null);
     try {
-      await onSave(formData);
+      // Convert empty string to null for tovLevelId
+      const dataToSave = {
+        ...formData,
+        tovLevelId: formData.tovLevelId || null,
+      };
+      await onSave(dataToSave);
       onClose();
     } catch (err) {
       setError(err.message);
@@ -69,6 +75,25 @@ function FunctionTitleModal({ functionTitle, onSave, onClose, t }) {
                 placeholder={t('admin.functionTitles.descriptionPlaceholder')}
                 rows={3}
               />
+            </div>
+
+            <div className="admin-form-group">
+              <label className="admin-form-label">{t('admin.functionTitles.tovLevel')}</label>
+              <select
+                className="admin-form-select"
+                value={formData.tovLevelId}
+                onChange={e => setFormData({ ...formData, tovLevelId: e.target.value })}
+              >
+                <option value="">{t('admin.functionTitles.noTovLevel')}</option>
+                {tovLevels.map(tl => (
+                  <option key={tl.id} value={tl.id}>
+                    {tl.code} - {tl.name}
+                  </option>
+                ))}
+              </select>
+              <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+                {t('admin.functionTitles.tovLevelHint')}
+              </div>
             </div>
 
             <div className="admin-form-group">
@@ -124,6 +149,7 @@ function ConfirmDialog({ title, message, onConfirm, onCancel, t }) {
 export function FunctionTitles() {
   const { t } = useLanguage();
   const [functionTitles, setFunctionTitles] = useState([]);
+  const [tovLevels, setTovLevels] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [search, setSearch] = useState('');
@@ -144,10 +170,14 @@ export function FunctionTitles() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const data = await adminApi.getFunctionTitles();
-      setFunctionTitles(data);
+      const [functionTitlesData, tovLevelsData] = await Promise.all([
+        adminApi.getFunctionTitles(),
+        adminApi.getTovLevels(),
+      ]);
+      setFunctionTitles(functionTitlesData);
+      setTovLevels(tovLevelsData);
     } catch (err) {
-      console.error('Failed to load function titles:', err);
+      console.error('Failed to load data:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -308,6 +338,7 @@ export function FunctionTitles() {
                 <th style={{ width: '40px' }}></th>
                 <th>{t('admin.functionTitles.name')}</th>
                 <th>{t('admin.functionTitles.description')}</th>
+                <th style={{ width: '120px' }}>{t('admin.functionTitles.tovLevel')}</th>
                 <th style={{ width: '80px' }}>{t('admin.functionTitles.order')}</th>
                 <th style={{ width: '120px' }}>{t('admin.functionTitles.actions')}</th>
               </tr>
@@ -331,6 +362,23 @@ export function FunctionTitles() {
                   <td><strong>{item.name}</strong></td>
                   <td style={{ color: item.description ? '#333' : '#999' }}>
                     {item.description || '-'}
+                  </td>
+                  <td>
+                    {item.tovLevel ? (
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '2px 8px',
+                        background: '#e7f3ff',
+                        color: '#004A91',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: '600'
+                      }}>
+                        {item.tovLevel.code}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#999' }}>-</span>
+                    )}
                   </td>
                   <td style={{ textAlign: 'center' }}>{item.sortOrder}</td>
                   <td>
@@ -363,6 +411,7 @@ export function FunctionTitles() {
       {showModal && (
         <FunctionTitleModal
           functionTitle={editingItem}
+          tovLevels={tovLevels}
           onSave={handleSave}
           onClose={() => setShowModal(false)}
           t={t}

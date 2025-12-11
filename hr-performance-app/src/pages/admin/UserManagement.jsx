@@ -25,6 +25,23 @@ function UserModal({ user, managers, functionTitles, tovLevels, onSave, onClose,
     isActive: user?.isActive ?? true,
   });
   const [saving, setSaving] = useState(false);
+  const [autoLevelApplied, setAutoLevelApplied] = useState(false);
+
+  // Handle function title change - auto-populate TOV level if mapped
+  const handleFunctionTitleChange = (functionTitleId) => {
+    const selectedTitle = functionTitles.find(ft => ft.id === functionTitleId);
+    const newFormData = { ...formData, functionTitleId };
+
+    // If function title has a mapped TOV level, auto-apply it
+    if (selectedTitle?.tovLevelId) {
+      newFormData.tovLevelId = selectedTitle.tovLevelId;
+      setAutoLevelApplied(true);
+    } else {
+      setAutoLevelApplied(false);
+    }
+
+    setFormData(newFormData);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -95,21 +112,34 @@ function UserModal({ user, managers, functionTitles, tovLevels, onSave, onClose,
               <select
                 className="admin-form-select"
                 value={formData.functionTitleId}
-                onChange={e => setFormData({ ...formData, functionTitleId: e.target.value })}
+                onChange={e => handleFunctionTitleChange(e.target.value)}
               >
                 <option value="">{t('admin.users.noFunction')}</option>
                 {functionTitles.map(ft => (
-                  <option key={ft.id} value={ft.id}>{ft.name}</option>
+                  <option key={ft.id} value={ft.id}>
+                    {ft.name}
+                    {ft.tovLevel ? ` → ${ft.tovLevel.code}` : ''}
+                  </option>
                 ))}
               </select>
             </div>
 
             <div className="admin-form-group">
-              <label className="admin-form-label">{t('admin.users.tovLevel')}</label>
+              <label className="admin-form-label">
+                {t('admin.users.tovLevel')}
+                {autoLevelApplied && (
+                  <span style={{ marginLeft: '8px', fontSize: '11px', color: '#28a745', fontWeight: 'normal' }}>
+                    ({t('admin.users.autoApplied')})
+                  </span>
+                )}
+              </label>
               <select
                 className="admin-form-select"
                 value={formData.tovLevelId}
-                onChange={e => setFormData({ ...formData, tovLevelId: e.target.value })}
+                onChange={e => {
+                  setFormData({ ...formData, tovLevelId: e.target.value });
+                  setAutoLevelApplied(false);
+                }}
               >
                 <option value="">{t('admin.users.noLevel')}</option>
                 {tovLevels.map(tl => (

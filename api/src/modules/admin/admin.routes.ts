@@ -9,7 +9,7 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
 
   fastify.get('/function-titles', {
     schema: {
-      description: 'List function titles for current OpCo',
+      description: 'List function titles for current OpCo with their TOV level mappings',
       tags: ['Admin'],
       security: [{ bearerAuth: [] }],
     },
@@ -20,6 +20,9 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
         ...withTenantFilter(request),
         isActive: true,
       },
+      include: {
+        tovLevel: true,
+      },
       orderBy: { sortOrder: 'asc' },
     });
     return functionTitles;
@@ -27,7 +30,7 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
 
   fastify.post('/function-titles', {
     schema: {
-      description: 'Create a function title',
+      description: 'Create a function title with optional TOV level mapping',
       tags: ['Admin'],
       security: [{ bearerAuth: [] }],
       body: {
@@ -35,6 +38,7 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
         properties: {
           name: { type: 'string' },
           description: { type: 'string' },
+          tovLevelId: { type: 'string', description: 'Optional TOV/IDE level to auto-map for this function' },
           sortOrder: { type: 'integer' },
         },
         required: ['name'],
@@ -42,14 +46,18 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
     },
     preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
   }, async (request, reply) => {
-    const body = request.body as { name: string; description?: string; sortOrder?: number };
+    const body = request.body as { name: string; description?: string; tovLevelId?: string; sortOrder?: number };
 
     const functionTitle = await fastify.prisma.functionTitle.create({
       data: {
         opcoId: request.tenant.opcoId,
         name: body.name,
         description: body.description,
+        tovLevelId: body.tovLevelId || null,
         sortOrder: body.sortOrder || 0,
+      },
+      include: {
+        tovLevel: true,
       },
     });
 
@@ -58,18 +66,21 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
 
   fastify.patch('/function-titles/:id', {
     schema: {
-      description: 'Update a function title',
+      description: 'Update a function title including TOV level mapping',
       tags: ['Admin'],
       security: [{ bearerAuth: [] }],
     },
     preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
   }, async (request) => {
     const { id } = request.params as { id: string };
-    const body = request.body as Partial<{ name: string; description: string; sortOrder: number; isActive: boolean }>;
+    const body = request.body as Partial<{ name: string; description: string; tovLevelId: string | null; sortOrder: number; isActive: boolean }>;
 
     const functionTitle = await fastify.prisma.functionTitle.update({
       where: { id },
       data: body,
+      include: {
+        tovLevel: true,
+      },
     });
 
     return functionTitle;

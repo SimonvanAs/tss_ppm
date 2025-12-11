@@ -354,6 +354,7 @@
       "noManager": "Geen manager",
       "noFunction": "Niet toegewezen",
       "noLevel": "Niet toegewezen",
+      "autoApplied": "automatisch toegepast vanuit functie",
       "noUsers": "Geen gebruikers gevonden",
       "noUsersDesc": "Pas uw zoekopdracht of filters aan",
       "error": "Gebruikers konden niet worden geladen"
@@ -382,6 +383,9 @@
       "dragHint": "Sleep rijen om functietitels te herschikken",
       "name": "Naam",
       "description": "Beschrijving",
+      "tovLevel": "TOV Niveau",
+      "noTovLevel": "Geen automatisch niveau",
+      "tovLevelHint": "Indien ingesteld, wordt dit TOV/IDE niveau automatisch toegepast wanneer deze functietitel wordt geselecteerd voor een medewerker",
       "order": "Volgorde",
       "actions": "Acties",
       "create": "Functietitel Aanmaken",

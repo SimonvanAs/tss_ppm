@@ -89,7 +89,7 @@ enum UserRole {
 // CONFIGURABLE ENTITIES (per OpCo)
 // ============================================
 
-/// Function/Job titles managed per OpCo
+/// Function/Job titles managed per OpCo with automatic TOV level mapping
 model FunctionTitle {
   id          String   @id @default(uuid())
   name        String
@@ -102,10 +102,16 @@ model FunctionTitle {
   opcoId String
   opco   OpCo   @relation(fields: [opcoId], references: [id])
 
+  // Automatic TOV/IDE level mapping - when user selects this function title,
+  // this level is auto-populated in their review
+  tovLevelId String?
+  tovLevel   TovLevel? @relation(fields: [tovLevelId], references: [id])
+
   users User[]
 
   @@unique([opcoId, name])
   @@index([opcoId])
+  @@index([tovLevelId])
   @@map("function_titles")
 }
 
@@ -125,6 +131,7 @@ model TovLevel {
 
   // Relations
   users            User[]
+  functionTitles   FunctionTitle[]
   competencyLevels CompetencyLevel[]
   reviewCycles     ReviewCycle[]
 

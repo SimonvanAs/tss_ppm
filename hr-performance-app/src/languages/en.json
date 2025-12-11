@@ -354,6 +354,7 @@
       "noManager": "No manager",
       "noFunction": "Not assigned",
       "noLevel": "Not assigned",
+      "autoApplied": "auto-applied from function",
       "noUsers": "No users found",
       "noUsersDesc": "Try adjusting your search or filters",
       "error": "Failed to load users"
@@ -382,6 +383,9 @@
       "dragHint": "Drag and drop rows to reorder function titles",
       "name": "Name",
       "description": "Description",
+      "tovLevel": "TOV Level",
+      "noTovLevel": "No automatic level",
+      "tovLevelHint": "When set, this TOV/IDE level will be automatically applied when this function title is selected for an employee",
       "order": "Order",
       "actions": "Actions",
       "create": "Create Function Title",

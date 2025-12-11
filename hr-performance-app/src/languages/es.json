@@ -354,6 +354,7 @@
       "noManager": "Sin gerente",
       "noFunction": "No asignado",
       "noLevel": "No asignado",
+      "autoApplied": "aplicado automáticamente desde función",
       "noUsers": "No se encontraron usuarios",
       "noUsersDesc": "Intente ajustar su búsqueda o filtros",
       "error": "No se pudieron cargar los usuarios"
@@ -382,6 +383,9 @@
       "dragHint": "Arrastre y suelte filas para reordenar los títulos de función",
       "name": "Nombre",
       "description": "Descripción",
+      "tovLevel": "Nivel TOV",
+      "noTovLevel": "Sin nivel automático",
+      "tovLevelHint": "Cuando se establece, este nivel TOV/IDE se aplicará automáticamente cuando se seleccione este título de función para un empleado",
       "order": "Orden",
       "actions": "Acciones",
       "create": "Crear Título de Función",

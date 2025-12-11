@@ -36,7 +36,16 @@
       "Bash(sudo -E bash -)",
       "Bash(sudo apt-get install:*)",
       "Bash(node --version:*)",
-      "Bash(npm:*)"
+      "Bash(npm:*)",
+      "Bash(copy:*)",
+      "Bash(docker:*)",
+      "Bash(gh issue view:*)",
+      "Bash(gh issue close:*)",
+      "Bash(git stash:*)",
+      "Bash(gh issue list:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []

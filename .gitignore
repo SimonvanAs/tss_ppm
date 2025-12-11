@@ -41,3 +41,6 @@ npm-debug.log*
 
 # Local development
 *.local
+
+# Security/Scanning reports
+.securevibes/

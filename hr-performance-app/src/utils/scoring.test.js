@@ -30,12 +30,16 @@ describe('calculateWhatScore', () => {
       { title: 'Goal 2', score: 2, weight: 40 },
     ];
     // (3*60 + 2*40) / 100 = 260/100 = 2.6
-    expect(calculateWhatScore(goals)).toBeCloseTo(2.6);
+    const result = calculateWhatScore(goals);
+    expect(result.score).toBeCloseTo(2.6);
+    expect(result.hasScfVeto).toBe(false);
   });
 
   it('should handle single goal', () => {
     const goals = [{ title: 'Goal 1', score: 2, weight: 100 }];
-    expect(calculateWhatScore(goals)).toBe(2);
+    const result = calculateWhatScore(goals);
+    expect(result.score).toBe(2);
+    expect(result.hasScfVeto).toBe(false);
   });
 
   it('should ignore goals without scores or weights', () => {
@@ -44,7 +48,9 @@ describe('calculateWhatScore', () => {
       { title: 'Goal 2', score: null, weight: 50 },
       { title: 'Goal 3', score: 2, weight: 0 },
     ];
-    expect(calculateWhatScore(goals)).toBe(3);
+    const result = calculateWhatScore(goals);
+    expect(result.score).toBe(3);
+    expect(result.hasScfVeto).toBe(false);
   });
 
   it('should handle three goals with different weights', () => {
@@ -54,7 +60,31 @@ describe('calculateWhatScore', () => {
       { title: 'Goal 3', score: 3, weight: 50 },
     ];
     // (1*20 + 2*30 + 3*50) / 100 = 230/100 = 2.3
-    expect(calculateWhatScore(goals)).toBeCloseTo(2.3);
+    const result = calculateWhatScore(goals);
+    expect(result.score).toBeCloseTo(2.3);
+    expect(result.hasScfVeto).toBe(false);
+  });
+
+  it('should return SCF VETO when any SCF goal fails', () => {
+    const goals = [
+      { title: 'Goal 1', score: 3, weight: 50 },
+      { title: 'Goal 2', score: 3, weight: 50 },
+      { title: 'SCF Check', goalType: 'SCF', scfValue: 'FAIL' },
+    ];
+    const result = calculateWhatScore(goals);
+    expect(result.score).toBe(1.00);
+    expect(result.hasScfVeto).toBe(true);
+  });
+
+  it('should not VETO when SCF goal passes', () => {
+    const goals = [
+      { title: 'Goal 1', score: 3, weight: 50 },
+      { title: 'Goal 2', score: 3, weight: 50 },
+      { title: 'SCF Check', goalType: 'SCF', scfValue: 'PASS' },
+    ];
+    const result = calculateWhatScore(goals);
+    expect(result.score).toBe(3);
+    expect(result.hasScfVeto).toBe(false);
   });
 });
 

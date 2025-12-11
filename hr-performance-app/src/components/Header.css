@@ -406,3 +406,66 @@
     order: -1;
   }
 }
+
+/* User Menu Styles */
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 16px;
+  padding-left: 16px;
+  border-left: 1px solid #e5e5e5;
+}
+
+.user-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #333;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-role {
+  font-size: 0.65rem;
+  color: white;
+  background: linear-gradient(135deg, #CC0E70, #a00b5a);
+  padding: 2px 8px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.logout-button {
+  padding: 6px 12px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+  background: #fff;
+  border-color: #DC3545;
+  color: #DC3545;
+}
+
+@media (max-width: 768px) {
+  .user-menu {
+    width: 100%;
+    justify-content: center;
+    margin-left: 0;
+    padding-left: 0;
+    border-left: none;
+    padding-top: 12px;
+    border-top: 1px solid #e5e5e5;
+  }
+
+  .user-name {
+    max-width: 100px;
+  }
+}

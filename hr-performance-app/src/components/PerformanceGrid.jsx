@@ -13,7 +13,9 @@ export function PerformanceGrid() {
   const { t } = useLanguage();
   const { formData } = useForm();
 
-  const whatScore = calculateWhatScore(formData.goals || []);
+  const whatResult = calculateWhatScore(formData.goals || []);
+  const whatScore = whatResult?.score ?? null;
+  const hasScfVeto = whatResult?.hasScfVeto ?? false;
   const howScore = calculateHowScore(formData.competencyScores || {});
   const levelPosition = mapLevelToGrid(formData.tovLevel);
 
@@ -76,11 +78,12 @@ export function PerformanceGrid() {
 
         {/* Scores display */}
         <div className="scores-display">
-          <div className="score-item">
+          <div className={`score-item ${hasScfVeto ? 'veto-active' : ''}`}>
             <span className="score-name">{t('grid.whatScore')}:</span>
             <span className="score-value">
               {whatScore !== null ? whatScore.toFixed(2) : '-'}
             </span>
+            {hasScfVeto && <span className="veto-badge">{t('grid.scfVeto')}</span>}
           </div>
           <div className="score-item">
             <span className="score-name">{t('grid.howScore')}:</span>

@@ -1,17 +1,42 @@
-import { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import { createContext, useContext, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
-import {
-  generateSessionCode,
-  saveSession,
-  loadSession,
-  deleteSession,
-  createInitialFormData,
-  cleanupExpiredSessions,
-  sanitizeInput
-} from '../utils/session';
+import { sanitizeInput } from '../utils/session';
 import { calculateProgress, validateForm } from '../utils/scoring';
 
 const FormContext = createContext();
+
+/**
+ * Create initial form data structure
+ */
+function createInitialFormData() {
+  return {
+    // Employee info
+    employeeName: '',
+    functionTitle: '',
+    tovLevel: '',
+    manager: '',
+    department: '',
+    reviewPeriod: new Date().getFullYear().toString(),
+    language: 'en',
+
+    // Goals (WHAT-axis)
+    goals: [{ id: uuidv4(), title: '', description: '', score: '', weight: '', goalType: 'STANDARD' }],
+
+    // Competency scores (HOW-axis)
+    competencyScores: {},
+    competencyNotes: {},
+    behaviorScores: {},
+    detailedBehaviorMode: false,
+
+    // Self-assessment
+    selfAssessment: '',
+    developmentGoals: '',
+
+    // Manager comments
+    managerComments: '',
+    developmentPlan: '',
+  };
+}
 
 /**
  * Recursively sanitize all string values in an object
@@ -36,67 +61,9 @@ function sanitizeFormData(data) {
 }
 
 export function FormProvider({ children }) {
-  const [sessionCode, setSessionCode] = useState(() => generateSessionCode());
   const [formData, setFormData] = useState(createInitialFormData);
   const [isDirty, setIsDirty] = useState(false);
-  const [lastSaved, setLastSaved] = useState(null);
   const [validationErrors, setValidationErrors] = useState([]);
-  const [showSaveIndicator, setShowSaveIndicator] = useState(false);
-  const saveTimeoutRef = useRef(null);
-  const indicatorTimeoutRef = useRef(null);
-
-  // Cleanup expired sessions on mount
-  useEffect(() => {
-    cleanupExpiredSessions();
-  }, []);
-
-  // Helper to show save indicator briefly
-  const triggerSaveIndicator = useCallback(() => {
-    setShowSaveIndicator(true);
-    if (indicatorTimeoutRef.current) {
-      clearTimeout(indicatorTimeoutRef.current);
-    }
-    indicatorTimeoutRef.current = setTimeout(() => {
-      setShowSaveIndicator(false);
-    }, 2000);
-  }, []);
-
-  // Auto-save after 2-3 seconds of inactivity
-  useEffect(() => {
-    if (!isDirty) return;
-
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-
-    saveTimeoutRef.current = setTimeout(() => {
-      // Sanitize all string data before saving to prevent XSS
-      const sanitizedData = sanitizeFormData(formData);
-      saveSession(sessionCode, sanitizedData);
-      setLastSaved(new Date());
-      setIsDirty(false);
-      triggerSaveIndicator();
-    }, 2500);
-
-    return () => {
-      if (saveTimeoutRef.current) {
-        clearTimeout(saveTimeoutRef.current);
-      }
-    };
-  }, [formData, isDirty, sessionCode, triggerSaveIndicator]);
-
-  // Manual save function (for Ctrl+S)
-  const manualSave = useCallback(() => {
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
-    // Sanitize all string data before saving to prevent XSS
-    const sanitizedData = sanitizeFormData(formData);
-    saveSession(sessionCode, sanitizedData);
-    setLastSaved(new Date());
-    setIsDirty(false);
-    triggerSaveIndicator();
-  }, [sessionCode, formData, triggerSaveIndicator]);
 
   // Update form data
   const updateFormData = useCallback((updates) => {
@@ -119,12 +86,12 @@ export function FormProvider({ children }) {
   }, []);
 
   // Add a new goal
-  const addGoal = useCallback(() => {
+  const addGoal = useCallback((goalType = 'STANDARD') => {
     setFormData(prev => {
       if (prev.goals.length >= 9) return prev;
       return {
         ...prev,
-        goals: [...prev.goals, { id: uuidv4(), title: '', description: '', score: '', weight: '' }]
+        goals: [...prev.goals, { id: uuidv4(), title: '', description: '', score: '', weight: '', goalType }]
       };
     });
     setIsDirty(true);
@@ -177,33 +144,49 @@ export function FormProvider({ children }) {
     setIsDirty(true);
   }, []);
 
-  // Resume a session
-  const resumeSession = useCallback((code) => {
-    const session = loadSession(code);
-    if (session) {
-      setSessionCode(code.toUpperCase());
-      setFormData(session);
-      setIsDirty(false);
-      return true;
-    }
-    return false;
+  // Update behavior score (for detailed HOW-axis scoring)
+  const updateBehaviorScore = useCallback((competencyId, behaviorIndex, score) => {
+    setFormData(prev => ({
+      ...prev,
+      behaviorScores: {
+        ...prev.behaviorScores,
+        [competencyId]: {
+          ...(prev.behaviorScores?.[competencyId] || {}),
+          [behaviorIndex]: score
+        }
+      }
+    }));
+    setIsDirty(true);
   }, []);
 
-  // Start a new session
-  const startNewSession = useCallback(() => {
-    const newCode = generateSessionCode();
-    setSessionCode(newCode);
+  // Toggle detailed behavior mode
+  const setDetailedBehaviorMode = useCallback((enabled) => {
+    setFormData(prev => ({
+      ...prev,
+      detailedBehaviorMode: enabled
+    }));
+    setIsDirty(true);
+  }, []);
+
+  // Clear behavior scores for a competency (when switching modes)
+  const clearBehaviorScores = useCallback((competencyId) => {
+    setFormData(prev => {
+      const newBehaviorScores = { ...prev.behaviorScores };
+      delete newBehaviorScores[competencyId];
+      return {
+        ...prev,
+        behaviorScores: newBehaviorScores
+      };
+    });
+    setIsDirty(true);
+  }, []);
+
+  // Reset form to initial state
+  const resetForm = useCallback(() => {
     setFormData(createInitialFormData());
     setIsDirty(false);
-    setLastSaved(null);
     setValidationErrors([]);
   }, []);
-
-  // Clear current session
-  const clearSession = useCallback(() => {
-    deleteSession(sessionCode);
-    startNewSession();
-  }, [sessionCode, startNewSession]);
 
   // Validate form
   const validate = useCallback(() => {
@@ -216,7 +199,6 @@ export function FormProvider({ children }) {
   const progress = calculateProgress(formData);
 
   const value = {
-    sessionCode,
     formData,
     updateFormData,
     updateGoal,
@@ -225,16 +207,14 @@ export function FormProvider({ children }) {
     reorderGoals,
     updateCompetencyScore,
     updateCompetencyNote,
-    resumeSession,
-    startNewSession,
-    clearSession,
+    updateBehaviorScore,
+    setDetailedBehaviorMode,
+    clearBehaviorScores,
+    resetForm,
     validate,
     validationErrors,
     progress,
-    lastSaved,
     isDirty,
-    showSaveIndicator,
-    manualSave
   };
 
   return (

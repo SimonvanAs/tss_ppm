@@ -15,7 +15,7 @@ import {
   Packer
 } from 'docx';
 import { saveAs } from 'file-saver';
-import { calculateWhatScore, calculateHowScore, roundToGridPosition, mapLevelToGrid, getGridColor } from './scoring';
+import { calculateWhatScore, calculateHowScore, roundToGridPosition, mapLevelToGrid, getGridColor, GOAL_TYPES, calculateCompetencyScoreFromBehaviors } from './scoring';
 import { competencies, levelDescriptions } from './competencies';
 
 const COLORS = {
@@ -172,7 +172,9 @@ function createSummarySection(formData, language) {
 }
 
 function createGridVisualization(formData, language) {
-  const whatScore = calculateWhatScore(formData.goals || []);
+  const whatResult = calculateWhatScore(formData.goals || []);
+  const whatScore = whatResult?.score ?? null;
+  const hasScfVeto = whatResult?.hasScfVeto ?? false;
   const howScore = calculateHowScore(formData.competencyScores || {});
   const whatPosition = whatScore ? roundToGridPosition(whatScore) : null;
   const howPosition = howScore ? roundToGridPosition(howScore) : mapLevelToGrid(formData.tovLevel);
@@ -274,6 +276,7 @@ function createGridVisualization(formData, language) {
 
   const whatLabel = language === 'nl' ? 'WAT Score' : language === 'es' ? 'Puntuación QUÉ' : 'WHAT Score';
   const howLabel = language === 'nl' ? 'HOE Score' : language === 'es' ? 'Puntuación CÓMO' : 'HOW Score';
+  const scfVetoLabel = language === 'nl' ? '[SCF VETO]' : language === 'es' ? '[VETO SCF]' : '[SCF VETO]';
 
   return [
     createSectionTitle(title),
@@ -285,6 +288,7 @@ function createGridVisualization(formData, language) {
     new Paragraph({
       children: [
         new TextRun({ text: `${whatLabel}: ${whatScore ? whatScore.toFixed(2) : '-'}`, bold: true }),
+        ...(hasScfVeto ? [new TextRun({ text: ` ${scfVetoLabel}`, bold: true, color: COLORS.red })] : []),
         new TextRun({ text: '     |     ' }),
         new TextRun({ text: `${howLabel}: ${howScore ? howScore.toFixed(2) : '-'}`, bold: true })
       ],
@@ -300,33 +304,67 @@ function createGoalsSection(formData, language) {
     nl: { 1: 'Onder verwachting', 2: 'Voldoet aan verwachting', 3: 'Overtreft verwachting' },
     es: { 1: 'Por debajo', 2: 'Cumple', 3: 'Supera' }
   };
+  const sectionLabels = {
+    en: { standard: 'Standard Goals', kar: 'KAR Objectives' },
+    nl: { standard: 'Standaard doelen', kar: 'KAR doelstellingen' },
+    es: { standard: 'Objetivos estándar', kar: 'Objetivos KAR' }
+  };
 
-  const goals = (formData.goals || []).filter(g => g.title.trim());
+  const allGoals = (formData.goals || []).filter(g => g.title.trim());
+  const standardGoals = allGoals.filter(g => g.goalType !== GOAL_TYPES.KAR);
+  const karGoals = allGoals.filter(g => g.goalType === GOAL_TYPES.KAR);
   const labels = scoreLabels[language] || scoreLabels.en;
+  const sectLabels = sectionLabels[language] || sectionLabels.en;
 
   const elements = [createSectionTitle(title)];
 
-  goals.forEach((goal, index) => {
-    elements.push(
-      new Paragraph({
-        children: [
-          new TextRun({ text: `${index + 1}. ${goal.title}`, bold: true, size: 24 }),
-          new TextRun({ text: ` (${goal.weight}%)`, color: COLORS.text })
-        ],
-        spacing: { before: 200 }
-      }),
-      new Paragraph({
-        children: [new TextRun({ text: goal.description || '' })],
-        spacing: { after: 100 }
-      }),
-      new Paragraph({
-        children: [
-          new TextRun({ text: `Score: ${goal.score} - ${labels[goal.score] || ''}`, italics: true, color: COLORS.accent })
-        ],
-        spacing: { after: 200 }
-      })
-    );
-  });
+  // Helper to add goals
+  const addGoals = (goals, startIndex, isKar = false) => {
+    goals.forEach((goal, idx) => {
+      const goalNumber = startIndex + idx + 1;
+      elements.push(
+        new Paragraph({
+          children: [
+            ...(isKar ? [new TextRun({ text: '[KAR] ', bold: true, color: COLORS.accent })] : []),
+            new TextRun({ text: `${goalNumber}. ${goal.title}`, bold: true, size: 24 }),
+            new TextRun({ text: ` (${goal.weight}%)`, color: COLORS.text })
+          ],
+          spacing: { before: 200 }
+        }),
+        new Paragraph({
+          children: [new TextRun({ text: goal.description || '' })],
+          spacing: { after: 100 }
+        }),
+        new Paragraph({
+          children: [
+            new TextRun({ text: `Score: ${goal.score} - ${labels[goal.score] || ''}`, italics: true, color: COLORS.accent })
+          ],
+          spacing: { after: 200 }
+        })
+      );
+    });
+  };
+
+  // Add standard goals
+  if (standardGoals.length > 0) {
+    if (karGoals.length > 0) {
+      // Only add subsection header if both types exist
+      elements.push(new Paragraph({
+        children: [new TextRun({ text: sectLabels.standard, bold: true, size: 22, color: COLORS.primary })],
+        spacing: { before: 150, after: 100 }
+      }));
+    }
+    addGoals(standardGoals, 0, false);
+  }
+
+  // Add KAR objectives
+  if (karGoals.length > 0) {
+    elements.push(new Paragraph({
+      children: [new TextRun({ text: sectLabels.kar, bold: true, size: 22, color: COLORS.accent })],
+      spacing: { before: 200, after: 100 }
+    }));
+    addGoals(karGoals, standardGoals.length, true);
+  }
 
   return elements;
 }
@@ -342,6 +380,8 @@ function createCompetenciesSection(formData, language) {
   const levelComps = competencies[selectedLevel] || [];
   const scores = formData.competencyScores || {};
   const notes = formData.competencyNotes || {};
+  const behaviorScores = formData.behaviorScores || {};
+  const detailedMode = formData.detailedBehaviorMode;
   const scoreLabels = {
     en: { 1: 'Below expectations', 2: 'Meets expectations', 3: 'Exceeds expectations' },
     nl: { 1: 'Onder verwachting', 2: 'Voldoet aan verwachting', 3: 'Overtreft verwachting' },
@@ -351,6 +391,11 @@ function createCompetenciesSection(formData, language) {
     en: 'Explanation',
     nl: 'Toelichting',
     es: 'Explicación'
+  };
+  const computedLabel = {
+    en: 'Computed from behaviors',
+    nl: 'Berekend uit gedragingen',
+    es: 'Calculado de comportamientos'
   };
   const labels = scoreLabels[language] || scoreLabels.en;
 
@@ -368,6 +413,9 @@ function createCompetenciesSection(formData, language) {
   levelComps.forEach((comp) => {
     const score = scores[comp.id];
     const note = notes[comp.id];
+    const compBehaviorScores = behaviorScores[comp.id];
+    const indicators = comp.indicators[language] || comp.indicators.en;
+
     elements.push(
       new Paragraph({
         children: [
@@ -377,18 +425,62 @@ function createCompetenciesSection(formData, language) {
       }),
       new Paragraph({
         children: [new TextRun({ text: comp.title[language] || comp.title.en, size: 22 })]
-      }),
-      new Paragraph({
-        children: [
-          new TextRun({
-            text: score ? `Score: ${score} - ${labels[score]}` : 'Not scored',
-            italics: true,
-            color: score === 1 ? COLORS.red : COLORS.accent
-          })
-        ],
-        spacing: { after: note ? 50 : 100 }
       })
     );
+
+    // Add behavior-level scores if in detailed mode and behaviors were scored
+    if (detailedMode && compBehaviorScores && Object.keys(compBehaviorScores).length > 0) {
+      indicators.forEach((indicator, idx) => {
+        const behaviorScore = compBehaviorScores[idx];
+        elements.push(
+          new Paragraph({
+            children: [
+              new TextRun({ text: `  ${idx + 1}. ${indicator}`, size: 18 }),
+              new TextRun({
+                text: behaviorScore ? ` - Score: ${behaviorScore}` : '',
+                italics: true,
+                size: 18,
+                color: behaviorScore === 1 ? COLORS.red : '666666'
+              })
+            ],
+            spacing: { after: 30 }
+          })
+        );
+      });
+
+      // Show computed score info
+      const computedResult = calculateCompetencyScoreFromBehaviors(compBehaviorScores, indicators.length);
+      if (computedResult) {
+        elements.push(
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `${computedLabel[language] || computedLabel.en}: ${computedResult.score} (avg: ${computedResult.average})`,
+                italics: true,
+                size: 18,
+                color: computedResult.hasVeto ? COLORS.red : COLORS.accent
+              }),
+              ...(computedResult.hasVeto ? [new TextRun({ text: ' [VETO]', bold: true, size: 18, color: COLORS.red })] : [])
+            ],
+            spacing: { before: 50, after: note ? 50 : 100 }
+          })
+        );
+      }
+    } else {
+      // Simple mode - just show the score
+      elements.push(
+        new Paragraph({
+          children: [
+            new TextRun({
+              text: score ? `Score: ${score} - ${labels[score]}` : 'Not scored',
+              italics: true,
+              color: score === 1 ? COLORS.red : COLORS.accent
+            })
+          ],
+          spacing: { after: note ? 50 : 100 }
+        })
+      );
+    }
 
     // Add note if present
     if (note && note.trim()) {

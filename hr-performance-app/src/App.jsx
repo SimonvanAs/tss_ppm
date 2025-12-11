@@ -26,6 +26,9 @@ import {
   AllReviews,
   HistoryDashboard,
   AnalyticsDashboard,
+  CalibrationList,
+  CalibrationSession,
+  CalibrationReport,
   AdminLayout,
   AdminDashboard,
   UserManagement,
@@ -367,6 +370,58 @@ function AppRouter() {
                 <FormProvider>
                   <PageWrapper>
                     <AnalyticsDashboard />
+                  </PageWrapper>
+                </FormProvider>
+              </WhisperProvider>
+            </LanguageProvider>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Calibration Sessions - HR+ only */}
+      <Route
+        path="/calibration"
+        element={
+          <ProtectedRoute roles={['HR', 'OPCO_ADMIN', 'TSS_SUPER_ADMIN']}>
+            <LanguageProvider>
+              <WhisperProvider>
+                <FormProvider>
+                  <PageWrapper>
+                    <CalibrationList />
+                  </PageWrapper>
+                </FormProvider>
+              </WhisperProvider>
+            </LanguageProvider>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/calibration/:id"
+        element={
+          <ProtectedRoute roles={['HR', 'OPCO_ADMIN', 'TSS_SUPER_ADMIN']}>
+            <LanguageProvider>
+              <WhisperProvider>
+                <FormProvider>
+                  <PageWrapper>
+                    <CalibrationSession />
+                  </PageWrapper>
+                </FormProvider>
+              </WhisperProvider>
+            </LanguageProvider>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/calibration/:id/report"
+        element={
+          <ProtectedRoute roles={['HR', 'OPCO_ADMIN', 'TSS_SUPER_ADMIN']}>
+            <LanguageProvider>
+              <WhisperProvider>
+                <FormProvider>
+                  <PageWrapper>
+                    <CalibrationReport />
                   </PageWrapper>
                 </FormProvider>
               </WhisperProvider>

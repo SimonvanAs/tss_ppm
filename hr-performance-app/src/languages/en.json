@@ -7,6 +7,7 @@
     "hrDashboard": "HR Dashboard",
     "allReviews": "All Reviews",
     "analytics": "Analytics",
+    "calibration": "Calibration",
     "admin": "Admin"
   },
   "pages": {
@@ -187,6 +188,120 @@
         "excel": "Export to Excel",
         "pdf": "Export to PDF"
       }
+    },
+    "calibration": {
+      "title": "Calibration Sessions",
+      "subtitle": "Ensure consistency and fairness across performance ratings",
+      "createSession": "Create Session",
+      "sessionName": "Session Name",
+      "sessionNamePlaceholder": "e.g., Q4 2024 End-Year Calibration",
+      "year": "Year",
+      "scope": {
+        "title": "Scope",
+        "manager": "Manager Team",
+        "businessUnit": "Business Unit",
+        "company": "Company-Wide"
+      },
+      "status": {
+        "title": "Status",
+        "all": "All Statuses",
+        "draft": "Draft",
+        "scheduled": "Scheduled",
+        "inProgress": "In Progress",
+        "pendingApproval": "Pending Approval",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+      },
+      "distribution": {
+        "title": "Rating Distribution",
+        "current": "Current",
+        "target": "Target",
+        "calibrated": "Calibrated",
+        "original": "Original",
+        "topTalent": "Top Talent",
+        "solidPerformer": "Solid Performer",
+        "needsAttention": "Needs Attention",
+        "concern": "Concern",
+        "enforceTarget": "Enforce Target Distribution",
+        "targetHelp": "Set target percentages for each rating category"
+      },
+      "actions": {
+        "start": "Start Session",
+        "complete": "Complete Calibration",
+        "adjust": "Adjust Rating",
+        "flag": "Flag for Review",
+        "unflag": "Remove Flag",
+        "applyChanges": "Apply All Changes",
+        "exportReport": "Export Report",
+        "cancel": "Cancel Session",
+        "delete": "Delete Session",
+        "view": "View",
+        "edit": "Edit"
+      },
+      "anomalies": {
+        "title": "Anomalies Detected",
+        "noAnomalies": "No anomalies detected",
+        "allClear": "All rating patterns appear normal",
+        "highRatings": "Unusually high ratings",
+        "lowRatings": "Unusually low ratings",
+        "deviation": "Significant deviation from average",
+        "alerts": "alerts",
+        "warnings": "warnings"
+      },
+      "adjustment": {
+        "original": "Original",
+        "calibrated": "Calibrated",
+        "notes": "Adjustment Notes",
+        "notesPlaceholder": "Explain the reason for this adjustment...",
+        "adjustedBy": "Adjusted by",
+        "whatScore": "WHAT Score",
+        "howScore": "HOW Score",
+        "save": "Save Adjustment",
+        "cancel": "Cancel"
+      },
+      "grid": {
+        "title": "Calibration Grid",
+        "clickToSelect": "Click a cell to view employees",
+        "employees": "employees",
+        "adjusted": "adjusted",
+        "whatAxis": "WHAT (Results)",
+        "howAxis": "HOW (Behaviors)"
+      },
+      "employees": {
+        "title": "Employees",
+        "inCell": "in {{position}}",
+        "noEmployees": "No employees in this position",
+        "manager": "Manager",
+        "flagged": "Flagged",
+        "adjusted": "Adjusted"
+      },
+      "comparison": {
+        "title": "Manager Comparison",
+        "avgWhat": "Avg WHAT",
+        "avgHow": "Avg HOW",
+        "teamSize": "Team Size",
+        "deviation": "Deviation",
+        "belowAvg": "Below Avg",
+        "aboveAvg": "Above Avg"
+      },
+      "session": {
+        "participants": "Participants",
+        "facilitator": "Facilitator",
+        "manager": "Manager",
+        "observer": "Observer",
+        "addParticipant": "Add Participant",
+        "scheduledFor": "Scheduled for",
+        "startedAt": "Started",
+        "completedAt": "Completed",
+        "createdBy": "Created by",
+        "totalEmployees": "Total Employees",
+        "adjustments": "Adjustments Made",
+        "flaggedReviews": "Flagged Reviews"
+      },
+      "noSessions": "No calibration sessions",
+      "noSessionsDesc": "Create your first calibration session to start reviewing and adjusting ratings across teams",
+      "loading": "Loading calibration data...",
+      "error": "Failed to load calibration data"
     }
   },
   "signature": {

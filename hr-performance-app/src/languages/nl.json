@@ -7,6 +7,7 @@
     "hrDashboard": "HR Dashboard",
     "allReviews": "Alle Beoordelingen",
     "analytics": "Analytics",
+    "calibration": "Kalibratie",
     "admin": "Beheer"
   },
   "pages": {
@@ -187,6 +188,120 @@
         "excel": "Exporteer naar Excel",
         "pdf": "Exporteer naar PDF"
       }
+    },
+    "calibration": {
+      "title": "Kalibratie Sessies",
+      "subtitle": "Zorg voor consistentie en eerlijkheid in prestatie beoordelingen",
+      "createSession": "Sessie Aanmaken",
+      "sessionName": "Sessienaam",
+      "sessionNamePlaceholder": "bijv. Q4 2024 Eindejaars Kalibratie",
+      "year": "Jaar",
+      "scope": {
+        "title": "Scope",
+        "manager": "Manager Team",
+        "businessUnit": "Business Unit",
+        "company": "Bedrijfsbreed"
+      },
+      "status": {
+        "title": "Status",
+        "all": "Alle Statussen",
+        "draft": "Concept",
+        "scheduled": "Gepland",
+        "inProgress": "In Uitvoering",
+        "pendingApproval": "Wacht op Goedkeuring",
+        "completed": "Afgerond",
+        "cancelled": "Geannuleerd"
+      },
+      "distribution": {
+        "title": "Beoordelingsverdeling",
+        "current": "Huidig",
+        "target": "Doel",
+        "calibrated": "Gekalibreerd",
+        "original": "Origineel",
+        "topTalent": "Top Talent",
+        "solidPerformer": "Solide Presteerder",
+        "needsAttention": "Aandacht Nodig",
+        "concern": "Zorgpunt",
+        "enforceTarget": "Doelverdeling Afdwingen",
+        "targetHelp": "Stel doelpercentages in voor elke beoordelingscategorie"
+      },
+      "actions": {
+        "start": "Sessie Starten",
+        "complete": "Kalibratie Afronden",
+        "adjust": "Beoordeling Aanpassen",
+        "flag": "Markeren voor Review",
+        "unflag": "Markering Verwijderen",
+        "applyChanges": "Alle Wijzigingen Toepassen",
+        "exportReport": "Rapport Exporteren",
+        "cancel": "Sessie Annuleren",
+        "delete": "Sessie Verwijderen",
+        "view": "Bekijken",
+        "edit": "Bewerken"
+      },
+      "anomalies": {
+        "title": "Afwijkingen Gedetecteerd",
+        "noAnomalies": "Geen afwijkingen gedetecteerd",
+        "allClear": "Alle beoordelingspatronen lijken normaal",
+        "highRatings": "Ongewoon hoge beoordelingen",
+        "lowRatings": "Ongewoon lage beoordelingen",
+        "deviation": "Significante afwijking van gemiddelde",
+        "alerts": "waarschuwingen",
+        "warnings": "meldingen"
+      },
+      "adjustment": {
+        "original": "Origineel",
+        "calibrated": "Gekalibreerd",
+        "notes": "Aanpassingsnotities",
+        "notesPlaceholder": "Leg de reden voor deze aanpassing uit...",
+        "adjustedBy": "Aangepast door",
+        "whatScore": "WAT Score",
+        "howScore": "HOE Score",
+        "save": "Aanpassing Opslaan",
+        "cancel": "Annuleren"
+      },
+      "grid": {
+        "title": "Kalibratie Grid",
+        "clickToSelect": "Klik op een cel om medewerkers te bekijken",
+        "employees": "medewerkers",
+        "adjusted": "aangepast",
+        "whatAxis": "WAT (Resultaten)",
+        "howAxis": "HOE (Gedrag)"
+      },
+      "employees": {
+        "title": "Medewerkers",
+        "inCell": "in {{position}}",
+        "noEmployees": "Geen medewerkers in deze positie",
+        "manager": "Manager",
+        "flagged": "Gemarkeerd",
+        "adjusted": "Aangepast"
+      },
+      "comparison": {
+        "title": "Manager Vergelijking",
+        "avgWhat": "Gem. WAT",
+        "avgHow": "Gem. HOE",
+        "teamSize": "Teamgrootte",
+        "deviation": "Afwijking",
+        "belowAvg": "Onder Gem.",
+        "aboveAvg": "Boven Gem."
+      },
+      "session": {
+        "participants": "Deelnemers",
+        "facilitator": "Facilitator",
+        "manager": "Manager",
+        "observer": "Waarnemer",
+        "addParticipant": "Deelnemer Toevoegen",
+        "scheduledFor": "Gepland voor",
+        "startedAt": "Gestart",
+        "completedAt": "Afgerond",
+        "createdBy": "Aangemaakt door",
+        "totalEmployees": "Totaal Medewerkers",
+        "adjustments": "Aanpassingen Gemaakt",
+        "flaggedReviews": "Gemarkeerde Beoordelingen"
+      },
+      "noSessions": "Geen kalibratie sessies",
+      "noSessionsDesc": "Maak uw eerste kalibratie sessie aan om beoordelingen te reviewen en aan te passen",
+      "loading": "Kalibratie gegevens laden...",
+      "error": "Kalibratie gegevens konden niet worden geladen"
     }
   },
   "signature": {

@@ -26,12 +26,13 @@ model OpCo {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  users            User[]
-  functionTitles   FunctionTitle[]
-  tovLevels        TovLevel[]
-  competencyLevels CompetencyLevel[]
-  reviewCycles     ReviewCycle[]
-  businessUnits    BusinessUnit[]
+  users               User[]
+  functionTitles      FunctionTitle[]
+  tovLevels           TovLevel[]
+  competencyLevels    CompetencyLevel[]
+  reviewCycles        ReviewCycle[]
+  businessUnits       BusinessUnit[]
+  calibrationSessions CalibrationSession[]
 
   @@map("opcos")
 }
@@ -76,6 +77,11 @@ model User {
   goalChangeRequests GoalChangeRequest[] @relation("RequestedBy")
   goalApprovals      GoalChangeRequest[] @relation("ApprovedBy")
   auditLogs          AuditLog[]
+
+  // Calibration relations
+  calibrationSessionsCreated CalibrationSession[]     @relation("CalibrationCreator")
+  calibrationAdjustments     CalibrationItem[]        @relation("CalibrationAdjuster")
+  calibrationParticipations  CalibrationParticipant[]
 
   @@unique([opcoId, email])
   @@index([opcoId])
@@ -122,6 +128,9 @@ model BusinessUnit {
 
   // Users in this BU
   users User[] @relation("BUMembership")
+
+  // Calibration sessions scoped to this BU
+  calibrationSessions CalibrationSession[]
 
   @@unique([opcoId, code])
   @@index([opcoId])
@@ -268,6 +277,7 @@ model ReviewCycle {
   competencyScores   CompetencyScore[]
   goalChangeRequests GoalChangeRequest[]
   auditLogs          AuditLog[]
+  calibrationItems   CalibrationItem[]
 
   @@unique([opcoId, employeeId, year])
   @@index([opcoId])
@@ -462,4 +472,125 @@ model AuditLog {
   @@index([userId])
   @@index([createdAt])
   @@map("audit_logs")
+}
+
+// ============================================
+// CALIBRATION SESSIONS
+// ============================================
+
+/// Calibration session for reviewing ratings across teams
+model CalibrationSession {
+  id          String            @id @default(uuid())
+  name        String            // e.g., "Q4 2024 End-Year Calibration"
+  year        Int
+  status      CalibrationStatus @default(DRAFT)
+  scope       CalibrationScope  @default(BUSINESS_UNIT)
+
+  // Target distribution (optional - e.g., 20-70-10 rule)
+  targetDistribution  Json?   // { topTalent: 20, solid: 70, concern: 10 }
+  enforceDistribution Boolean @default(false)
+
+  // Session timing
+  scheduledAt DateTime?
+  startedAt   DateTime?
+  completedAt DateTime?
+
+  // Metadata
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Tenant & Owner
+  opcoId         String
+  opco           OpCo          @relation(fields: [opcoId], references: [id])
+  businessUnitId String?
+  businessUnit   BusinessUnit? @relation(fields: [businessUnitId], references: [id])
+  createdById    String
+  createdBy      User          @relation("CalibrationCreator", fields: [createdById], references: [id])
+
+  // Relations
+  items        CalibrationItem[]
+  participants CalibrationParticipant[]
+
+  @@index([opcoId])
+  @@index([year])
+  @@index([status])
+  @@map("calibration_sessions")
+}
+
+enum CalibrationStatus {
+  DRAFT            // Session being prepared
+  SCHEDULED        // Session scheduled but not started
+  IN_PROGRESS      // Active calibration meeting
+  PENDING_APPROVAL // Awaiting final approval
+  COMPLETED        // Calibration finalized
+  CANCELLED
+}
+
+enum CalibrationScope {
+  MANAGER       // Single manager's team
+  BUSINESS_UNIT // Entire business unit
+  COMPANY       // Company-wide calibration
+}
+
+/// Individual review included in calibration
+model CalibrationItem {
+  id String @id @default(uuid())
+
+  // Original scores (snapshot at session start)
+  originalWhatScore Float
+  originalHowScore  Float
+  originalGridPos   String // e.g., "B2"
+
+  // Calibrated scores (after adjustments)
+  calibratedWhatScore Float?
+  calibratedHowScore  Float?
+  calibratedGridPos   String?
+
+  // Adjustment tracking
+  isAdjusted      Boolean   @default(false)
+  adjustmentNotes String?   @db.Text
+  adjustedAt      DateTime?
+  adjustedById    String?
+  adjustedBy      User?     @relation("CalibrationAdjuster", fields: [adjustedById], references: [id])
+
+  // Flags for attention
+  flaggedForReview Boolean @default(false)
+  flagReason       String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  sessionId     String
+  session       CalibrationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  reviewCycleId String
+  reviewCycle   ReviewCycle        @relation(fields: [reviewCycleId], references: [id])
+
+  @@unique([sessionId, reviewCycleId])
+  @@index([sessionId])
+  @@map("calibration_items")
+}
+
+/// Participants in calibration session (facilitators, observers)
+model CalibrationParticipant {
+  id   String                     @id @default(uuid())
+  role CalibrationParticipantRole @default(OBSERVER)
+
+  joinedAt DateTime?
+  leftAt   DateTime?
+
+  sessionId String
+  session   CalibrationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User               @relation(fields: [userId], references: [id])
+
+  @@unique([sessionId, userId])
+  @@map("calibration_participants")
+}
+
+enum CalibrationParticipantRole {
+  FACILITATOR // Can make adjustments
+  MANAGER     // Can view own team, suggest changes
+  OBSERVER    // Read-only access
 }

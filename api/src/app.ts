@@ -14,6 +14,7 @@ import { usersRoutes } from './modules/users/users.routes.js';
 import { reviewsRoutes } from './modules/reviews/reviews.routes.js';
 import { adminRoutes } from './modules/admin/admin.routes.js';
 import { analyticsRoutes } from './modules/analytics/analytics.routes.js';
+import { calibrationRoutes } from './modules/calibration/calibration.routes.js';
 import { healthRoutes } from './modules/health/health.routes.js';
 
 export async function buildApp(): Promise<FastifyInstance> {
@@ -88,6 +89,7 @@ export async function buildApp(): Promise<FastifyInstance> {
   await app.register(reviewsRoutes, { prefix: '/api/v1/reviews' });
   await app.register(adminRoutes, { prefix: '/api/v1/admin' });
   await app.register(analyticsRoutes, { prefix: '/api/v1/analytics' });
+  await app.register(calibrationRoutes, { prefix: '/api/v1/calibration' });
 
   // Global error handler
   app.setErrorHandler((error, request, reply) => {

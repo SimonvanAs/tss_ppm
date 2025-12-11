@@ -6,6 +6,11 @@ export { AllReviews } from './AllReviews';
 export { HistoryDashboard } from './HistoryDashboard';
 export { AnalyticsDashboard } from './AnalyticsDashboard';
 
+// Calibration pages
+export { CalibrationList } from './CalibrationList';
+export { CalibrationSession } from './CalibrationSession';
+export { CalibrationReport } from './CalibrationReport';
+
 // Admin pages
 export {
   AdminLayout,

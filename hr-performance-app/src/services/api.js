@@ -259,4 +259,30 @@ export const analyticsApi = {
   getBusinessUnitsSummary: (params = {}) => apiClient.get('/analytics/business-units', params),
 };
 
+// Calibration
+export const calibrationApi = {
+  // Sessions
+  getSessions: (params = {}) => apiClient.get('/calibration/sessions', params),
+  getSession: (id) => apiClient.get(`/calibration/sessions/${id}`),
+  createSession: (data) => apiClient.post('/calibration/sessions', data),
+  updateSession: (id, data) => apiClient.patch(`/calibration/sessions/${id}`, data),
+  deleteSession: (id) => apiClient.delete(`/calibration/sessions/${id}`),
+  startSession: (id) => apiClient.post(`/calibration/sessions/${id}/start`),
+  completeSession: (id, data = {}) => apiClient.post(`/calibration/sessions/${id}/complete`, data),
+
+  // Items
+  getItems: (sessionId, params = {}) => apiClient.get(`/calibration/sessions/${sessionId}/items`, params),
+  adjustItem: (sessionId, itemId, data) => apiClient.patch(`/calibration/sessions/${sessionId}/items/${itemId}`, data),
+  flagItem: (sessionId, itemId, data) => apiClient.post(`/calibration/sessions/${sessionId}/items/${itemId}/flag`, data),
+
+  // Analytics
+  getDistribution: (sessionId) => apiClient.get(`/calibration/sessions/${sessionId}/distribution`),
+  getComparison: (sessionId) => apiClient.get(`/calibration/sessions/${sessionId}/comparison`),
+  getAnomalies: (sessionId) => apiClient.get(`/calibration/sessions/${sessionId}/anomalies`),
+
+  // Participants
+  addParticipant: (sessionId, data) => apiClient.post(`/calibration/sessions/${sessionId}/participants`, data),
+  removeParticipant: (sessionId, userId) => apiClient.delete(`/calibration/sessions/${sessionId}/participants/${userId}`),
+};
+
 export default apiClient;

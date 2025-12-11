@@ -7,6 +7,7 @@
     "hrDashboard": "Panel de RRHH",
     "allReviews": "Todas las Evaluaciones",
     "analytics": "Análisis",
+    "calibration": "Calibración",
     "admin": "Administrar"
   },
   "pages": {
@@ -187,6 +188,120 @@
         "excel": "Exportar a Excel",
         "pdf": "Exportar a PDF"
       }
+    },
+    "calibration": {
+      "title": "Sesiones de Calibración",
+      "subtitle": "Garantice consistencia y equidad en las calificaciones de desempeño",
+      "createSession": "Crear Sesión",
+      "sessionName": "Nombre de Sesión",
+      "sessionNamePlaceholder": "ej. Calibración de Fin de Año Q4 2024",
+      "year": "Año",
+      "scope": {
+        "title": "Alcance",
+        "manager": "Equipo del Gerente",
+        "businessUnit": "Unidad de Negocio",
+        "company": "Toda la Empresa"
+      },
+      "status": {
+        "title": "Estado",
+        "all": "Todos los Estados",
+        "draft": "Borrador",
+        "scheduled": "Programado",
+        "inProgress": "En Progreso",
+        "pendingApproval": "Pendiente de Aprobación",
+        "completed": "Completado",
+        "cancelled": "Cancelado"
+      },
+      "distribution": {
+        "title": "Distribución de Calificaciones",
+        "current": "Actual",
+        "target": "Objetivo",
+        "calibrated": "Calibrado",
+        "original": "Original",
+        "topTalent": "Talento Superior",
+        "solidPerformer": "Desempeño Sólido",
+        "needsAttention": "Necesita Atención",
+        "concern": "Preocupación",
+        "enforceTarget": "Aplicar Distribución Objetivo",
+        "targetHelp": "Establecer porcentajes objetivo para cada categoría de calificación"
+      },
+      "actions": {
+        "start": "Iniciar Sesión",
+        "complete": "Completar Calibración",
+        "adjust": "Ajustar Calificación",
+        "flag": "Marcar para Revisión",
+        "unflag": "Quitar Marca",
+        "applyChanges": "Aplicar Todos los Cambios",
+        "exportReport": "Exportar Informe",
+        "cancel": "Cancelar Sesión",
+        "delete": "Eliminar Sesión",
+        "view": "Ver",
+        "edit": "Editar"
+      },
+      "anomalies": {
+        "title": "Anomalías Detectadas",
+        "noAnomalies": "No se detectaron anomalías",
+        "allClear": "Todos los patrones de calificación parecen normales",
+        "highRatings": "Calificaciones inusualmente altas",
+        "lowRatings": "Calificaciones inusualmente bajas",
+        "deviation": "Desviación significativa del promedio",
+        "alerts": "alertas",
+        "warnings": "advertencias"
+      },
+      "adjustment": {
+        "original": "Original",
+        "calibrated": "Calibrado",
+        "notes": "Notas de Ajuste",
+        "notesPlaceholder": "Explique la razón de este ajuste...",
+        "adjustedBy": "Ajustado por",
+        "whatScore": "Puntuación QUÉ",
+        "howScore": "Puntuación CÓMO",
+        "save": "Guardar Ajuste",
+        "cancel": "Cancelar"
+      },
+      "grid": {
+        "title": "Matriz de Calibración",
+        "clickToSelect": "Haga clic en una celda para ver empleados",
+        "employees": "empleados",
+        "adjusted": "ajustado",
+        "whatAxis": "QUÉ (Resultados)",
+        "howAxis": "CÓMO (Comportamientos)"
+      },
+      "employees": {
+        "title": "Empleados",
+        "inCell": "en {{position}}",
+        "noEmployees": "No hay empleados en esta posición",
+        "manager": "Gerente",
+        "flagged": "Marcado",
+        "adjusted": "Ajustado"
+      },
+      "comparison": {
+        "title": "Comparación de Gerentes",
+        "avgWhat": "Prom. QUÉ",
+        "avgHow": "Prom. CÓMO",
+        "teamSize": "Tamaño del Equipo",
+        "deviation": "Desviación",
+        "belowAvg": "Bajo Prom.",
+        "aboveAvg": "Sobre Prom."
+      },
+      "session": {
+        "participants": "Participantes",
+        "facilitator": "Facilitador",
+        "manager": "Gerente",
+        "observer": "Observador",
+        "addParticipant": "Agregar Participante",
+        "scheduledFor": "Programado para",
+        "startedAt": "Iniciado",
+        "completedAt": "Completado",
+        "createdBy": "Creado por",
+        "totalEmployees": "Total de Empleados",
+        "adjustments": "Ajustes Realizados",
+        "flaggedReviews": "Evaluaciones Marcadas"
+      },
+      "noSessions": "Sin sesiones de calibración",
+      "noSessionsDesc": "Cree su primera sesión de calibración para comenzar a revisar y ajustar calificaciones",
+      "loading": "Cargando datos de calibración...",
+      "error": "No se pudieron cargar los datos de calibración"
     }
   },
   "signature": {

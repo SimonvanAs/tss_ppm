@@ -33,7 +33,7 @@ export function AllReviews() {
         }),
       ]);
 
-      setUsers(usersData.users || []);
+      setUsers(usersData.data || []);
       setReviews(reviewsData.reviews || []);
     } catch (err) {
       console.error('Failed to load reviews:', err);

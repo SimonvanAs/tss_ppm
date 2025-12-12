@@ -32,7 +32,7 @@ export function HRDashboard() {
         reviewsApi.list({ year: new Date().getFullYear() }),
       ]);
 
-      const users = usersData.users || [];
+      const users = usersData.data || [];
       const reviews = reviewsData.reviews || [];
 
       // Calculate stats

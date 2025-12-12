@@ -249,7 +249,7 @@ export function TeamOverview() {
 
       // Get direct reports for current manager
       const usersData = await usersApi.list({ managerId: user?.id });
-      const users = usersData.users || [];
+      const users = usersData.data || [];
 
       // Load reviews for each team member
       const teamWithReviews = await Promise.all(

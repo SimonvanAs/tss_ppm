@@ -24,7 +24,7 @@ export function Approvals() {
 
       // Get all reviews for team members
       const usersData = await usersApi.list({ managerId: user?.id });
-      const teamMembers = usersData.users || [];
+      const teamMembers = usersData.data || [];
 
       // Collect all pending change requests from team reviews
       const allChangeRequests = [];

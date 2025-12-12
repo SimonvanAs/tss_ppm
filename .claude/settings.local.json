@@ -45,7 +45,13 @@
       "Bash(gh issue list:*)",
       "Bash(find:*)",
       "Bash(ls:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(gh issue comment:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx prisma generate)",
+      "Bash(DATABASE_URL=\"postgresql://ppm:changeme@localhost:5432/tss_ppm\" npx prisma migrate:*)",
+      "Bash(npx prisma migrate diff:*)",
+      "Bash(/c/Program Files/Docker/Docker/resources/bin/docker compose build api)"
     ],
     "deny": [],
     "ask": []

@@ -83,10 +83,10 @@ export function MyReviews() {
       <div className="page">
         <div className="card">
           <div className="empty-state">
-            <p className="empty-state-title">Error loading reviews</p>
+            <p className="empty-state-title">{t('pages.myReviews.errorLoading') || 'Error loading reviews'}</p>
             <p className="empty-state-text">{error}</p>
             <button className="btn btn-primary" onClick={loadReviews}>
-              Try Again
+              {t('common.retry')}
             </button>
           </div>
         </div>

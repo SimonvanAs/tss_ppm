@@ -662,7 +662,10 @@ export function PrivacyPolicy({ onBack }) {
       </div>
 
       <footer className="app-footer">
-        <span className="app-footer-ai">Made with AI assistance</span>
+        <span className="app-footer-ai">
+          <span>🤖</span>
+          <span>Made with AI assistance</span>
+        </span>
         <a
           href="https://github.com/SimonvanAs/tss_ppm"
           target="_blank"

@@ -139,6 +139,19 @@ export function CalibrationSession() {
     }
   };
 
+  // Convert API enum values to camelCase for translation keys
+  // e.g., "IN_PROGRESS" -> "inProgress", "BUSINESS_UNIT" -> "businessUnit"
+  const toCamelCase = (str) => {
+    if (!str) return '';
+    return str
+      .toLowerCase()
+      .split('_')
+      .map((word, index) => 
+        index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
+      )
+      .join('');
+  };
+
   // Filter items by selected grid cell
   const filteredItems = selectedCell
     ? items.filter(item => {
@@ -153,7 +166,7 @@ export function CalibrationSession() {
       <div className="page">
         <div className="loading-state">
           <div className="loading-spinner-small"></div>
-          <p>{t('common.loading') || 'Loading...'}</p>
+          <p>{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -165,7 +178,7 @@ export function CalibrationSession() {
         <div className="error-state">
           <p>{t('pages.calibration.error')}</p>
           <Link to="/calibration" className="btn btn-primary">
-            {t('common.goBack') || 'Go Back'}
+            {t('common.goBack')}
           </Link>
         </div>
       </div>
@@ -189,7 +202,7 @@ export function CalibrationSession() {
           <div>
             <h1 className="page-title">{session.name}</h1>
             <p className="page-subtitle">
-              {session.year} • {session.businessUnit?.name || (t(`pages.calibration.scope.${session.scope.toLowerCase()}`) || session.scope)}
+              {session.year} • {session.businessUnit?.name || (t(`pages.calibration.scope.${toCamelCase(session.scope)}`) || session.scope)}
               {session.itemCount > 0 && ` • ${session.itemCount} ${t('pages.calibration.session.totalEmployees')}`}
             </p>
           </div>
@@ -203,7 +216,7 @@ export function CalibrationSession() {
               borderColor: getStatusColor(session.status),
             }}
           >
-            {t(`pages.calibration.status.${session.status.toLowerCase()}`) || session.status}
+            {t(`pages.calibration.status.${toCamelCase(session.status)}`) || session.status}
           </span>
 
           {canStart && (
@@ -270,9 +283,9 @@ export function CalibrationSession() {
           <svg viewBox="0 0 24 24" width="64" height="64" fill="#004A91" style={{ marginBottom: 16 }}>
             <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z" />
           </svg>
-          <h2>Ready to Start Calibration</h2>
+          <h2>{t('pages.calibration.readyToStart') || 'Ready to Start Calibration'}</h2>
           <p style={{ color: '#666', maxWidth: 500, margin: '16px auto' }}>
-            Starting the calibration will snapshot all end-year review scores for the selected scope. You can then review and adjust ratings as needed.
+            {t('pages.calibration.readyToStartDesc') || 'Starting the calibration will snapshot all end-year review scores for the selected scope. You can then review and adjust ratings as needed.'}
           </p>
           <button
             className="btn btn-primary btn-large"

@@ -315,6 +315,9 @@
 .team-grid-card {
   position: sticky;
   top: 100px;
+  width: 100%;
+  max-width: 320px;
+  overflow: hidden;
 }
 
 .team-table-card {
@@ -324,6 +327,10 @@
 /* Team 9-Grid Visualization */
 .team-grid-container {
   padding: 8px;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .team-9grid {
@@ -332,12 +339,24 @@
   align-items: center;
   gap: 8px;
   margin: 16px 0;
+  width: 100%;
+  max-width: 100%;
+  position: relative;
+}
+
+.grid-cells-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
 }
 
 .grid-cells {
   display: flex;
   align-items: center;
   gap: 4px;
+  justify-content: center;
 }
 
 .grid-how-labels {
@@ -348,6 +367,7 @@
   font-weight: 600;
   color: #666;
   padding-right: 8px;
+  flex-shrink: 0;
 }
 
 .grid-how-labels span {
@@ -362,6 +382,7 @@
   grid-template-columns: repeat(3, 70px);
   grid-template-rows: repeat(3, 70px);
   gap: 4px;
+  flex-shrink: 0;
 }
 
 .grid-cell {
@@ -400,6 +421,9 @@
   font-weight: 600;
   color: #666;
   padding-top: 8px;
+  justify-content: center;
+  width: fit-content;
+  margin-left: calc(0.75rem + 8px + 4px); /* Match width of HOW labels + padding */
 }
 
 .grid-what-labels span {
@@ -461,31 +485,59 @@
   flex-wrap: wrap;
 }
 
+/* Filters Row */
+.filters-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 16px;
+}
+
 .filter-group {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 8px;
+  min-width: 150px;
+  flex: 0 0 auto;
 }
 
 .filter-group label {
   font-size: 0.75rem;
   font-weight: 600;
-  color: #666;
+  color: #333;
   text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0;
 }
 
 .filter-select {
-  padding: 6px 12px;
+  width: 100%;
+  min-width: 150px;
+  padding: 8px 32px 8px 12px;
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 0.875rem;
   background: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 12px;
   cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.filter-select:hover {
+  border-color: #999;
 }
 
 .filter-select:focus {
   outline: none;
   border-color: #CC0E70;
+  box-shadow: 0 0 0 3px rgba(204, 14, 112, 0.1);
 }
 
 /* Sort Indicator */
@@ -554,8 +606,20 @@
     align-items: stretch;
   }
 
+  .filters-row {
+    flex-direction: column;
+    gap: 16px;
+    padding: 12px;
+  }
+
   .filter-group {
-    justify-content: space-between;
+    width: 100%;
+    min-width: unset;
+  }
+
+  .filter-select {
+    width: 100%;
+    min-width: unset;
   }
 
   .grid-main {

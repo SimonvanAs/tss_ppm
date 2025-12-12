@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { usersApi, reviewsApi } from '../services/api';
-import { roundToGridPosition, getGridColor } from '../utils/scoring';
+import { roundToGridPosition, getGridColor } from '../utils/analyticsUtils';
 import { SignatureStatus } from '../components/SignatureStatus';
 import './Pages.css';
 
@@ -82,35 +82,38 @@ function Team9Grid({ teamMembers, t }) {
           <span>HOW</span>
         </div>
 
-        {/* Grid cells */}
-        <div className="grid-cells">
-          {/* HOW labels */}
-          <div className="grid-how-labels">
-            <span>3</span>
-            <span>2</span>
-            <span>1</span>
-          </div>
+        {/* Grid cells container */}
+        <div className="grid-cells-wrapper">
+          {/* Grid cells */}
+          <div className="grid-cells">
+            {/* HOW labels */}
+            <div className="grid-how-labels">
+              <span>3</span>
+              <span>2</span>
+              <span>1</span>
+            </div>
 
-          {/* Main grid */}
-          <div className="grid-main">
-            {positions.map(pos => {
-              const key = `${pos.what}-${pos.how}`;
-              const count = gridCounts.counts[key] || 0;
-              const names = gridCounts.names[key] || [];
-              const color = getGridColor(pos.what, pos.how);
+            {/* Main grid */}
+            <div className="grid-main">
+              {positions.map(pos => {
+                const key = `${pos.what}-${pos.how}`;
+                const count = gridCounts.counts[key] || 0;
+                const names = gridCounts.names[key] || [];
+                const color = getGridColor(pos.what, pos.how);
 
-              return (
-                <div
-                  key={key}
-                  className="grid-cell"
-                  style={{ backgroundColor: color }}
-                  title={names.join(', ') || t('pages.team.noEmployees')}
-                >
-                  <span className="grid-cell-count">{count}</span>
-                  <span className="grid-cell-label">{pos.label}</span>
-                </div>
-              );
-            })}
+                return (
+                  <div
+                    key={key}
+                    className="grid-cell"
+                    style={{ backgroundColor: color }}
+                    title={names.join(', ') || t('pages.team.noEmployees')}
+                  >
+                    <span className="grid-cell-count">{count}</span>
+                    <span className="grid-cell-label">{pos.label}</span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* WHAT labels */}

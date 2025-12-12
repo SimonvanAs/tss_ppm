@@ -70,6 +70,19 @@ export function CalibrationList() {
     return new Date(dateString).toLocaleString();
   };
 
+  // Convert API enum values to camelCase for translation keys
+  // e.g., "IN_PROGRESS" -> "inProgress", "BUSINESS_UNIT" -> "businessUnit"
+  const toCamelCase = (str) => {
+    if (!str) return '';
+    return str
+      .toLowerCase()
+      .split('_')
+      .map((word, index) => 
+        index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
+      )
+      .join('');
+  };
+
   // Generate year options (last 5 years + next year)
   const yearOptions = [];
   const currentYear = new Date().getFullYear();
@@ -111,7 +124,7 @@ export function CalibrationList() {
       <div className="card" style={{ marginBottom: 24 }}>
         <div className="filters-row">
           <div className="filter-group">
-            <label>{t('common.year') || 'Year'}</label>
+            <label>{t('common.year')}</label>
             <select
               value={filters.year}
               onChange={(e) => setFilters({ ...filters, year: parseInt(e.target.value) })}
@@ -124,13 +137,13 @@ export function CalibrationList() {
           </div>
 
           <div className="filter-group">
-            <label>{t('common.status') || 'Status'}</label>
+            <label>{t('common.status')}</label>
             <select
               value={filters.status}
               onChange={(e) => setFilters({ ...filters, status: e.target.value })}
               className="filter-select"
             >
-              <option value="">{t('common.all') || 'All'}</option>
+              <option value="">{t('common.all')}</option>
               <option value="DRAFT">{t('pages.calibration.status.draft')}</option>
               <option value="SCHEDULED">{t('pages.calibration.status.scheduled')}</option>
               <option value="IN_PROGRESS">{t('pages.calibration.status.inProgress')}</option>
@@ -142,13 +155,13 @@ export function CalibrationList() {
 
           {businessUnits.length > 0 && (
             <div className="filter-group">
-              <label>{t('common.businessUnit') || 'Business Unit'}</label>
+              <label>{t('common.businessUnit')}</label>
               <select
                 value={filters.businessUnitId}
                 onChange={(e) => setFilters({ ...filters, businessUnitId: e.target.value })}
                 className="filter-select"
               >
-                <option value="">{t('common.all') || 'All'}</option>
+                <option value="">{t('common.all')}</option>
                 {businessUnits.map((bu) => (
                   <option key={bu.id} value={bu.id}>{bu.name}</option>
                 ))}
@@ -163,7 +176,7 @@ export function CalibrationList() {
         {isLoading ? (
           <div className="loading-state">
             <div className="loading-spinner-small"></div>
-            <p>{t('common.loading') || 'Loading...'}</p>
+            <p>{t('common.loading')}</p>
           </div>
         ) : sessions.length === 0 ? (
           <div className="empty-state">
@@ -186,10 +199,10 @@ export function CalibrationList() {
                 <th>{t('pages.calibration.sessionName')}</th>
                 <th>{t('pages.calibration.status.title')}</th>
                 <th>{t('pages.calibration.scope.title')}</th>
-                <th>{t('common.businessUnit') || 'Business Unit'}</th>
+                <th>{t('common.businessUnit')}</th>
                 <th>{t('pages.calibration.session.totalEmployees')}</th>
                 <th>{t('pages.calibration.session.createdBy')}</th>
-                <th>{t('common.date') || 'Date'}</th>
+                <th>{t('common.date')}</th>
               </tr>
             </thead>
             <tbody>
@@ -215,12 +228,12 @@ export function CalibrationList() {
                         borderColor: getStatusColor(session.status),
                       }}
                     >
-                      {t(`pages.calibration.status.${session.status.toLowerCase()}`) || session.status}
+                      {t(`pages.calibration.status.${toCamelCase(session.status)}`) || session.status}
                     </span>
                   </td>
                   <td>
                     <span className="scope-badge">
-                      {t(`pages.calibration.scope.${session.scope.toLowerCase()}`) || session.scope}
+                      {t(`pages.calibration.scope.${toCamelCase(session.scope)}`) || session.scope}
                     </span>
                   </td>
                   <td>{session.businessUnit?.name || '-'}</td>
@@ -342,7 +355,7 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
 
             <div className="form-row">
               <div className="form-group">
-                <label>{t('common.year') || 'Year'}</label>
+                <label>{t('common.year')}</label>
                 <select
                   value={formData.year}
                   onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
@@ -369,13 +382,13 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
 
             {formData.scope === 'BUSINESS_UNIT' && businessUnits.length > 0 && (
               <div className="form-group">
-                <label>{t('common.businessUnit') || 'Business Unit'}</label>
+                <label>{t('common.businessUnit')}</label>
                 <select
                   value={formData.businessUnitId}
                   onChange={(e) => setFormData({ ...formData, businessUnitId: e.target.value })}
                   className="form-input"
                 >
-                  <option value="">{t('common.selectOption') || 'Select...'}</option>
+                  <option value="">{t('common.selectOption')}</option>
                   {businessUnits.map((bu) => (
                     <option key={bu.id} value={bu.id}>{bu.name}</option>
                   ))}
@@ -467,7 +480,7 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
               onClick={onClose}
               disabled={isSubmitting}
             >
-              {t('common.cancel') || 'Cancel'}
+              {t('common.cancel')}
             </button>
             <button
               type="submit"
@@ -477,7 +490,7 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
               {isSubmitting ? (
                 <span className="loading-spinner-small" />
               ) : (
-                t('common.create') || 'Create'
+                t('common.create')
               )}
             </button>
           </div>

@@ -208,7 +208,7 @@ export function CalibrationEmployeeCard({
                 <div className="adjustment-form">
                   <div className="adjustment-scores">
                     <div className="score-input">
-                      <label>WHAT Score</label>
+                      <label>{t('grid.whatScore')}</label>
                       <input
                         type="number"
                         min="1"
@@ -222,7 +222,7 @@ export function CalibrationEmployeeCard({
                       />
                     </div>
                     <div className="score-input">
-                      <label>HOW Score</label>
+                      <label>{t('grid.howScore')}</label>
                       <input
                         type="number"
                         min="1"

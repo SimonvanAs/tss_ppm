@@ -113,7 +113,7 @@ export function AdminLayout() {
             onClick={closeSidebar}
           >
             <span className="admin-nav-icon"><BackIcon /></span>
-            Back
+            {t('common.goBack')}
           </NavLink>
           <h2 className="admin-sidebar-title">{t('admin.title')}</h2>
           <p className="admin-sidebar-subtitle">{user?.opcoName || 'OpCo'}</p>
@@ -246,7 +246,7 @@ export function AdminLayout() {
       <button
         className="admin-sidebar-toggle"
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        aria-label="Toggle menu"
+        aria-label={t('admin.toggleMenu') || 'Toggle menu'}
       >
         <MenuIcon />
       </button>

@@ -613,6 +613,7 @@
       "functionTitles": "Títulos de Función",
       "tovLevels": "Niveles TOV",
       "competencies": "Competencias",
+      "import": "Importar Revisiones",
       "opcos": "OpCos",
       "global": "Global"
     },
@@ -749,6 +750,29 @@
       "noItemsDesc": "Cree competencias para definir criterios de evaluación",
       "addFirst": "Agregar Primera Competencia",
       "error": "No se pudieron cargar las competencias"
+    },
+    "import": {
+      "title": "Importar Revisiones Históricas",
+      "subtitle": "Suba un archivo Excel para importar revisiones de desempeño anteriores al sistema.",
+      "instructions": "Requisitos de Formato del Archivo",
+      "formatDescription": "Su archivo Excel debe contener las siguientes columnas:",
+      "note": "Nota: Los nombres de las columnas son flexibles y se detectarán automáticamente. La primera fila debe contener encabezados.",
+      "uploadTitle": "Subir Archivo",
+      "selectFile": "Seleccionar Archivo",
+      "upload": "Subir e Importar",
+      "uploading": "Subiendo...",
+      "invalidFileType": "Tipo de archivo inválido. Por favor suba un archivo Excel (.xlsx, .xls) o CSV.",
+      "fileTooLarge": "El archivo excede el límite de 10MB.",
+      "noFileSelected": "Por favor seleccione un archivo para subir.",
+      "uploadError": "Error al subir el archivo. Por favor intente de nuevo.",
+      "complete": "¡Importación Completa!",
+      "totalRows": "Filas Totales",
+      "created": "Creados",
+      "updated": "Actualizados",
+      "skipped": "Omitidos",
+      "errors": "Errores",
+      "importAnother": "Importar Otro Archivo",
+      "remove": "Eliminar"
     },
     "opcos": {
       "title": "Gestión de OpCo",

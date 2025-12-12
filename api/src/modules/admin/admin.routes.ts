@@ -717,23 +717,26 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       });
 
       // Expected columns (flexible mapping)
+      // Order matters: check more specific patterns first
       const columnMap: Record<string, string> = {};
       headers.forEach((header, index) => {
         const normalized = header.toLowerCase().trim();
-        if (normalized.includes('employee') && normalized.includes('email')) {
-          columnMap.email = header;
-        } else if (normalized.includes('employee') && normalized.includes('name')) {
-          columnMap.employeeName = header;
-        } else if (normalized.includes('year')) {
-          columnMap.year = header;
-        } else if (normalized.includes('what') && normalized.includes('score')) {
+        // Check score columns first (more specific) before year
+        if (normalized.includes('what') && normalized.includes('score')) {
           columnMap.whatScore = header;
         } else if (normalized.includes('how') && normalized.includes('score')) {
           columnMap.howScore = header;
-        } else if (normalized.includes('tov') || normalized.includes('level')) {
+        } else if (normalized.includes('employee') && normalized.includes('email')) {
+          columnMap.email = header;
+        } else if (normalized.includes('employee') && normalized.includes('name')) {
+          columnMap.employeeName = header;
+        } else if (normalized.includes('tov') || (normalized.includes('ide') && normalized.includes('level'))) {
           columnMap.tovLevel = header;
         } else if (normalized.includes('status')) {
           columnMap.status = header;
+        } else if (normalized === 'year' || (normalized.includes('year') && !normalized.includes('score'))) {
+          // Only match 'year' if it's not part of a score column name
+          columnMap.year = header;
         }
       });
 

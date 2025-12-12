@@ -25,7 +25,8 @@
       "actions": "Acties",
       "view": "Bekijken",
       "continue": "Doorgaan",
-      "loading": "Beoordelingen laden..."
+      "loading": "Beoordelingen laden...",
+      "errorLoading": "Fout bij laden beoordelingen"
     },
     "team": {
       "title": "Team Overzicht",
@@ -88,7 +89,8 @@
       "pendingApprovals": "Openstaande Goedkeuringen",
       "byStage": "Beoordelingen per Fase",
       "byScore": "Score Verdeling",
-      "recentActivity": "Recente Activiteit"
+      "recentActivity": "Recente Activiteit",
+      "noRecentReviews": "Geen recente beoordelingen"
     },
     "allReviews": {
       "title": "Alle Beoordelingen",
@@ -104,6 +106,7 @@
       "title": "Prestatie Geschiedenis",
       "subtitleOwn": "Volg uw prestatiescores en trends door de tijd",
       "subtitleOther": "Prestatie geschiedenis voor {{name}}",
+      "noAccess": "U heeft geen toestemming om de prestatiegeschiedenis van deze medewerker te bekijken.",
       "totalReviews": "Totaal Beoordelingen",
       "yearsSpan": "Jaren Bereik",
       "avgWhat": "Gem. WAT",
@@ -138,6 +141,11 @@
       "viewHistory": "Bekijk Geschiedenis",
       "metric": "Metriek",
       "status": "Status"
+    },
+    "accessDenied": {
+      "message": "U heeft geen toestemming om deze pagina te bekijken.",
+      "currentRole": "Uw huidige rol",
+      "requiredRoles": "Vereiste rollen"
     },
     "analytics": {
       "title": "Prestatie Analytics",
@@ -301,7 +309,26 @@
       "noSessions": "Geen kalibratie sessies",
       "noSessionsDesc": "Maak uw eerste kalibratie sessie aan om beoordelingen te reviewen en aan te passen",
       "loading": "Kalibratie gegevens laden...",
-      "error": "Kalibratie gegevens konden niet worden geladen"
+      "error": "Kalibratie gegevens konden niet worden geladen",
+      "readyToStart": "Klaar om Kalibratie te Starten",
+      "readyToStartDesc": "Het starten van de kalibratie maakt een momentopname van alle eindjaarsbeoordelingsscores voor het geselecteerde bereik. U kunt vervolgens de beoordelingen bekijken en aanpassen indien nodig.",
+      "sessionNotFound": "Sessie niet gevonden",
+      "backToSession": "Terug naar Sessie",
+      "reportTitle": "Kalibratie Rapport",
+      "report": {
+        "sessionSummary": "Sessie Samenvatting",
+        "adjustmentsMade": "Aanpassingen Gemaakt",
+        "originalPosition": "Originele Positie",
+        "calibratedPosition": "Gekalibreerde Positie",
+        "change": "Wijziging",
+        "adjustmentsByFacilitator": "Aanpassingen per Facilitator",
+        "adjustments": "aanpassingen",
+        "avgWhatChange": "Gem. WAT Wijziging",
+        "avgHowChange": "Gem. HOE Wijziging",
+        "sessionNotes": "Sessie Notities",
+        "generatedOn": "Gegenereerd op",
+        "systemName": "TSS Prestatiebeheersysteem"
+      }
     }
   },
   "signature": {
@@ -334,6 +361,14 @@
   },
   "review": {
     "stages": {
+      "draft": "Concept",
+      "goalSetting": "Doelen Stellen",
+      "goalSettingComplete": "Doelen Vergrendeld",
+      "midYear": "Halfjaarlijkse Beoordeling",
+      "midYearComplete": "Halfjaar Afgerond",
+      "endYear": "Eindejaars Beoordeling",
+      "pendingSignatures": "Wacht op Handtekeningen",
+      "completed": "Afgerond",
       "DRAFT": "Concept",
       "GOAL_SETTING": "Doelen Stellen",
       "GOAL_SETTING_COMPLETE": "Doelen Vergrendeld",
@@ -363,7 +398,21 @@
       "goalSetting": "Stel prestatie doelen vast voor de beoordelingsperiode",
       "midYear": "Halfjaarlijkse voortgang beoordeling en scoring",
       "endYear": "Definitieve eindejaars prestatie-evaluatie"
-    }
+    },
+    "saving": "Opslaan...",
+    "saved": "Opgeslagen",
+    "unsaved": "Niet-opgeslagen wijzigingen",
+    "saveFailed": "Opslaan mislukt",
+    "notFound": "Beoordeling Niet Gevonden",
+    "notFoundDesc": "De beoordeling die u zoekt bestaat niet of u heeft geen toegang.",
+    "startGoalSetting": "Start Doelen Stellen",
+    "completeGoalSetting": "Voltooi Doelen Stellen",
+    "startMidYear": "Start Halfjaarlijkse Beoordeling",
+    "completeMidYear": "Voltooi Halfjaar",
+    "startEndYear": "Start Eindejaars Beoordeling",
+    "completeEndYear": "Voltooi Eindjaar",
+    "awaitingSignatures": "Deze beoordeling wacht op handtekeningen",
+    "reviewCompleted": "Beoordeling Voltooid"
   },
   "app": {
     "title": "Beoordelingsgesprek",
@@ -467,7 +516,13 @@
     "whatScore": "WAT Score",
     "howScore": "HOE Score",
     "position": "Uw positie",
-    "scfVeto": "SCF VETO"
+    "scfVeto": "SCF VETO",
+    "legend": {
+      "immediateAttention": "Onmiddellijke aandacht",
+      "developmentArea": "Ontwikkelgebied",
+      "goodPerformance": "Goede prestatie",
+      "exceptional": "Uitzonderlijk"
+    }
   },
   "selfAssessment": {
     "title": "Zelfevaluatie medewerker",
@@ -479,11 +534,13 @@
   },
   "actions": {
     "preview": "Voorbeeld rapport",
+    "save": "Opslaan",
     "saveDraft": "Conceptrapport downloaden",
     "download": "Definitief rapport downloaden",
     "clearSession": "Sessie wissen",
     "confirmClear": "Weet u zeker dat u deze sessie wilt wissen? Alle gegevens gaan verloren.",
-    "saved": "Opgeslagen"
+    "saved": "Opgeslagen",
+    "downloadError": "Fout bij genereren rapport. Probeer het opnieuw."
   },
   "validation": {
     "required": "Dit veld is verplicht",
@@ -533,10 +590,19 @@
     "search": "Zoeken",
     "error": "Fout",
     "accessDenied": "Toegang Geweigerd",
-    "goBack": "Terug"
+    "goBack": "Terug",
+    "year": "Jaar",
+    "status": "Status",
+    "businessUnit": "Business Unit",
+    "date": "Datum",
+    "all": "Alle",
+    "selectOption": "Selecteren...",
+    "create": "Aanmaken",
+    "logout": "Uitloggen"
   },
   "admin": {
     "title": "Beheerportaal",
+    "toggleMenu": "Menu wisselen",
     "sections": {
       "management": "Beheer",
       "configuration": "Configuratie",

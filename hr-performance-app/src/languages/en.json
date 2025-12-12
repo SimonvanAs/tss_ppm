@@ -25,7 +25,8 @@
       "actions": "Actions",
       "view": "View",
       "continue": "Continue",
-      "loading": "Loading reviews..."
+      "loading": "Loading reviews...",
+      "errorLoading": "Error loading reviews"
     },
     "newReview": {
       "title": "Create New Review",
@@ -98,6 +99,7 @@
       "completedReviews": "Completed",
       "pendingApprovals": "Pending Approvals",
       "byStage": "Reviews by Stage",
+      "noRecentReviews": "No recent reviews",
       "byScore": "Score Distribution",
       "recentActivity": "Recent Activity"
     },
@@ -115,6 +117,7 @@
       "title": "Performance History",
       "subtitleOwn": "Track your performance scores and trends over time",
       "subtitleOther": "Performance history for {{name}}",
+      "noAccess": "You do not have permission to view this employee's performance history.",
       "totalReviews": "Total Reviews",
       "yearsSpan": "Years Span",
       "avgWhat": "Avg. WHAT",
@@ -149,6 +152,11 @@
       "viewHistory": "View History",
       "metric": "Metric",
       "status": "Status"
+    },
+    "accessDenied": {
+      "message": "You do not have permission to access this page.",
+      "currentRole": "Your current role",
+      "requiredRoles": "Required roles"
     },
     "analytics": {
       "title": "Performance Analytics",
@@ -312,7 +320,26 @@
       "noSessions": "No calibration sessions",
       "noSessionsDesc": "Create your first calibration session to start reviewing and adjusting ratings across teams",
       "loading": "Loading calibration data...",
-      "error": "Failed to load calibration data"
+      "error": "Failed to load calibration data",
+      "readyToStart": "Ready to Start Calibration",
+      "readyToStartDesc": "Starting the calibration will snapshot all end-year review scores for the selected scope. You can then review and adjust ratings as needed.",
+      "sessionNotFound": "Session not found",
+      "backToSession": "Back to Session",
+      "reportTitle": "Calibration Report",
+      "report": {
+        "sessionSummary": "Session Summary",
+        "adjustmentsMade": "Adjustments Made",
+        "originalPosition": "Original Position",
+        "calibratedPosition": "Calibrated Position",
+        "change": "Change",
+        "adjustmentsByFacilitator": "Adjustments by Facilitator",
+        "adjustments": "adjustments",
+        "avgWhatChange": "Avg WHAT Change",
+        "avgHowChange": "Avg HOW Change",
+        "sessionNotes": "Session Notes",
+        "generatedOn": "Generated on",
+        "systemName": "TSS Performance Management System"
+      }
     }
   },
   "signature": {
@@ -345,6 +372,14 @@
   },
   "review": {
     "stages": {
+      "draft": "Draft",
+      "goalSetting": "Goal Setting",
+      "goalSettingComplete": "Goals Locked",
+      "midYear": "Mid-Year Review",
+      "midYearComplete": "Mid-Year Complete",
+      "endYear": "End-Year Review",
+      "pendingSignatures": "Pending Signatures",
+      "completed": "Completed",
       "DRAFT": "Draft",
       "GOAL_SETTING": "Goal Setting",
       "GOAL_SETTING_COMPLETE": "Goals Locked",
@@ -374,7 +409,21 @@
       "goalSetting": "Set and define performance goals for the review period",
       "midYear": "Mid-year progress review and scoring",
       "endYear": "Final year-end performance evaluation"
-    }
+    },
+    "saving": "Saving...",
+    "saved": "Saved",
+    "unsaved": "Unsaved changes",
+    "saveFailed": "Save failed",
+    "notFound": "Review Not Found",
+    "notFoundDesc": "The review you're looking for doesn't exist or you don't have access to it.",
+    "startGoalSetting": "Start Goal Setting",
+    "completeGoalSetting": "Complete Goal Setting",
+    "startMidYear": "Start Mid-Year Review",
+    "completeMidYear": "Complete Mid-Year",
+    "startEndYear": "Start End-Year Review",
+    "completeEndYear": "Complete End-Year",
+    "awaitingSignatures": "This review is awaiting signatures",
+    "reviewCompleted": "Review Completed"
   },
   "app": {
     "title": "Performance Review",
@@ -478,7 +527,13 @@
     "whatScore": "WHAT Score",
     "howScore": "HOW Score",
     "position": "Your position",
-    "scfVeto": "SCF VETO"
+    "scfVeto": "SCF VETO",
+    "legend": {
+      "immediateAttention": "Immediate attention",
+      "developmentArea": "Development area",
+      "goodPerformance": "Good performance",
+      "exceptional": "Exceptional"
+    }
   },
   "selfAssessment": {
     "title": "Employee Self-Assessment",
@@ -490,11 +545,13 @@
   },
   "actions": {
     "preview": "Preview Report",
+    "save": "Save",
     "saveDraft": "Download Draft Report",
     "download": "Download Final Report",
     "clearSession": "Clear Session",
     "confirmClear": "Are you sure you want to clear this session? All data will be lost.",
-    "saved": "Saved"
+    "saved": "Saved",
+    "downloadError": "Error generating report. Please try again."
   },
   "validation": {
     "required": "This field is required",
@@ -552,10 +609,12 @@
     "all": "All",
     "selectOption": "Select...",
     "create": "Create",
-    "creating": "Creating..."
+    "creating": "Creating...",
+    "logout": "Logout"
   },
   "admin": {
     "title": "Admin Portal",
+    "toggleMenu": "Toggle menu",
     "sections": {
       "management": "Management",
       "configuration": "Configuration",

@@ -11,6 +11,7 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import {
   MyReviews,
   NewReview,
+  ReviewForm,
   TeamOverview,
   Approvals,
   HRDashboard,
@@ -72,7 +73,10 @@ function PageWrapper({ children, showNav = true }) {
         {children}
       </main>
       <footer className="app-footer">
-        <span className="app-footer-ai">Made with AI assistance</span>
+        <span className="app-footer-ai">
+          <span>🤖</span>
+          <span>Made with AI assistance</span>
+        </span>
         <div className="app-footer-links">
           <button
             className="app-footer-link privacy-link"
@@ -372,21 +376,16 @@ function AppRouter() {
         />
       </Route>
 
-      {/* API-backed review form route (for future use) */}
+      {/* API-backed review form */}
       <Route
         path="/review/:reviewId"
         element={
           <ProtectedRoute>
             <LanguageProvider>
               <WhisperProvider>
-                <FormProvider>
-                  <PageWrapper showNav={false}>
-                    <div className="card" style={{ padding: 48, textAlign: 'center' }}>
-                      <h2 style={{ color: '#004A91', margin: '0 0 16px' }}>Review Details</h2>
-                      <p style={{ color: '#666' }}>API-backed review editing coming soon</p>
-                    </div>
-                  </PageWrapper>
-                </FormProvider>
+                <PageWrapper showNav={false}>
+                  <ReviewForm />
+                </PageWrapper>
               </WhisperProvider>
             </LanguageProvider>
           </ProtectedRoute>

@@ -67,11 +67,16 @@ export function NewReview() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
 
-    // Auto-fill TOV level when employee is selected
+    // Auto-fill manager and TOV level when employee is selected
     if (name === 'employeeId') {
       const selectedEmployee = employees.find(emp => emp.id === value);
-      if (selectedEmployee?.tovLevelId) {
-        setFormData(prev => ({ ...prev, tovLevelId: selectedEmployee.tovLevelId }));
+      if (selectedEmployee) {
+        setFormData(prev => ({
+          ...prev,
+          // Use employee's manager if available, otherwise keep current
+          managerId: selectedEmployee.managerId || prev.managerId,
+          tovLevelId: selectedEmployee.tovLevelId || prev.tovLevelId,
+        }));
       }
     }
   };

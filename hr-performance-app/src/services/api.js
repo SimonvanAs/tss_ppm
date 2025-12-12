@@ -274,7 +274,7 @@ class ApiClient {
     if (endpoint.includes('/reviews')) return { reviews: MOCK_DATA.reviews };
     if (endpoint.includes('/users/me')) return MOCK_DATA.users[0];
     if (endpoint.match(/\/users\/[^/]+\/team/)) return { teamMembers: MOCK_DATA.teamMembers };
-    if (endpoint.includes('/users')) return { users: MOCK_DATA.users };
+    if (endpoint.includes('/users')) return { data: MOCK_DATA.users, pagination: { page: 1, limit: 50, total: MOCK_DATA.users.length, totalPages: 1 } };
     if (endpoint.match(/\/calibration\/sessions\/[^/]+\/items/)) return { items: MOCK_DATA.calibrationItems };
     if (endpoint.match(/\/calibration\/sessions\/[^/]+\/distribution/)) return {
       original: { tiers: { topTalent: 5, solidPerformer: 8, needsAttention: 4, concern: 3 } },

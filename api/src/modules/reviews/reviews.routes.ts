@@ -57,27 +57,35 @@ export const reviewsRoutes: FastifyPluginAsync = async (fastify: FastifyInstance
 
     const skip = (query.page - 1) * query.limit;
 
+    // Get user's database ID for filtering
+    const currentUser = await fastify.prisma.user.findUnique({
+      where: { keycloakId: request.user.keycloakId },
+      select: { id: true },
+    });
+
     // Build where clause based on role
     let roleFilter = {};
-    switch (request.user.role) {
-      case UserRole.EMPLOYEE:
-        // Employees only see their own reviews
-        roleFilter = { employee: { keycloakId: request.user.keycloakId } };
-        break;
-      case UserRole.MANAGER:
-        // Managers see their direct reports' reviews and their own
-        roleFilter = {
-          OR: [
-            { manager: { keycloakId: request.user.keycloakId } },
-            { employee: { keycloakId: request.user.keycloakId } },
-          ],
-        };
-        break;
-      case UserRole.HR:
-      case UserRole.OPCO_ADMIN:
-      case UserRole.TSS_SUPER_ADMIN:
-        // HR and admins can see all within tenant
-        break;
+    if (currentUser) {
+      switch (request.user.role) {
+        case UserRole.EMPLOYEE:
+          // Employees only see their own reviews
+          roleFilter = { employeeId: currentUser.id };
+          break;
+        case UserRole.MANAGER:
+          // Managers see their direct reports' reviews and their own
+          roleFilter = {
+            OR: [
+              { managerId: currentUser.id },
+              { employeeId: currentUser.id },
+            ],
+          };
+          break;
+        case UserRole.HR:
+        case UserRole.OPCO_ADMIN:
+        case UserRole.TSS_SUPER_ADMIN:
+          // HR and admins can see all within tenant
+          break;
+      }
     }
 
     const where = {

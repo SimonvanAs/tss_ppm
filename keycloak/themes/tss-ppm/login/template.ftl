@@ -22,22 +22,18 @@
 <body class="${bodyClass}">
 <div class="login-container">
     <div class="login-card">
-        <#if section = "header">
-            <#nested>
-        </#if>
+        <#nested "header">
         <#if displayMessage && message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
             <div class="alert alert-${message.type}">
                 <span class="kc-feedback-text">${kcSanitize(message.summary)?no_esc}</span>
             </div>
         </#if>
-        <#if section = "form">
-            <#nested>
-        </#if>
+        <#nested "form">
         <#if displayRequiredFields>
             <div class="kc-required-fields">${msg("requiredFields")}</div>
         </#if>
-        <#if section = "info" && displayInfo>
-            <#nested>
+        <#if displayInfo>
+            <#nested "info">
         </#if>
     </div>
 </div>

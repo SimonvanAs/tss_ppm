@@ -27,6 +27,17 @@
       "continue": "Continue",
       "loading": "Loading reviews..."
     },
+    "newReview": {
+      "title": "Create New Review",
+      "year": "Year",
+      "employee": "Employee",
+      "selectEmployee": "Select employee...",
+      "manager": "Manager",
+      "selectManager": "Select manager...",
+      "tovLevel": "TOV/IDE Level",
+      "selectTovLevel": "Select TOV level...",
+      "create": "Create Review"
+    },
     "team": {
       "title": "Team Overview",
       "subtitle": "Direct reports and their performance reviews",
@@ -540,7 +551,8 @@
     "date": "Date",
     "all": "All",
     "selectOption": "Select...",
-    "create": "Create"
+    "create": "Create",
+    "creating": "Creating..."
   },
   "admin": {
     "title": "Admin Portal",

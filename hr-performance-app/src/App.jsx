@@ -145,9 +145,11 @@ function AppRouter() {
           <ProtectedRoute roles={['MANAGER', 'HR', 'OPCO_ADMIN', 'TSS_SUPER_ADMIN']}>
             <LanguageProvider>
               <WhisperProvider>
-                <PageWrapper>
-                  <NewReview />
-                </PageWrapper>
+                <FormProvider>
+                  <PageWrapper>
+                    <NewReview />
+                  </PageWrapper>
+                </FormProvider>
               </WhisperProvider>
             </LanguageProvider>
           </ProtectedRoute>

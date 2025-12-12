@@ -89,6 +89,15 @@ export const reviewsRoutes: FastifyPluginAsync = async (fastify: FastifyInstance
       ...(query.managerId && { managerId: query.managerId }),
     };
 
+    // Debug logging
+    fastify.log.info({
+      userRole: request.user.role,
+      userKeycloakId: request.user.keycloakId,
+      tenantOpcoId: request.tenant?.opcoId,
+      roleFilter,
+      whereClause: where,
+    }, 'Reviews list query debug');
+
     const [reviews, total] = await Promise.all([
       fastify.prisma.reviewCycle.findMany({
         where,

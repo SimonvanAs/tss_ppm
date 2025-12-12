@@ -10,6 +10,7 @@ import { config } from './config/index.js';
 import { authPlugin } from './plugins/auth.js';
 import { tenantPlugin } from './plugins/tenant.js';
 import { prismaPlugin } from './plugins/prisma.js';
+import { auditPlugin } from './plugins/audit.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
 import { usersRoutes } from './modules/users/users.routes.js';
 import { reviewsRoutes } from './modules/reviews/reviews.routes.js';
@@ -86,9 +87,10 @@ export async function buildApp(): Promise<FastifyInstance> {
   // Database plugin
   await app.register(prismaPlugin);
 
-  // Auth & tenant plugins
+  // Auth, tenant & audit plugins
   await app.register(authPlugin);
   await app.register(tenantPlugin);
+  await app.register(auditPlugin);
 
   // Routes
   await app.register(healthRoutes, { prefix: '/api/v1/health' });

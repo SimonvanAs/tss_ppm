@@ -113,7 +113,7 @@ export function AdminLayout() {
             onClick={closeSidebar}
           >
             <span className="admin-nav-icon"><BackIcon /></span>
-            {t('common.goBack')}
+            {t('admin.backToApp')}
           </NavLink>
           <h2 className="admin-sidebar-title">{t('admin.title')}</h2>
           <p className="admin-sidebar-subtitle">{user?.opcoName || 'OpCo'}</p>

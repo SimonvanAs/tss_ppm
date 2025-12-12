@@ -602,6 +602,7 @@
   },
   "admin": {
     "title": "Beheerportaal",
+    "backToApp": "Terug naar App",
     "toggleMenu": "Menu wisselen",
     "sections": {
       "management": "Beheer",

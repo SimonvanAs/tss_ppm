@@ -614,6 +614,7 @@
   },
   "admin": {
     "title": "Admin Portal",
+    "backToApp": "Back to App",
     "toggleMenu": "Toggle menu",
     "sections": {
       "management": "Management",

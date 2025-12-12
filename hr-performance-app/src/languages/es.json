@@ -600,6 +600,7 @@
   },
   "admin": {
     "title": "Portal de Administración",
+    "backToApp": "Volver a la Aplicación",
     "toggleMenu": "Alternar menú",
     "sections": {
       "management": "Gestión",

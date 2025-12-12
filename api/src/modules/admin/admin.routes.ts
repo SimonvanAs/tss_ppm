@@ -697,7 +697,7 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       const filename = data.filename || 'import.xlsx';
 
       // Parse Excel file
-      const ExcelJS = await import('exceljs');
+      const { default: ExcelJS } = await import('exceljs');
       const workbook = new ExcelJS.Workbook();
       // @ts-ignore - Buffer type compatibility between Node.js versions
       await workbook.xlsx.load(bufferData);

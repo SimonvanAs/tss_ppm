@@ -606,6 +606,7 @@
     "saving": "Guardando...",
     "uploading": "Subiendo...",
     "cancel": "Cancelar",
+    "close": "Cerrar",
     "edit": "Editar",
     "delete": "Eliminar",
     "add": "Agregar",
@@ -735,6 +736,13 @@
       "deleteTitle": "Eliminar Título de Función",
       "deleteMessage": "¿Está seguro de que desea eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
       "error": "No se pudieron cargar los títulos de función",
+      "assignedUsers": "Usuarios Asignados",
+      "cannotDelete": "No Se Puede Eliminar el Título de Función",
+      "deleteBlocked": "{{count}} usuario(s) asignado(s)",
+      "deleteBlockedMessage": "No se puede eliminar \"{{name}}\" porque {{count}} usuario(s) están actualmente asignados a este título de función.",
+      "assignedUsersTitle": "Usuarios con este título de función",
+      "andMoreUsers": "...y {{count}} usuario(s) más",
+      "reassignInstructions": "Para eliminar este título de función, primero debe reasignar todos los usuarios a un título de función diferente en Gestión de Usuarios.",
       "export": {
         "button": "Exportar a Excel",
         "exporting": "Exportando..."

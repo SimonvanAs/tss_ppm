@@ -606,6 +606,7 @@
     "saving": "Opslaan...",
     "uploading": "Uploaden...",
     "cancel": "Annuleren",
+    "close": "Sluiten",
     "edit": "Bewerken",
     "delete": "Verwijderen",
     "add": "Toevoegen",
@@ -735,6 +736,13 @@
       "deleteTitle": "Functietitel Verwijderen",
       "deleteMessage": "Weet u zeker dat u \"{{name}}\" wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
       "error": "Functietitels konden niet worden geladen",
+      "assignedUsers": "Toegewezen Gebruikers",
+      "cannotDelete": "Kan Functietitel Niet Verwijderen",
+      "deleteBlocked": "{{count}} gebruiker(s) toegewezen",
+      "deleteBlockedMessage": "Kan \"{{name}}\" niet verwijderen omdat {{count}} gebruiker(s) momenteel aan deze functietitel zijn toegewezen.",
+      "assignedUsersTitle": "Gebruikers met deze functietitel",
+      "andMoreUsers": "...en nog {{count}} gebruiker(s)",
+      "reassignInstructions": "Om deze functietitel te verwijderen, moet u eerst alle gebruikers toewijzen aan een andere functietitel in Gebruikersbeheer.",
       "export": {
         "button": "Exporteren naar Excel",
         "exporting": "Exporteren..."

@@ -606,6 +606,7 @@
     "saving": "Saving...",
     "uploading": "Uploading...",
     "cancel": "Cancel",
+    "close": "Close",
     "edit": "Edit",
     "delete": "Delete",
     "add": "Add",
@@ -735,6 +736,13 @@
       "deleteTitle": "Delete Function Title",
       "deleteMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
       "error": "Failed to load function titles",
+      "assignedUsers": "Assigned Users",
+      "cannotDelete": "Cannot Delete Function Title",
+      "deleteBlocked": "{{count}} user(s) assigned",
+      "deleteBlockedMessage": "Cannot delete \"{{name}}\" because {{count}} user(s) are currently assigned to this function title.",
+      "assignedUsersTitle": "Users with this function title",
+      "andMoreUsers": "...and {{count}} more user(s)",
+      "reassignInstructions": "To delete this function title, please first reassign all users to a different function title in User Management.",
       "export": {
         "button": "Export to Excel",
         "exporting": "Exporting..."

@@ -147,6 +147,74 @@ function ConfirmDialog({ title, message, onConfirm, onCancel, t }) {
   );
 }
 
+function AssignedUsersWarningDialog({ functionTitle, userCount, users, onClose, t }) {
+  return (
+    <div className="admin-modal-overlay" onClick={onClose}>
+      <div className="admin-modal" style={{ maxWidth: '600px' }} onClick={e => e.stopPropagation()}>
+        <div className="admin-modal-header">
+          <h3 className="admin-modal-title">{t('admin.functionTitles.cannotDelete')}</h3>
+          <button className="admin-modal-close" onClick={onClose}>&times;</button>
+        </div>
+        <div className="admin-modal-body">
+          <div style={{ padding: '12px', background: '#fff3cd', border: '1px solid #ffc107', borderRadius: '6px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="#856404">
+                <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+              </svg>
+              <strong style={{ color: '#856404' }}>
+                {t('admin.functionTitles.deleteBlocked', { count: userCount })}
+              </strong>
+            </div>
+            <p style={{ margin: 0, color: '#856404', fontSize: '14px' }}>
+              {t('admin.functionTitles.deleteBlockedMessage', { name: functionTitle.name, count: userCount })}
+            </p>
+          </div>
+
+          <h4 style={{ marginTop: '16px', marginBottom: '12px', fontSize: '14px' }}>
+            {t('admin.functionTitles.assignedUsersTitle')} ({userCount})
+          </h4>
+
+          <div style={{ maxHeight: '300px', overflowY: 'auto', border: '1px solid #ddd', borderRadius: '4px' }}>
+            <table style={{ width: '100%', fontSize: '13px' }}>
+              <thead style={{ backgroundColor: '#f8f9fa', position: 'sticky', top: 0 }}>
+                <tr>
+                  <th style={{ padding: '8px', textAlign: 'left' }}>{t('admin.users.name')}</th>
+                  <th style={{ padding: '8px', textAlign: 'left' }}>{t('admin.users.email')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id} style={{ borderTop: '1px solid #eee' }}>
+                    <td style={{ padding: '8px' }}>{user.firstName} {user.lastName}</td>
+                    <td style={{ padding: '8px', color: '#666' }}>{user.email}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {userCount > users.length && (
+            <p style={{ marginTop: '8px', fontSize: '12px', color: '#666', fontStyle: 'italic' }}>
+              {t('admin.functionTitles.andMoreUsers', { count: userCount - users.length })}
+            </p>
+          )}
+
+          <div style={{ marginTop: '16px', padding: '12px', background: '#f8f9fa', borderRadius: '6px' }}>
+            <p style={{ margin: 0, fontSize: '13px', color: '#666' }}>
+              {t('admin.functionTitles.reassignInstructions')}
+            </p>
+          </div>
+        </div>
+        <div className="admin-modal-footer">
+          <button className="admin-btn admin-btn-primary" onClick={onClose}>
+            {t('common.close')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ImportModal({ tovLevels, onClose, onImportComplete, t }) {
   const [file, setFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -404,6 +472,7 @@ export function FunctionTitles() {
   const [deletingItem, setDeletingItem] = useState(null);
   const [showImportModal, setShowImportModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [assignedUsersWarning, setAssignedUsersWarning] = useState(null);
 
   // Drag state
   const dragItem = useRef(null);
@@ -451,9 +520,25 @@ export function FunctionTitles() {
 
   const handleDelete = async () => {
     if (deletingItem) {
-      await adminApi.deleteFunctionTitle(deletingItem.id);
-      setDeletingItem(null);
-      await loadData();
+      try {
+        await adminApi.deleteFunctionTitle(deletingItem.id);
+        setDeletingItem(null);
+        await loadData();
+      } catch (err) {
+        console.error('Delete error:', err);
+        // Check if error is due to assigned users
+        if (err.userCount && err.users) {
+          setDeletingItem(null);
+          setAssignedUsersWarning({
+            functionTitle: deletingItem,
+            userCount: err.userCount,
+            users: err.users,
+          });
+        } else {
+          setError(err.message);
+          setDeletingItem(null);
+        }
+      }
     }
   };
 
@@ -626,6 +711,7 @@ export function FunctionTitles() {
                 <th>{t('admin.functionTitles.name')}</th>
                 <th>{t('admin.functionTitles.description')}</th>
                 <th style={{ width: '120px' }}>{t('admin.functionTitles.tovLevel')}</th>
+                <th style={{ width: '100px' }}>{t('admin.functionTitles.assignedUsers')}</th>
                 <th style={{ width: '80px' }}>{t('admin.functionTitles.order')}</th>
                 <th style={{ width: '120px' }}>{t('admin.functionTitles.actions')}</th>
               </tr>
@@ -665,6 +751,23 @@ export function FunctionTitles() {
                       </span>
                     ) : (
                       <span style={{ color: '#999' }}>-</span>
+                    )}
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    {item._count?.users > 0 ? (
+                      <span style={{
+                        display: 'inline-block',
+                        padding: '2px 8px',
+                        background: item._count.users > 0 ? '#fff3cd' : '#f8f9fa',
+                        color: item._count.users > 0 ? '#856404' : '#666',
+                        borderRadius: '4px',
+                        fontSize: '12px',
+                        fontWeight: '600'
+                      }}>
+                        {item._count.users}
+                      </span>
+                    ) : (
+                      <span style={{ color: '#999' }}>0</span>
                     )}
                   </td>
                   <td style={{ textAlign: 'center' }}>{item.sortOrder}</td>
@@ -722,6 +825,17 @@ export function FunctionTitles() {
           tovLevels={tovLevels}
           onClose={() => setShowImportModal(false)}
           onImportComplete={handleImportComplete}
+          t={t}
+        />
+      )}
+
+      {/* Assigned Users Warning Dialog */}
+      {assignedUsersWarning && (
+        <AssignedUsersWarningDialog
+          functionTitle={assignedUsersWarning.functionTitle}
+          userCount={assignedUsersWarning.userCount}
+          users={assignedUsersWarning.users}
+          onClose={() => setAssignedUsersWarning(null)}
           t={t}
         />
       )}

@@ -30,6 +30,9 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       },
       include: {
         tovLevel: true,
+        _count: {
+          select: { users: true },
+        },
       },
       orderBy: { sortOrder: 'asc' },
     });
@@ -103,6 +106,43 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
     preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
   }, async (request, reply) => {
     const { id } = request.params as { id: string };
+
+    // Check if function title has assigned users
+    const functionTitle = await fastify.prisma.functionTitle.findUnique({
+      where: { id },
+      include: {
+        _count: {
+          select: { users: true },
+        },
+        users: {
+          select: {
+            id: true,
+            firstName: true,
+            lastName: true,
+            email: true,
+          },
+          take: 10, // Return up to 10 users for the error message
+        },
+      },
+    });
+
+    if (!functionTitle) {
+      return reply.status(404).send({
+        error: { message: 'Function title not found', statusCode: 404 },
+      });
+    }
+
+    // Block deletion if users are assigned
+    if (functionTitle._count.users > 0) {
+      return reply.status(400).send({
+        error: {
+          message: `Cannot delete function title: ${functionTitle._count.users} user(s) are assigned to it`,
+          statusCode: 400,
+          userCount: functionTitle._count.users,
+          users: functionTitle.users,
+        },
+      });
+    }
 
     // Soft delete
     await fastify.prisma.functionTitle.update({

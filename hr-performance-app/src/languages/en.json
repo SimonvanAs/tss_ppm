@@ -592,6 +592,7 @@
     "loading": "Loading...",
     "save": "Save",
     "saving": "Saving...",
+    "uploading": "Uploading...",
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete",
@@ -629,6 +630,8 @@
       "tovLevels": "TOV Levels",
       "competencies": "Competencies",
       "import": "Import Reviews",
+      "settings": "Settings",
+      "branding": "Branding",
       "opcos": "OpCos",
       "global": "Global"
     },
@@ -845,6 +848,70 @@
       "whisper": "Whisper Service",
       "available": "Available",
       "error": "Failed to load global dashboard"
+    },
+    "settings": {
+      "title": "Workflow Settings",
+      "subtitle": "Configure review cycles, approvals, and notifications",
+      "saved": "Settings saved successfully",
+      "error": "Failed to save settings",
+      "reviewCycle": {
+        "title": "Review Cycle Dates",
+        "description": "Set default dates for each review period",
+        "goalSetting": "Goal Setting Period",
+        "midYear": "Mid-Year Review Period",
+        "endYear": "End-Year Review Period",
+        "start": "Start Date",
+        "end": "End Date",
+        "dateError": "End date must be after start date",
+        "overlapError": "Review periods cannot overlap"
+      },
+      "approvals": {
+        "title": "Approval Requirements",
+        "description": "Configure which stages require approvals",
+        "stage": "Stage",
+        "managerApproval": "Manager Approval",
+        "hrApproval": "HR Approval"
+      },
+      "signatures": {
+        "title": "Signature Requirements",
+        "description": "Configure signature requirements for completed reviews",
+        "employee": "Require Employee Signature",
+        "manager": "Require Manager Signature"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "comingSoon": "Email notifications will be available in a future update",
+        "enabled": "Enable Notifications",
+        "reminderDays": "Days before deadline",
+        "overdueInterval": "Overdue reminder interval (days)",
+        "onApprovals": "Notify on pending approvals"
+      }
+    },
+    "branding": {
+      "title": "Branding Settings",
+      "subtitle": "Customize appearance for each operating company",
+      "selectOpco": "Select OpCo",
+      "saved": "Branding saved successfully",
+      "error": "Failed to save branding",
+      "logo": {
+        "title": "Logo",
+        "noLogo": "No logo set",
+        "upload": "Upload Logo",
+        "uploadHint": "Recommended: PNG or SVG, max 2MB",
+        "url": "Or enter logo URL",
+        "remove": "Remove Logo"
+      },
+      "colors": {
+        "title": "Colors",
+        "primary": "Primary Color",
+        "accent": "Accent Color",
+        "preview": "Preview"
+      },
+      "css": {
+        "title": "Custom CSS",
+        "description": "Advanced: Add custom CSS overrides",
+        "warning": "Warning: Invalid CSS may break the application appearance"
+      }
     }
   }
 }

@@ -489,6 +489,30 @@ export const adminApi = {
   createBusinessUnit: (data) => apiClient.post('/admin/business-units', data),
   updateBusinessUnit: (id, data) => apiClient.patch(`/admin/business-units/${id}`, data),
   deleteBusinessUnit: (id) => apiClient.delete(`/admin/business-units/${id}`),
+
+  // Settings
+  getSettings: (opcoId = null) => apiClient.get('/admin/settings', opcoId ? { opcoId } : {}),
+  updateSettings: (data) => apiClient.patch('/admin/settings', data),
+  updateBranding: (opcoId, data) => apiClient.patch('/admin/settings/branding', { opcoId, ...data }),
+  uploadLogo: async (opcoId, file) => {
+    const formData = new FormData();
+    formData.append('logo', file);
+    formData.append('opcoId', opcoId);
+
+    const token = window.keycloak?.token;
+    const response = await fetch(`${apiClient.baseURL}/admin/settings/logo`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || 'Failed to upload logo');
+    }
+
+    return response.json();
+  },
 };
 
 // Analytics

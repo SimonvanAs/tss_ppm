@@ -579,6 +579,7 @@
     "loading": "Cargando...",
     "save": "Guardar",
     "saving": "Guardando...",
+    "uploading": "Subiendo...",
     "cancel": "Cancelar",
     "edit": "Editar",
     "delete": "Eliminar",
@@ -615,6 +616,8 @@
       "tovLevels": "Niveles TOV",
       "competencies": "Competencias",
       "import": "Importar Revisiones",
+      "settings": "Configuración",
+      "branding": "Marca",
       "opcos": "OpCos",
       "global": "Global"
     },
@@ -831,6 +834,70 @@
       "whisper": "Servicio Whisper",
       "available": "Disponible",
       "error": "No se pudo cargar el panel global"
+    },
+    "settings": {
+      "title": "Configuración del Flujo de Trabajo",
+      "subtitle": "Configure ciclos de revisión, aprobaciones y notificaciones",
+      "saved": "Configuración guardada exitosamente",
+      "error": "Error al guardar la configuración",
+      "reviewCycle": {
+        "title": "Fechas del Ciclo de Revisión",
+        "description": "Establezca fechas predeterminadas para cada período de revisión",
+        "goalSetting": "Período de Establecimiento de Objetivos",
+        "midYear": "Revisión de Medio Año",
+        "endYear": "Revisión de Fin de Año",
+        "start": "Fecha de Inicio",
+        "end": "Fecha de Fin",
+        "dateError": "La fecha de fin debe ser posterior a la fecha de inicio",
+        "overlapError": "Los períodos de revisión no pueden superponerse"
+      },
+      "approvals": {
+        "title": "Requisitos de Aprobación",
+        "description": "Configure qué etapas requieren aprobaciones",
+        "stage": "Etapa",
+        "managerApproval": "Aprobación del Gerente",
+        "hrApproval": "Aprobación de RRHH"
+      },
+      "signatures": {
+        "title": "Requisitos de Firma",
+        "description": "Configure los requisitos de firma para revisiones completadas",
+        "employee": "Requerir Firma del Empleado",
+        "manager": "Requerir Firma del Gerente"
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "comingSoon": "Las notificaciones por correo electrónico estarán disponibles en una actualización futura",
+        "enabled": "Habilitar Notificaciones",
+        "reminderDays": "Días antes de la fecha límite",
+        "overdueInterval": "Intervalo de recordatorio de atrasos (días)",
+        "onApprovals": "Notificar sobre aprobaciones pendientes"
+      }
+    },
+    "branding": {
+      "title": "Configuración de Marca",
+      "subtitle": "Personalice la apariencia para cada empresa operativa",
+      "selectOpco": "Seleccionar OpCo",
+      "saved": "Marca guardada exitosamente",
+      "error": "Error al guardar la marca",
+      "logo": {
+        "title": "Logo",
+        "noLogo": "Sin logo establecido",
+        "upload": "Subir Logo",
+        "uploadHint": "Recomendado: PNG o SVG, máximo 2MB",
+        "url": "O ingrese la URL del logo",
+        "remove": "Eliminar Logo"
+      },
+      "colors": {
+        "title": "Colores",
+        "primary": "Color Primario",
+        "accent": "Color de Acento",
+        "preview": "Vista Previa"
+      },
+      "css": {
+        "title": "CSS Personalizado",
+        "description": "Avanzado: Agregue anulaciones de CSS personalizadas",
+        "warning": "Advertencia: CSS inválido puede afectar la apariencia de la aplicación"
+      }
     }
   }
 }

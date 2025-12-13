@@ -31,6 +31,8 @@ import {
   OpCoManagement,
   GlobalDashboard,
   ImportReviews,
+  WorkflowSettings,
+  BrandingSettings,
 } from './pages';
 import './App.css';
 
@@ -358,6 +360,7 @@ function AppRouter() {
         <Route path="tov-levels" element={<TovLevels />} />
         <Route path="competencies" element={<Competencies />} />
         <Route path="import" element={<ImportReviews />} />
+        <Route path="settings" element={<WorkflowSettings />} />
         <Route
           path="opcos"
           element={
@@ -371,6 +374,14 @@ function AppRouter() {
           element={
             <ProtectedRoute roles={['TSS_SUPER_ADMIN']}>
               <GlobalDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="branding"
+          element={
+            <ProtectedRoute roles={['TSS_SUPER_ADMIN']}>
+              <BrandingSettings />
             </ProtectedRoute>
           }
         />

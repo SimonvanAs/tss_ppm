@@ -581,6 +581,7 @@
     "loading": "Laden...",
     "save": "Opslaan",
     "saving": "Opslaan...",
+    "uploading": "Uploaden...",
     "cancel": "Annuleren",
     "edit": "Bewerken",
     "delete": "Verwijderen",
@@ -617,6 +618,8 @@
       "tovLevels": "TOV Niveaus",
       "competencies": "Competenties",
       "import": "Reviews Importeren",
+      "settings": "Instellingen",
+      "branding": "Huisstijl",
       "opcos": "OpCo's",
       "global": "Globaal"
     },
@@ -833,6 +836,70 @@
       "whisper": "Whisper Service",
       "available": "Beschikbaar",
       "error": "Globaal dashboard kon niet worden geladen"
+    },
+    "settings": {
+      "title": "Workflow Instellingen",
+      "subtitle": "Configureer beoordelingscycli, goedkeuringen en meldingen",
+      "saved": "Instellingen succesvol opgeslagen",
+      "error": "Instellingen opslaan mislukt",
+      "reviewCycle": {
+        "title": "Beoordelingscyclus Data",
+        "description": "Stel standaard data in voor elke beoordelingsperiode",
+        "goalSetting": "Doelstelling Periode",
+        "midYear": "Halfjaarlijkse Beoordeling",
+        "endYear": "Eindjaar Beoordeling",
+        "start": "Startdatum",
+        "end": "Einddatum",
+        "dateError": "Einddatum moet na startdatum liggen",
+        "overlapError": "Beoordelingsperiodes mogen niet overlappen"
+      },
+      "approvals": {
+        "title": "Goedkeuringsvereisten",
+        "description": "Configureer welke stappen goedkeuring vereisen",
+        "stage": "Fase",
+        "managerApproval": "Manager Goedkeuring",
+        "hrApproval": "HR Goedkeuring"
+      },
+      "signatures": {
+        "title": "Handtekeningvereisten",
+        "description": "Configureer handtekeningvereisten voor afgeronde beoordelingen",
+        "employee": "Handtekening Medewerker Vereist",
+        "manager": "Handtekening Manager Vereist"
+      },
+      "notifications": {
+        "title": "Meldingen",
+        "comingSoon": "E-mailmeldingen komen beschikbaar in een toekomstige update",
+        "enabled": "Meldingen Inschakelen",
+        "reminderDays": "Dagen voor deadline",
+        "overdueInterval": "Interval achterstallige herinneringen (dagen)",
+        "onApprovals": "Melden bij openstaande goedkeuringen"
+      }
+    },
+    "branding": {
+      "title": "Huisstijl Instellingen",
+      "subtitle": "Pas het uiterlijk aan voor elke werkmaatschappij",
+      "selectOpco": "Selecteer OpCo",
+      "saved": "Huisstijl succesvol opgeslagen",
+      "error": "Huisstijl opslaan mislukt",
+      "logo": {
+        "title": "Logo",
+        "noLogo": "Geen logo ingesteld",
+        "upload": "Logo Uploaden",
+        "uploadHint": "Aanbevolen: PNG of SVG, max 2MB",
+        "url": "Of voer logo URL in",
+        "remove": "Logo Verwijderen"
+      },
+      "colors": {
+        "title": "Kleuren",
+        "primary": "Primaire Kleur",
+        "accent": "Accent Kleur",
+        "preview": "Voorbeeld"
+      },
+      "css": {
+        "title": "Aangepaste CSS",
+        "description": "Geavanceerd: Voeg aangepaste CSS overschrijvingen toe",
+        "warning": "Waarschuwing: Ongeldige CSS kan het uiterlijk van de applicatie verstoren"
+      }
     }
   }
 }

@@ -25,4 +25,6 @@ export {
   OpCoManagement,
   GlobalDashboard,
   ImportReviews,
+  WorkflowSettings,
+  BrandingSettings,
 } from './admin';

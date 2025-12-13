@@ -1,7 +1,14 @@
 import { FastifyInstance, FastifyPluginAsync } from 'fastify';
-import { CycleStatus } from '@prisma/client';
+import { CycleStatus, Prisma } from '@prisma/client';
 import { UserRole } from '../../plugins/auth.js';
 import { withTenantFilter } from '../../plugins/tenant.js';
+import {
+  mergeWithDefaults,
+  validateDateRanges,
+  validateBranding,
+  DEFAULT_SETTINGS,
+  type OpCoSettings,
+} from '../../utils/settingsDefaults.js';
 
 export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // ============================================
@@ -670,6 +677,323 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
     });
 
     return opco;
+  });
+
+  // ============================================
+  // OPCO SETTINGS
+  // ============================================
+
+  fastify.get('/settings', {
+    schema: {
+      description: 'Get OpCo settings (workflow, notifications, branding)',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      querystring: {
+        type: 'object',
+        properties: {
+          opcoId: { type: 'string', description: 'OpCo ID (TSS Super Admin only)' },
+        },
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const query = request.query as { opcoId?: string };
+
+    // TSS Super Admin can query any OpCo
+    let targetOpcoId = request.tenant.opcoId;
+    if (query.opcoId && request.user.role === UserRole.TSS_SUPER_ADMIN) {
+      targetOpcoId = query.opcoId;
+    }
+
+    const opco = await fastify.prisma.opCo.findUnique({
+      where: { id: targetOpcoId },
+    });
+
+    if (!opco) {
+      return reply.status(404).send({
+        error: { message: 'OpCo not found', statusCode: 404 },
+      });
+    }
+
+    const settings = mergeWithDefaults(opco.settings as Partial<OpCoSettings>);
+    return { opcoId: opco.id, opcoName: opco.displayName, settings };
+  });
+
+  fastify.patch('/settings', {
+    schema: {
+      description: 'Update workflow and notification settings for current OpCo',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        properties: {
+          workflow: {
+            type: 'object',
+            properties: {
+              reviewCycle: {
+                type: 'object',
+                properties: {
+                  goalSettingStart: { type: ['string', 'null'] },
+                  goalSettingEnd: { type: ['string', 'null'] },
+                  midYearStart: { type: ['string', 'null'] },
+                  midYearEnd: { type: ['string', 'null'] },
+                  endYearStart: { type: ['string', 'null'] },
+                  endYearEnd: { type: ['string', 'null'] },
+                },
+              },
+              approvals: {
+                type: 'object',
+                properties: {
+                  goalSettingRequiresManager: { type: 'boolean' },
+                  goalSettingRequiresHR: { type: 'boolean' },
+                  midYearRequiresManager: { type: 'boolean' },
+                  midYearRequiresHR: { type: 'boolean' },
+                  endYearRequiresManager: { type: 'boolean' },
+                  endYearRequiresHR: { type: 'boolean' },
+                },
+              },
+              signatures: {
+                type: 'object',
+                properties: {
+                  requireEmployeeSignature: { type: 'boolean' },
+                  requireManagerSignature: { type: 'boolean' },
+                },
+              },
+            },
+          },
+          notifications: {
+            type: 'object',
+            properties: {
+              enabled: { type: 'boolean' },
+              reminderDaysBeforeDeadline: { type: 'integer', minimum: 1, maximum: 30 },
+              overdueReminderIntervalDays: { type: 'integer', minimum: 1, maximum: 14 },
+              notifyOnPendingApprovals: { type: 'boolean' },
+            },
+          },
+        },
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const body = request.body as Partial<Pick<OpCoSettings, 'workflow' | 'notifications'>>;
+
+    // Get current OpCo settings
+    const opco = await fastify.prisma.opCo.findUnique({
+      where: { id: request.tenant.opcoId },
+    });
+
+    if (!opco) {
+      return reply.status(404).send({
+        error: { message: 'OpCo not found', statusCode: 404 },
+      });
+    }
+
+    const currentSettings = mergeWithDefaults(opco.settings as Partial<OpCoSettings>);
+
+    // Validate date ranges if provided
+    if (body.workflow?.reviewCycle) {
+      const mergedReviewCycle = {
+        ...currentSettings.workflow.reviewCycle,
+        ...body.workflow.reviewCycle,
+      };
+      const dateErrors = validateDateRanges(mergedReviewCycle);
+      if (dateErrors.length > 0) {
+        return reply.status(400).send({
+          error: { message: dateErrors.join('; '), statusCode: 400 },
+        });
+      }
+    }
+
+    // Merge settings
+    const newSettings: OpCoSettings = {
+      ...currentSettings,
+      workflow: {
+        reviewCycle: {
+          ...currentSettings.workflow.reviewCycle,
+          ...(body.workflow?.reviewCycle || {}),
+        },
+        approvals: {
+          ...currentSettings.workflow.approvals,
+          ...(body.workflow?.approvals || {}),
+        },
+        signatures: {
+          ...currentSettings.workflow.signatures,
+          ...(body.workflow?.signatures || {}),
+        },
+      },
+      notifications: {
+        ...currentSettings.notifications,
+        ...(body.notifications || {}),
+      },
+    };
+
+    // Update OpCo
+    const updated = await fastify.prisma.opCo.update({
+      where: { id: request.tenant.opcoId },
+      data: { settings: newSettings as unknown as Prisma.InputJsonValue },
+    });
+
+    return { opcoId: updated.id, settings: newSettings };
+  });
+
+  fastify.patch('/settings/branding', {
+    schema: {
+      description: 'Update branding settings for an OpCo (TSS Super Admin only)',
+      tags: ['Super Admin'],
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        properties: {
+          opcoId: { type: 'string' },
+          logoUrl: { type: ['string', 'null'] },
+          primaryColor: { type: 'string', pattern: '^#[0-9A-Fa-f]{6}$' },
+          accentColor: { type: 'string', pattern: '^#[0-9A-Fa-f]{6}$' },
+          customCss: { type: ['string', 'null'] },
+        },
+        required: ['opcoId'],
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const body = request.body as {
+      opcoId: string;
+      logoUrl?: string | null;
+      primaryColor?: string;
+      accentColor?: string;
+      customCss?: string | null;
+    };
+
+    // Validate branding colors
+    const brandingUpdate: Partial<OpCoSettings['branding']> = {};
+    if (body.logoUrl !== undefined) brandingUpdate.logoUrl = body.logoUrl;
+    if (body.primaryColor) brandingUpdate.primaryColor = body.primaryColor;
+    if (body.accentColor) brandingUpdate.accentColor = body.accentColor;
+    if (body.customCss !== undefined) brandingUpdate.customCss = body.customCss;
+
+    const brandingErrors = validateBranding(brandingUpdate);
+    if (brandingErrors.length > 0) {
+      return reply.status(400).send({
+        error: { message: brandingErrors.join('; '), statusCode: 400 },
+      });
+    }
+
+    // Get current OpCo settings
+    const opco = await fastify.prisma.opCo.findUnique({
+      where: { id: body.opcoId },
+    });
+
+    if (!opco) {
+      return reply.status(404).send({
+        error: { message: 'OpCo not found', statusCode: 404 },
+      });
+    }
+
+    const currentSettings = mergeWithDefaults(opco.settings as Partial<OpCoSettings>);
+
+    // Merge branding
+    const newSettings: OpCoSettings = {
+      ...currentSettings,
+      branding: {
+        ...currentSettings.branding,
+        ...brandingUpdate,
+      },
+    };
+
+    // Update OpCo
+    const updated = await fastify.prisma.opCo.update({
+      where: { id: body.opcoId },
+      data: { settings: newSettings as unknown as Prisma.InputJsonValue },
+    });
+
+    return { opcoId: updated.id, branding: newSettings.branding };
+  });
+
+  fastify.post('/settings/logo', {
+    schema: {
+      description: 'Upload a logo for an OpCo (TSS Super Admin only)',
+      tags: ['Super Admin'],
+      security: [{ bearerAuth: [] }],
+      consumes: ['multipart/form-data'],
+    },
+    preHandler: [fastify.authorize(UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    try {
+      const data = await request.file();
+      if (!data) {
+        return reply.status(400).send({
+          error: { message: 'No file provided', statusCode: 400 },
+        });
+      }
+
+      // Get opcoId from form field
+      const fields = data.fields as Record<string, any>;
+      const opcoIdField = fields.opcoId;
+      const opcoId = opcoIdField?.value || opcoIdField;
+
+      if (!opcoId) {
+        return reply.status(400).send({
+          error: { message: 'opcoId is required', statusCode: 400 },
+        });
+      }
+
+      // Validate file type
+      const allowedTypes = ['image/png', 'image/jpeg', 'image/svg+xml', 'image/webp'];
+      if (!allowedTypes.includes(data.mimetype)) {
+        return reply.status(400).send({
+          error: { message: 'Invalid file type. Allowed: PNG, JPEG, SVG, WebP', statusCode: 400 },
+        });
+      }
+
+      // Read file buffer
+      const buffer = await data.toBuffer();
+      const filename = data.filename || 'logo';
+      const ext = filename.split('.').pop() || 'png';
+      const savedFilename = `${opcoId}-logo.${ext}`;
+
+      // For now, store as base64 data URL in settings
+      // In production, this would upload to a file storage service
+      const base64 = buffer.toString('base64');
+      const dataUrl = `data:${data.mimetype};base64,${base64}`;
+
+      // Get current OpCo settings
+      const opco = await fastify.prisma.opCo.findUnique({
+        where: { id: opcoId },
+      });
+
+      if (!opco) {
+        return reply.status(404).send({
+          error: { message: 'OpCo not found', statusCode: 404 },
+        });
+      }
+
+      const currentSettings = mergeWithDefaults(opco.settings as Partial<OpCoSettings>);
+
+      // Update logo URL in settings
+      const newSettings: OpCoSettings = {
+        ...currentSettings,
+        branding: {
+          ...currentSettings.branding,
+          logoUrl: dataUrl,
+        },
+      };
+
+      // Update OpCo
+      await fastify.prisma.opCo.update({
+        where: { id: opcoId },
+        data: { settings: newSettings as unknown as Prisma.InputJsonValue },
+      });
+
+      return {
+        success: true,
+        filename: savedFilename,
+        logoUrl: dataUrl,
+      };
+    } catch (err: any) {
+      fastify.log.error(err);
+      return reply.status(500).send({
+        error: { message: err.message || 'Failed to upload logo', statusCode: 500 },
+      });
+    }
   });
 
   // ============================================

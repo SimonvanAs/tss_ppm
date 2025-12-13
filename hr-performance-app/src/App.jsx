@@ -31,6 +31,7 @@ import {
   OpCoManagement,
   GlobalDashboard,
   ImportReviews,
+  StartNewYear,
   WorkflowSettings,
   BrandingSettings,
 } from './pages';
@@ -362,6 +363,7 @@ function AppRouter() {
         <Route path="tov-levels" element={<TovLevels />} />
         <Route path="competencies" element={<Competencies />} />
         <Route path="import" element={<ImportReviews />} />
+        <Route path="start-new-year" element={<StartNewYear />} />
         <Route path="settings" element={<WorkflowSettings />} />
         <Route
           path="opcos"

@@ -513,6 +513,9 @@ export const adminApi = {
 
     return response.json();
   },
+
+  // Bulk review cycle creation (Start New Performance Year)
+  bulkCreateReviewCycles: (data) => apiClient.post('/admin/review-cycles/bulk', data),
 };
 
 // Analytics

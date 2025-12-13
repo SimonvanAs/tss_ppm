@@ -1291,4 +1291,290 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       });
     }
   });
+
+  // ============================================
+  // BULK REVIEW CYCLE CREATION
+  // ============================================
+
+  fastify.post('/review-cycles/bulk', {
+    schema: {
+      description: 'Bulk create review cycles for all eligible employees (Start New Performance Year)',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        properties: {
+          year: { type: 'integer', description: 'Performance year to create reviews for' },
+          opcoId: { type: 'string', description: 'OpCo ID (required for TSS_SUPER_ADMIN)' },
+          filters: {
+            type: 'object',
+            properties: {
+              businessUnitId: { type: 'string', description: 'Filter by business unit' },
+              excludeExisting: { type: 'boolean', description: 'Skip employees with existing reviews (default true)' },
+              includeManagers: { type: 'boolean', description: 'Include users with MANAGER role (default false)' },
+            },
+          },
+          dryRun: { type: 'boolean', description: 'Preview mode - no changes made' },
+        },
+        required: ['year'],
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const body = request.body as {
+      year: number;
+      opcoId?: string;
+      filters?: {
+        businessUnitId?: string;
+        excludeExisting?: boolean;
+        includeManagers?: boolean;
+      };
+      dryRun?: boolean;
+    };
+
+    // Determine opcoId
+    const opcoId = request.user.role === UserRole.TSS_SUPER_ADMIN && body.opcoId
+      ? body.opcoId
+      : request.tenant.opcoId;
+
+    // Validate year
+    const currentYear = new Date().getFullYear();
+    if (body.year < currentYear - 1 || body.year > currentYear + 2) {
+      return reply.status(400).send({
+        error: { message: 'Year must be within reasonable range (last year to 2 years ahead)', statusCode: 400 },
+      });
+    }
+
+    const excludeExisting = body.filters?.excludeExisting !== false; // default true
+    const includeManagers = body.filters?.includeManagers === true; // default false
+    const isDryRun = body.dryRun === true;
+
+    // Get all eligible employees
+    const employeeWhere: any = {
+      opcoId,
+      isActive: true,
+    };
+
+    // Filter by role - include employees and optionally managers
+    if (includeManagers) {
+      employeeWhere.role = { in: [UserRole.EMPLOYEE, UserRole.MANAGER] };
+    } else {
+      employeeWhere.role = UserRole.EMPLOYEE;
+    }
+
+    // Filter by business unit if specified
+    if (body.filters?.businessUnitId) {
+      employeeWhere.businessUnitId = body.filters.businessUnitId;
+    }
+
+    // Get employees with their function titles
+    const employees = await fastify.prisma.user.findMany({
+      where: employeeWhere,
+      include: {
+        functionTitle: {
+          include: { tovLevel: true },
+        },
+        tovLevel: true,
+        manager: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+        businessUnit: {
+          select: { id: true, name: true },
+        },
+      },
+      orderBy: { lastName: 'asc' },
+    });
+
+    // Get existing reviews for the year if we need to exclude them
+    let existingReviewEmployeeIds = new Set<string>();
+    if (excludeExisting) {
+      const existingReviews = await fastify.prisma.reviewCycle.findMany({
+        where: { opcoId, year: body.year },
+        select: { employeeId: true },
+      });
+      existingReviewEmployeeIds = new Set(existingReviews.map(r => r.employeeId));
+    }
+
+    // Process each employee
+    const results: {
+      created: number;
+      skipped: number;
+      failed: number;
+      details: Array<{
+        userId: string;
+        employeeName: string;
+        managerName: string | null;
+        tovLevelCode: string | null;
+        status: 'created' | 'skipped' | 'failed' | 'will_create' | 'will_skip';
+        reason?: string;
+        reviewCycleId?: string;
+        warnings?: string[];
+      }>;
+    } = {
+      created: 0,
+      skipped: 0,
+      failed: 0,
+      details: [],
+    };
+
+    for (const employee of employees) {
+      const employeeName = `${employee.firstName} ${employee.lastName}`;
+      const managerName = employee.manager
+        ? `${employee.manager.firstName} ${employee.manager.lastName}`
+        : null;
+
+      // Get TOV level from employee or function title
+      const tovLevelId = employee.tovLevelId || employee.functionTitle?.tovLevelId;
+      const tovLevelCode = employee.tovLevel?.code || employee.functionTitle?.tovLevel?.code || null;
+
+      // Collect warnings
+      const warnings: string[] = [];
+      if (!employee.managerId) {
+        warnings.push('No manager assigned');
+      }
+      if (!tovLevelId) {
+        warnings.push('No TOV level mapped');
+      }
+
+      // Check if already exists
+      if (existingReviewEmployeeIds.has(employee.id)) {
+        results.skipped++;
+        results.details.push({
+          userId: employee.id,
+          employeeName,
+          managerName,
+          tovLevelCode,
+          status: isDryRun ? 'will_skip' : 'skipped',
+          reason: 'Review already exists for this year',
+        });
+        continue;
+      }
+
+      // Cannot create if no manager
+      if (!employee.managerId) {
+        results.skipped++;
+        results.details.push({
+          userId: employee.id,
+          employeeName,
+          managerName,
+          tovLevelCode,
+          status: isDryRun ? 'will_skip' : 'skipped',
+          reason: 'No manager assigned',
+          warnings,
+        });
+        continue;
+      }
+
+      // Cannot create if no TOV level
+      if (!tovLevelId) {
+        results.skipped++;
+        results.details.push({
+          userId: employee.id,
+          employeeName,
+          managerName,
+          tovLevelCode,
+          status: isDryRun ? 'will_skip' : 'skipped',
+          reason: 'No TOV level assigned or mapped from function title',
+          warnings,
+        });
+        continue;
+      }
+
+      // In dry run mode, just report what would happen
+      if (isDryRun) {
+        results.created++;
+        results.details.push({
+          userId: employee.id,
+          employeeName,
+          managerName,
+          tovLevelCode,
+          status: 'will_create',
+          warnings: warnings.length > 0 ? warnings : undefined,
+        });
+        continue;
+      }
+
+      // Create the review cycle
+      try {
+        // Get competency levels for the TOV level
+        const competencyLevels = await fastify.prisma.competencyLevel.findMany({
+          where: {
+            tovLevelId,
+            opcoId,
+            isActive: true,
+          },
+          orderBy: { sortOrder: 'asc' },
+        });
+
+        const review = await fastify.prisma.reviewCycle.create({
+          data: {
+            opcoId,
+            employeeId: employee.id,
+            managerId: employee.managerId,
+            year: body.year,
+            tovLevelId,
+            status: 'DRAFT',
+            stages: {
+              create: [
+                { stageType: 'GOAL_SETTING', status: 'PENDING' },
+                { stageType: 'MID_YEAR_REVIEW', status: 'PENDING' },
+                { stageType: 'END_YEAR_REVIEW', status: 'PENDING' },
+              ],
+            },
+            competencyScores: {
+              create: competencyLevels.map(cl => ({
+                competencyLevelId: cl.id,
+              })),
+            },
+          },
+        });
+
+        results.created++;
+        results.details.push({
+          userId: employee.id,
+          employeeName,
+          managerName,
+          tovLevelCode,
+          status: 'created',
+          reviewCycleId: review.id,
+          warnings: warnings.length > 0 ? warnings : undefined,
+        });
+      } catch (err: any) {
+        results.failed++;
+        results.details.push({
+          userId: employee.id,
+          employeeName,
+          managerName,
+          tovLevelCode,
+          status: 'failed',
+          reason: err.message || 'Unknown error',
+          warnings: warnings.length > 0 ? warnings : undefined,
+        });
+      }
+    }
+
+    // Audit log (only for actual creation, not dry run)
+    if (!isDryRun && results.created > 0) {
+      await fastify.audit.logFromRequest(request, {
+        entityType: 'ReviewCycle',
+        entityId: 'bulk',
+        action: 'CREATE',
+        metadata: {
+          year: body.year,
+          created: results.created,
+          skipped: results.skipped,
+          failed: results.failed,
+        },
+      });
+    }
+
+    return {
+      year: body.year,
+      dryRun: isDryRun,
+      created: results.created,
+      skipped: results.skipped,
+      failed: results.failed,
+      details: results.details,
+    };
+  });
 };

@@ -1065,3 +1065,25 @@
   cursor: not-allowed;
   transform: none;
 }
+
+/* File upload label (styled as button) */
+.file-upload-label {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #004A91;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.15s ease;
+}
+
+.file-upload-label:hover {
+  background-color: #003a73;
+}
+
+.file-upload-label:focus {
+  outline: 2px solid #004A91;
+  outline-offset: 2px;
+}

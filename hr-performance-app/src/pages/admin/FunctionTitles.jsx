@@ -221,11 +221,11 @@ function ImportModal({ tovLevels, onClose, onImportComplete, t }) {
   };
 
   return (
-    <div className="admin-modal-overlay" onClick={handleClose}>
+    <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="import-modal-title" onClick={handleClose}>
       <div className="admin-modal" style={{ maxWidth: '700px' }} onClick={e => e.stopPropagation()}>
         <div className="admin-modal-header">
-          <h3 className="admin-modal-title">{t('admin.functionTitles.import.title')}</h3>
-          <button className="admin-modal-close" onClick={handleClose}>&times;</button>
+          <h3 id="import-modal-title" className="admin-modal-title">{t('admin.functionTitles.import.title')}</h3>
+          <button className="admin-modal-close" onClick={handleClose} aria-label={t('common.close')}>&times;</button>
         </div>
 
         <div className="admin-modal-body">
@@ -252,16 +252,7 @@ function ImportModal({ tovLevels, onClose, onImportComplete, t }) {
               <div style={{ marginBottom: '16px' }}>
                 <label
                   htmlFor="file-upload-ft"
-                  style={{
-                    display: 'inline-block',
-                    padding: '10px 20px',
-                    backgroundColor: '#004A91',
-                    color: 'white',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    fontWeight: 500,
-                  }}
+                  className="file-upload-label"
                 >
                   {t('admin.functionTitles.import.selectFile')}
                 </label>
@@ -297,15 +288,7 @@ function ImportModal({ tovLevels, onClose, onImportComplete, t }) {
               </div>
 
               {error && (
-                <div style={{
-                  padding: '12px',
-                  backgroundColor: 'rgba(220, 53, 69, 0.1)',
-                  border: '1px solid #DC3545',
-                  borderRadius: '4px',
-                  color: '#DC3545',
-                  marginBottom: '16px',
-                  fontSize: '13px',
-                }}>
+                <div className="alert alert-error" role="alert" style={{ marginBottom: '16px', fontSize: '13px' }}>
                   {error}
                 </div>
               )}

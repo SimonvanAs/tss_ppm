@@ -356,6 +356,14 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       if (validRows.length > 0) {
         try {
           await fastify.prisma.$transaction(async (tx) => {
+            // Get max sortOrder once before the loop (fixes N+1 query)
+            const maxSortOrderResult = await tx.functionTitle.findFirst({
+              where: { ...withTenantFilter(request) },
+              orderBy: { sortOrder: 'desc' },
+              select: { sortOrder: true },
+            });
+            let nextSortOrder = (maxSortOrderResult?.sortOrder || 0);
+
             for (const { data } of validRows) {
               if (data.existingId) {
                 // Update existing
@@ -368,24 +376,34 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
                 });
                 results.updated++;
               } else {
-                // Create new
-                const maxSortOrder = await tx.functionTitle.findFirst({
-                  where: { ...withTenantFilter(request) },
-                  orderBy: { sortOrder: 'desc' },
-                  select: { sortOrder: true },
-                });
+                // Create new with incrementing sortOrder
+                nextSortOrder++;
                 await tx.functionTitle.create({
                   data: {
                     opcoId: request.tenant.opcoId,
                     name: data.name,
                     tovLevelId: data.tovLevelId,
                     description: data.description,
-                    sortOrder: (maxSortOrder?.sortOrder || 0) + 1,
+                    sortOrder: nextSortOrder,
                   },
                 });
                 results.created++;
               }
             }
+          });
+
+          // Audit log for successful bulk import
+          await fastify.audit.logFromRequest(request, {
+            entityType: 'FunctionTitle',
+            entityId: 'bulk',
+            action: 'IMPORT',
+            metadata: {
+              filename,
+              total: results.total,
+              created: results.created,
+              updated: results.updated,
+              skipped: results.skipped,
+            },
           });
         } catch (err: any) {
           // Transaction failed

@@ -594,9 +594,16 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       isActive: boolean;
     }>;
 
+    // Convert empty strings to null for foreign key fields
+    const updateData: typeof body = { ...body };
+    if (updateData.managerId === '') updateData.managerId = null as unknown as string;
+    if (updateData.functionTitleId === '') updateData.functionTitleId = null as unknown as string;
+    if (updateData.tovLevelId === '') updateData.tovLevelId = null as unknown as string;
+    if (updateData.businessUnitId === '') updateData.businessUnitId = null as unknown as string;
+
     const user = await fastify.prisma.user.update({
       where: { id },
-      data: body,
+      data: updateData,
       include: {
         functionTitle: true,
         tovLevel: true,

@@ -315,7 +315,12 @@
         "createdBy": "Aangemaakt door",
         "totalEmployees": "Totaal Medewerkers",
         "adjustments": "Aanpassingen Gemaakt",
-        "flaggedReviews": "Gemarkeerde Beoordelingen"
+        "flaggedReviews": "Gemarkeerde Beoordelingen",
+        "editSession": "Sessie Bewerken",
+        "sessionName": "Sessienaam",
+        "sessionNotes": "Notities",
+        "notesPlaceholder": "Voeg sessie notities, observaties of beslissingen toe...",
+        "nameLockedHint": "Naam kan niet worden gewijzigd voor lopende sessies"
       },
       "noSessions": "Geen kalibratie sessies",
       "noSessionsDesc": "Maak uw eerste kalibratie sessie aan om beoordelingen te reviewen en aan te passen",

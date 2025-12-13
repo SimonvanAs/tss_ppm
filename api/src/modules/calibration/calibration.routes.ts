@@ -369,10 +369,20 @@ export const calibrationRoutes: FastifyPluginAsync = async (fastify: FastifyInst
       });
     }
 
-    // Can only update DRAFT or SCHEDULED sessions
-    if (!['DRAFT', 'SCHEDULED'].includes(session.status)) {
+    // Check what can be updated based on session status
+    const isInProgress = session.status === 'IN_PROGRESS';
+    const canFullyEdit = ['DRAFT', 'SCHEDULED'].includes(session.status);
+
+    if (!canFullyEdit && !isInProgress) {
       return reply.status(400).send({
-        error: { message: 'Can only update draft or scheduled sessions', statusCode: 400 },
+        error: { message: 'Cannot update completed or cancelled sessions', statusCode: 400 },
+      });
+    }
+
+    // For IN_PROGRESS, only allow notes update
+    if (isInProgress && (body.name || body.scheduledAt || body.targetDistribution !== undefined || body.enforceDistribution !== undefined)) {
+      return reply.status(400).send({
+        error: { message: 'Can only update notes for in-progress sessions', statusCode: 400 },
       });
     }
 

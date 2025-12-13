@@ -315,7 +315,12 @@
         "createdBy": "Creado por",
         "totalEmployees": "Total de Empleados",
         "adjustments": "Ajustes Realizados",
-        "flaggedReviews": "Evaluaciones Marcadas"
+        "flaggedReviews": "Evaluaciones Marcadas",
+        "editSession": "Editar Sesión",
+        "sessionName": "Nombre de Sesión",
+        "sessionNotes": "Notas",
+        "notesPlaceholder": "Añadir notas de sesión, observaciones o decisiones...",
+        "nameLockedHint": "El nombre no se puede cambiar para sesiones en progreso"
       },
       "noSessions": "Sin sesiones de calibración",
       "noSessionsDesc": "Cree su primera sesión de calibración para comenzar a revisar y ajustar calificaciones",

@@ -315,7 +315,12 @@
         "createdBy": "Created by",
         "totalEmployees": "Total Employees",
         "adjustments": "Adjustments Made",
-        "flaggedReviews": "Flagged Reviews"
+        "flaggedReviews": "Flagged Reviews",
+        "editSession": "Edit Session",
+        "sessionName": "Session Name",
+        "sessionNotes": "Notes",
+        "notesPlaceholder": "Add session notes, observations, or decisions...",
+        "nameLockedHint": "Name cannot be changed for in-progress sessions"
       },
       "noSessions": "No calibration sessions",
       "noSessionsDesc": "Create your first calibration session to start reviewing and adjusting ratings across teams",

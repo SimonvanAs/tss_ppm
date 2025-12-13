@@ -15,6 +15,7 @@ export function EmployeeInfo() {
   const [functionTitles, setFunctionTitles] = useState([]);
   const [tovLevels, setTovLevels] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [autoLevelApplied, setAutoLevelApplied] = useState(false);
 
   // Check if user can override TOV level (HR or higher)
@@ -25,6 +26,7 @@ export function EmployeeInfo() {
     const loadData = async () => {
       try {
         setLoading(true);
+        setLoadError(null);
         const [ftData, tlData] = await Promise.all([
           adminApi.getFunctionTitles(),
           adminApi.getTovLevels(),
@@ -33,6 +35,7 @@ export function EmployeeInfo() {
         setTovLevels(tlData.tovLevels || tlData || []);
       } catch (err) {
         console.error('Failed to load function titles or TOV levels:', err);
+        setLoadError(err.message || 'Failed to load data');
       } finally {
         setLoading(false);
       }
@@ -82,10 +85,10 @@ export function EmployeeInfo() {
 
   const hasError = (field) => validationErrors.includes(field);
 
-  // Get the selected function title name for display
-  const getSelectedFunctionTitleName = () => {
-    const selected = functionTitles.find(ft => ft.id === formData.functionTitle);
-    return selected?.name || '';
+  // Helper to build aria-describedby from multiple possible IDs
+  const getAriaDescribedBy = (...ids) => {
+    const validIds = ids.filter(Boolean);
+    return validIds.length > 0 ? validIds.join(' ') : undefined;
   };
 
   // Check if the selected function title has no TOV level mapping
@@ -109,21 +112,26 @@ export function EmployeeInfo() {
               value={formData.employeeName}
               onChange={handleChange('employeeName')}
               placeholder={t('employee.namePlaceholder')}
+              aria-describedby={hasError('employeeName') ? 'employeeName-validation' : undefined}
             />
             <VoiceInputButton onTranscript={handleVoiceInput('employeeName')} />
           </div>
           {hasError('employeeName') && (
-            <span className="field-error">{t('validation.required')}</span>
+            <span id="employeeName-validation" className="field-error" role="alert">{t('validation.required')}</span>
           )}
         </div>
 
         <div className={`form-group ${hasError('functionTitle') ? 'has-error' : ''}`}>
-          <label htmlFor="functionTitle">{t('employee.role')} *</label>
+          <label htmlFor="functionTitle">{t('employee.functionTitle')} *</label>
           <select
             id="functionTitle"
             value={formData.functionTitle}
             onChange={handleFunctionTitleChange}
             disabled={loading}
+            aria-describedby={getAriaDescribedBy(
+              loadError && 'functionTitle-error',
+              hasError('functionTitle') && 'functionTitle-validation'
+            )}
           >
             <option value="">{loading ? t('common.loading') : t('employee.selectFunctionTitle')}</option>
             {functionTitles.map(ft => (
@@ -133,8 +141,11 @@ export function EmployeeInfo() {
               </option>
             ))}
           </select>
+          {loadError && (
+            <span id="functionTitle-error" className="field-warning" role="alert">{t('employee.loadError')}</span>
+          )}
           {hasError('functionTitle') && (
-            <span className="field-error">{t('validation.required')}</span>
+            <span id="functionTitle-validation" className="field-error">{t('validation.required')}</span>
           )}
         </div>
 
@@ -147,11 +158,12 @@ export function EmployeeInfo() {
               value={formData.businessUnit}
               onChange={handleChange('businessUnit')}
               placeholder={t('employee.businessUnitPlaceholder')}
+              aria-describedby={hasError('businessUnit') ? 'businessUnit-validation' : undefined}
             />
             <VoiceInputButton onTranscript={handleVoiceInput('businessUnit')} />
           </div>
           {hasError('businessUnit') && (
-            <span className="field-error">{t('validation.required')}</span>
+            <span id="businessUnit-validation" className="field-error" role="alert">{t('validation.required')}</span>
           )}
         </div>
 
@@ -159,7 +171,7 @@ export function EmployeeInfo() {
           <label htmlFor="tovLevel">
             {t('employee.tovLevel')} *
             {autoLevelApplied && (
-              <span className="auto-applied-badge">
+              <span className="auto-applied-badge" id="tovLevel-auto-applied">
                 ({t('employee.autoApplied')})
               </span>
             )}
@@ -172,6 +184,15 @@ export function EmployeeInfo() {
                 value={formData.tovLevel}
                 onChange={handleTovLevelChange}
                 disabled={loading}
+                aria-describedby={
+                  hasNoTovLevelMapping() && !canOverrideTovLevel
+                    ? 'tovLevel-warning'
+                    : hasError('tovLevel')
+                    ? 'tovLevel-validation'
+                    : autoLevelApplied
+                    ? 'tovLevel-auto-applied'
+                    : undefined
+                }
               >
                 <option value="">{t('employee.selectLevel')}</option>
                 {tovLevels.length > 0 ? (
@@ -182,15 +203,15 @@ export function EmployeeInfo() {
                   ))
                 ) : (
                   <>
-                    <option value="A">A</option>
-                    <option value="B">B</option>
-                    <option value="C">C</option>
-                    <option value="D">D</option>
+                    <option value="A">A - Level A</option>
+                    <option value="B">B - Level B</option>
+                    <option value="C">C - Level C</option>
+                    <option value="D">D - Level D</option>
                   </>
                 )}
               </select>
               {hasNoTovLevelMapping() && !canOverrideTovLevel && (
-                <span className="field-warning">{t('employee.noTovLevelMapping')}</span>
+                <span id="tovLevel-warning" className="field-warning" role="alert">{t('employee.noTovLevelMapping')}</span>
               )}
             </>
           ) : (
@@ -201,11 +222,12 @@ export function EmployeeInfo() {
                 value={formData.tovLevel || t('employee.selectFunctionTitleFirst')}
                 readOnly
                 className="read-only-input"
+                aria-describedby={autoLevelApplied ? 'tovLevel-auto-applied' : undefined}
               />
             </div>
           )}
           {hasError('tovLevel') && (
-            <span className="field-error">{t('validation.selectTovLevel')}</span>
+            <span id="tovLevel-validation" className="field-error">{t('validation.selectTovLevel')}</span>
           )}
         </div>
 
@@ -216,9 +238,10 @@ export function EmployeeInfo() {
             id="reviewDate"
             value={formData.reviewDate}
             onChange={handleChange('reviewDate')}
+            aria-describedby={hasError('reviewDate') ? 'reviewDate-validation' : undefined}
           />
           {hasError('reviewDate') && (
-            <span className="field-error">{t('validation.required')}</span>
+            <span id="reviewDate-validation" className="field-error" role="alert">{t('validation.required')}</span>
           )}
         </div>
 

@@ -734,7 +734,29 @@
       "addFirst": "Add First Function Title",
       "deleteTitle": "Delete Function Title",
       "deleteMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
-      "error": "Failed to load function titles"
+      "error": "Failed to load function titles",
+      "export": {
+        "button": "Export to Excel",
+        "exporting": "Exporting..."
+      },
+      "import": {
+        "button": "Import from Excel",
+        "title": "Import Function Titles",
+        "instructions": "Excel file format requirements:",
+        "note": "Column names are flexible and will be automatically detected. The first row should contain headers.",
+        "selectFile": "Select File",
+        "noFileSelected": "Please select a file to upload.",
+        "invalidFileType": "Invalid file type. Please upload an Excel file (.xlsx, .xls).",
+        "fileTooLarge": "File size exceeds 10MB limit.",
+        "uploading": "Uploading...",
+        "upload": "Upload and Import",
+        "complete": "Import Complete!",
+        "totalRows": "Total Rows",
+        "created": "Created",
+        "updated": "Updated",
+        "skipped": "Skipped",
+        "errors": "Errors"
+      }
     },
     "tovLevels": {
       "title": "TOV/IDE Levels",

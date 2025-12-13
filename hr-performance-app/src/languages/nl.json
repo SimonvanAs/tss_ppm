@@ -734,7 +734,29 @@
       "addFirst": "Eerste Functietitel Toevoegen",
       "deleteTitle": "Functietitel Verwijderen",
       "deleteMessage": "Weet u zeker dat u \"{{name}}\" wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
-      "error": "Functietitels konden niet worden geladen"
+      "error": "Functietitels konden niet worden geladen",
+      "export": {
+        "button": "Exporteren naar Excel",
+        "exporting": "Exporteren..."
+      },
+      "import": {
+        "button": "Importeren vanuit Excel",
+        "title": "Functietitels Importeren",
+        "instructions": "Excel-bestandsformatvereisten:",
+        "note": "Kolomnamen zijn flexibel en worden automatisch gedetecteerd. De eerste rij moet koppen bevatten.",
+        "selectFile": "Bestand Selecteren",
+        "noFileSelected": "Selecteer een bestand om te uploaden.",
+        "invalidFileType": "Ongeldig bestandstype. Upload een Excel-bestand (.xlsx, .xls).",
+        "fileTooLarge": "Bestandsgrootte overschrijdt de limiet van 10MB.",
+        "uploading": "Uploaden...",
+        "upload": "Uploaden en Importeren",
+        "complete": "Import Voltooid!",
+        "totalRows": "Totaal Rijen",
+        "created": "Aangemaakt",
+        "updated": "Bijgewerkt",
+        "skipped": "Overgeslagen",
+        "errors": "Fouten"
+      }
     },
     "tovLevels": {
       "title": "TOV/IDE Niveaus",

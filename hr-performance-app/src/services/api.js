@@ -463,6 +463,51 @@ export const adminApi = {
   createFunctionTitle: (data) => apiClient.post('/admin/function-titles', data),
   updateFunctionTitle: (id, data) => apiClient.patch(`/admin/function-titles/${id}`, data),
   deleteFunctionTitle: (id) => apiClient.delete(`/admin/function-titles/${id}`),
+  exportFunctionTitles: async () => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+    const token = apiClient.accessToken;
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/admin/function-titles/export`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || 'Failed to export function titles');
+    }
+
+    return response.blob();
+  },
+  bulkImportFunctionTitles: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+    const token = apiClient.accessToken;
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/admin/function-titles/bulk`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error?.message || 'Failed to import function titles');
+    }
+
+    return data;
+  },
 
   // TOV Levels
   getTovLevels: () => apiClient.get('/admin/tov-levels'),

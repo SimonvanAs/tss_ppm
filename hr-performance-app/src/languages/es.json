@@ -734,7 +734,29 @@
       "addFirst": "Agregar Primer Título de Función",
       "deleteTitle": "Eliminar Título de Función",
       "deleteMessage": "¿Está seguro de que desea eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
-      "error": "No se pudieron cargar los títulos de función"
+      "error": "No se pudieron cargar los títulos de función",
+      "export": {
+        "button": "Exportar a Excel",
+        "exporting": "Exportando..."
+      },
+      "import": {
+        "button": "Importar desde Excel",
+        "title": "Importar Títulos de Función",
+        "instructions": "Requisitos del formato de archivo Excel:",
+        "note": "Los nombres de las columnas son flexibles y se detectarán automáticamente. La primera fila debe contener encabezados.",
+        "selectFile": "Seleccionar Archivo",
+        "noFileSelected": "Por favor seleccione un archivo para subir.",
+        "invalidFileType": "Tipo de archivo no válido. Suba un archivo Excel (.xlsx, .xls).",
+        "fileTooLarge": "El tamaño del archivo excede el límite de 10MB.",
+        "uploading": "Subiendo...",
+        "upload": "Subir e Importar",
+        "complete": "¡Importación Completa!",
+        "totalRows": "Total de Filas",
+        "created": "Creados",
+        "updated": "Actualizados",
+        "skipped": "Omitidos",
+        "errors": "Errores"
+      }
     },
     "tovLevels": {
       "title": "Niveles TOV/IDE",

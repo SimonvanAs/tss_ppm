@@ -113,6 +113,307 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
     return reply.status(204).send();
   });
 
+  fastify.get('/function-titles/export', {
+    schema: {
+      description: 'Export function titles as Excel file',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    try {
+      const functionTitles = await fastify.prisma.functionTitle.findMany({
+        where: {
+          ...withTenantFilter(request),
+          isActive: true,
+        },
+        include: {
+          tovLevel: true,
+        },
+        orderBy: { sortOrder: 'asc' },
+      });
+
+      // Generate Excel file
+      const { default: ExcelJS } = await import('exceljs');
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Function Titles');
+
+      // Add headers
+      worksheet.columns = [
+        { header: 'Name', key: 'name', width: 30 },
+        { header: 'TOV Level', key: 'tovLevel', width: 15 },
+        { header: 'Description', key: 'description', width: 50 },
+      ];
+
+      // Style header row
+      worksheet.getRow(1).font = { bold: true };
+      worksheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE7F3FF' },
+      };
+
+      // Add data rows
+      functionTitles.forEach((ft) => {
+        worksheet.addRow({
+          name: ft.name,
+          tovLevel: ft.tovLevel?.code || '',
+          description: ft.description || '',
+        });
+      });
+
+      // Generate buffer
+      const buffer = await workbook.xlsx.writeBuffer();
+
+      // Set response headers
+      reply.header('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      reply.header('Content-Disposition', 'attachment; filename="function-titles.xlsx"');
+
+      return reply.send(buffer);
+    } catch (err: any) {
+      fastify.log.error(err);
+      return reply.status(500).send({
+        error: { message: err.message || 'Failed to export function titles', statusCode: 500 },
+      });
+    }
+  });
+
+  fastify.post('/function-titles/bulk', {
+    schema: {
+      description: 'Bulk import function titles from Excel file',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      consumes: ['multipart/form-data'],
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    try {
+      const data = await request.file();
+      if (!data) {
+        return reply.status(400).send({
+          error: { message: 'No file provided', statusCode: 400 },
+        });
+      }
+
+      const bufferData = await data.toBuffer();
+      const filename = data.filename || 'import.xlsx';
+
+      // Parse Excel file
+      const { default: ExcelJS } = await import('exceljs');
+      const workbook = new ExcelJS.Workbook();
+      // @ts-ignore - Buffer type compatibility
+      await workbook.xlsx.load(bufferData);
+
+      const worksheet = workbook.getWorksheet(1);
+      if (!worksheet) {
+        return reply.status(400).send({
+          error: { message: 'Excel file is empty or invalid', statusCode: 400 },
+        });
+      }
+
+      // Parse header row
+      const headerRow = worksheet.getRow(1);
+      const headers: string[] = [];
+      headerRow.eachCell((cell, colNumber) => {
+        headers[colNumber - 1] = cell.value?.toString() || '';
+      });
+
+      // Map columns
+      const columnMap: Record<string, string> = {};
+      headers.forEach((header) => {
+        const normalized = header.toLowerCase().trim();
+        if (normalized.includes('name')) {
+          columnMap.name = header;
+        } else if (normalized.includes('tov') || normalized.includes('level')) {
+          columnMap.tovLevel = header;
+        } else if (normalized.includes('description')) {
+          columnMap.description = header;
+        }
+      });
+
+      // Validate required columns
+      if (!columnMap.name) {
+        return reply.status(400).send({
+          error: {
+            message: 'Excel file must contain a Name column',
+            statusCode: 400,
+          },
+        });
+      }
+
+      // Get all TOV levels for validation
+      const tovLevels = await fastify.prisma.tovLevel.findMany({
+        where: {
+          ...withTenantFilter(request),
+          isActive: true,
+        },
+      });
+      const tovLevelMap = new Map(tovLevels.map(tl => [tl.code.toLowerCase(), tl]));
+
+      // Get existing function titles for duplicate check
+      const existingFunctionTitles = await fastify.prisma.functionTitle.findMany({
+        where: {
+          ...withTenantFilter(request),
+          isActive: true,
+        },
+      });
+      const existingNames = new Set(existingFunctionTitles.map(ft => ft.name.toLowerCase()));
+
+      const results = {
+        total: 0,
+        created: 0,
+        updated: 0,
+        skipped: 0,
+        errors: [] as Array<{ row: number; message: string }>,
+      };
+
+      // Collect valid rows for bulk transaction
+      type ValidRow = {
+        name: string;
+        tovLevelId: string | null;
+        description: string;
+        existingId?: string;
+      };
+      const validRows: Array<{ rowNum: number; data: ValidRow }> = [];
+
+      // Process each row (validation pass)
+      for (let rowNum = 2; rowNum <= worksheet.rowCount; rowNum++) {
+        const row = worksheet.getRow(rowNum);
+        if (!row || row.cellCount === 0) continue;
+
+        results.total++;
+
+        try {
+          const getCellValue = (colName: string): string | null => {
+            const headerIndex = headers.indexOf(columnMap[colName]);
+            if (headerIndex === -1) return null;
+            const cell = row.getCell(headerIndex + 1);
+            return cell.value?.toString()?.trim() || null;
+          };
+
+          const name = getCellValue('name');
+          const tovLevelCode = getCellValue('tovLevel');
+          const description = getCellValue('description') || '';
+
+          if (!name) {
+            results.skipped++;
+            results.errors.push({ row: rowNum, message: 'Missing name' });
+            continue;
+          }
+
+          // Validate TOV level if provided
+          let tovLevelId: string | null = null;
+          if (tovLevelCode) {
+            const tovLevel = tovLevelMap.get(tovLevelCode.toLowerCase());
+            if (!tovLevel) {
+              results.skipped++;
+              results.errors.push({
+                row: rowNum,
+                message: `Invalid TOV level: ${tovLevelCode}. Valid values: ${tovLevels.map(tl => tl.code).join(', ')}`,
+              });
+              continue;
+            }
+            tovLevelId = tovLevel.id;
+          }
+
+          // Check for duplicates within the import file
+          const duplicateInFile = validRows.find(
+            vr => vr.data.name.toLowerCase() === name.toLowerCase()
+          );
+          if (duplicateInFile) {
+            results.skipped++;
+            results.errors.push({
+              row: rowNum,
+              message: `Duplicate name in file (first seen at row ${duplicateInFile.rowNum})`,
+            });
+            continue;
+          }
+
+          // Check if exists (for update vs create)
+          const existing = existingFunctionTitles.find(
+            ft => ft.name.toLowerCase() === name.toLowerCase()
+          );
+
+          validRows.push({
+            rowNum,
+            data: {
+              name,
+              tovLevelId,
+              description,
+              existingId: existing?.id,
+            },
+          });
+        } catch (err: any) {
+          results.skipped++;
+          results.errors.push({
+            row: rowNum,
+            message: err.message || 'Unknown error',
+          });
+        }
+      }
+
+      // Bulk create/update in transaction
+      if (validRows.length > 0) {
+        try {
+          await fastify.prisma.$transaction(async (tx) => {
+            for (const { data } of validRows) {
+              if (data.existingId) {
+                // Update existing
+                await tx.functionTitle.update({
+                  where: { id: data.existingId },
+                  data: {
+                    tovLevelId: data.tovLevelId,
+                    description: data.description,
+                  },
+                });
+                results.updated++;
+              } else {
+                // Create new
+                const maxSortOrder = await tx.functionTitle.findFirst({
+                  where: { ...withTenantFilter(request) },
+                  orderBy: { sortOrder: 'desc' },
+                  select: { sortOrder: true },
+                });
+                await tx.functionTitle.create({
+                  data: {
+                    opcoId: request.tenant.opcoId,
+                    name: data.name,
+                    tovLevelId: data.tovLevelId,
+                    description: data.description,
+                    sortOrder: (maxSortOrder?.sortOrder || 0) + 1,
+                  },
+                });
+                results.created++;
+              }
+            }
+          });
+        } catch (err: any) {
+          // Transaction failed
+          return reply.status(500).send({
+            error: {
+              message: `Bulk operation failed: ${err.message}`,
+              statusCode: 500,
+            },
+          });
+        }
+      }
+
+      return reply.status(200).send({
+        success: true,
+        filename,
+        results,
+      });
+    } catch (err: any) {
+      fastify.log.error(err);
+      return reply.status(500).send({
+        error: {
+          message: err.message || 'Failed to import function titles',
+          statusCode: 500,
+        },
+      });
+    }
+  });
+
   // ============================================
   // BUSINESS UNITS
   // ============================================

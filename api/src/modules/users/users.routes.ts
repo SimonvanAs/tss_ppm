@@ -114,7 +114,8 @@ export const usersRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
         role: user.role,
         functionTitle: user.functionTitle?.name || null,
         tovLevel: user.tovLevel?.code || null,
-        tovLevelId: user.tovLevelId,
+        // Fall back to function title's TOV level if user doesn't have one directly set
+        tovLevelId: user.tovLevelId || user.functionTitle?.tovLevelId || null,
         managerId: user.managerId,
         isActive: user.isActive,
       })),

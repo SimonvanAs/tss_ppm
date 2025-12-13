@@ -28,6 +28,17 @@
       "loading": "Beoordelingen laden...",
       "errorLoading": "Fout bij laden beoordelingen"
     },
+    "newReview": {
+      "title": "Nieuwe Beoordeling Aanmaken",
+      "year": "Jaar",
+      "employee": "Medewerker",
+      "selectEmployee": "Selecteer medewerker...",
+      "manager": "Manager",
+      "selectManager": "Selecteer manager...",
+      "tovLevel": "TOV/IDE Niveau",
+      "selectTovLevel": "Selecteer TOV niveau...",
+      "create": "Beoordeling Aanmaken"
+    },
     "team": {
       "title": "Team Overzicht",
       "subtitle": "Direct reports en hun beoordelingen",
@@ -599,6 +610,7 @@
     "all": "Alle",
     "selectOption": "Selecteren...",
     "create": "Aanmaken",
+    "creating": "Aanmaken...",
     "logout": "Uitloggen"
   },
   "admin": {

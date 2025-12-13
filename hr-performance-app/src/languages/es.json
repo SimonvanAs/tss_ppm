@@ -28,6 +28,17 @@
       "loading": "Cargando evaluaciones...",
       "errorLoading": "Error al cargar evaluaciones"
     },
+    "newReview": {
+      "title": "Crear Nueva Evaluación",
+      "year": "Año",
+      "employee": "Empleado",
+      "selectEmployee": "Seleccionar empleado...",
+      "manager": "Gerente",
+      "selectManager": "Seleccionar gerente...",
+      "tovLevel": "Nivel TOV/IDE",
+      "selectTovLevel": "Seleccionar nivel TOV...",
+      "create": "Crear Evaluación"
+    },
     "team": {
       "title": "Resumen del Equipo",
       "subtitle": "Reportes directos y sus evaluaciones de desempeño",
@@ -538,7 +549,9 @@
     "download": "Descargar informe final",
     "clearSession": "Limpiar sesión",
     "confirmClear": "¿Está seguro de que desea limpiar esta sesión? Todos los datos se perderán.",
-    "saved": "Guardado"
+    "saved": "Guardado",
+    "save": "Guardar",
+    "downloadError": "Error al generar el informe. Por favor intente de nuevo."
   },
   "validation": {
     "required": "Este campo es obligatorio",
@@ -597,6 +610,7 @@
     "all": "Todos",
     "selectOption": "Seleccionar...",
     "create": "Crear",
+    "creating": "Creando...",
     "logout": "Cerrar sesión"
   },
   "admin": {

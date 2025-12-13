@@ -1087,3 +1087,25 @@
   outline: 2px solid #004A91;
   outline-offset: 2px;
 }
+
+/* Warning banner (for blocking dialogs) */
+.warning-banner {
+  padding: 12px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  color: #856404;
+}
+
+.warning-banner-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.warning-banner-text {
+  margin: 0;
+  font-size: 14px;
+}

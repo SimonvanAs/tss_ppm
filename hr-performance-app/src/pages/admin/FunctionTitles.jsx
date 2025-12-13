@@ -38,13 +38,13 @@ function FunctionTitleModal({ functionTitle, tovLevels, onSave, onClose, t }) {
   };
 
   return (
-    <div className="admin-modal-overlay" onClick={onClose}>
+    <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="function-title-modal-title" onClick={onClose}>
       <div className="admin-modal" onClick={e => e.stopPropagation()}>
         <div className="admin-modal-header">
-          <h3 className="admin-modal-title">
+          <h3 id="function-title-modal-title" className="admin-modal-title">
             {functionTitle ? t('admin.functionTitles.edit') : t('admin.functionTitles.create')}
           </h3>
-          <button className="admin-modal-close" onClick={onClose}>&times;</button>
+          <button className="admin-modal-close" onClick={onClose} aria-label={t('common.close')}>&times;</button>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -125,11 +125,11 @@ function FunctionTitleModal({ functionTitle, tovLevels, onSave, onClose, t }) {
 
 function ConfirmDialog({ title, message, onConfirm, onCancel, t }) {
   return (
-    <div className="admin-modal-overlay" onClick={onCancel}>
+    <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title" onClick={onCancel}>
       <div className="admin-modal" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
         <div className="admin-modal-header">
-          <h3 className="admin-modal-title">{title}</h3>
-          <button className="admin-modal-close" onClick={onCancel}>&times;</button>
+          <h3 id="confirm-dialog-title" className="admin-modal-title">{title}</h3>
+          <button className="admin-modal-close" onClick={onCancel} aria-label={t('common.close')}>&times;</button>
         </div>
         <div className="admin-modal-body">
           <p>{message}</p>
@@ -149,23 +149,23 @@ function ConfirmDialog({ title, message, onConfirm, onCancel, t }) {
 
 function AssignedUsersWarningDialog({ functionTitle, userCount, users, onClose, t }) {
   return (
-    <div className="admin-modal-overlay" onClick={onClose}>
+    <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="warning-dialog-title" onClick={onClose}>
       <div className="admin-modal" style={{ maxWidth: '600px' }} onClick={e => e.stopPropagation()}>
         <div className="admin-modal-header">
-          <h3 className="admin-modal-title">{t('admin.functionTitles.cannotDelete')}</h3>
-          <button className="admin-modal-close" onClick={onClose}>&times;</button>
+          <h3 id="warning-dialog-title" className="admin-modal-title">{t('admin.functionTitles.cannotDelete')}</h3>
+          <button className="admin-modal-close" onClick={onClose} aria-label={t('common.close')}>&times;</button>
         </div>
         <div className="admin-modal-body">
-          <div style={{ padding: '12px', background: '#fff3cd', border: '1px solid #ffc107', borderRadius: '6px', marginBottom: '16px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
-              <svg viewBox="0 0 24 24" width="20" height="20" fill="#856404">
+          <div className="warning-banner">
+            <div className="warning-banner-header">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
                 <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
               </svg>
-              <strong style={{ color: '#856404' }}>
+              <strong>
                 {t('admin.functionTitles.deleteBlocked', { count: userCount })}
               </strong>
             </div>
-            <p style={{ margin: 0, color: '#856404', fontSize: '14px' }}>
+            <p className="warning-banner-text">
               {t('admin.functionTitles.deleteBlockedMessage', { name: functionTitle.name, count: userCount })}
             </p>
           </div>

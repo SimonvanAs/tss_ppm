@@ -120,8 +120,8 @@ services:
     volumes:
       - keycloak-data:/opt/keycloak/data
       - ./keycloak:/opt/keycloak/data/import:ro
-      # Custom themes disabled - using default Keycloak theme
-      # - ./keycloak/themes:/opt/keycloak/themes:ro
+      # Custom themes
+      - ./keycloak/themes:/opt/keycloak/themes:ro
     environment:
       # Database (uses same PostgreSQL instance)
       - KC_DB=postgres

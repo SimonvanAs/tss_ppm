@@ -12,6 +12,21 @@ export function Header() {
   const { progress, updateFormData } = useForm();
   const { user, logout, isAuthenticated } = useAuth();
 
+  // Save status from ReviewContext (when on review form page)
+  const [saveStatus, setSaveStatus] = useState(null);
+
+  useEffect(() => {
+    const handleSaveStatus = (e) => {
+      setSaveStatus(e.detail);
+    };
+
+    window.addEventListener('review-save-status', handleSaveStatus);
+    return () => {
+      window.removeEventListener('review-save-status', handleSaveStatus);
+      setSaveStatus(null);
+    };
+  }, []);
+
   const getProgressColor = () => {
     if (progress < 50) return '#DC3545';
     if (progress < 80) return '#FFA500';
@@ -27,18 +42,45 @@ export function Header() {
         </div>
 
         <div className="header-center">
-          <div className="progress-container">
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{
-                  width: `${progress}%`,
-                  backgroundColor: getProgressColor()
-                }}
-              />
+          {/* Show save status when on review form, otherwise show progress */}
+          {saveStatus ? (
+            <div className="header-save-status">
+              {saveStatus.saving && (
+                <span className="save-status-indicator saving">
+                  <span className="save-spinner" />
+                  {t('review.saving')}
+                </span>
+              )}
+              {!saveStatus.saving && saveStatus.dirty && (
+                <span className="save-status-indicator unsaved">
+                  {t('review.unsaved')}
+                </span>
+              )}
+              {!saveStatus.saving && saveStatus.saved && (
+                <span className="save-status-indicator saved">
+                  ✓ {t('review.saved')}
+                </span>
+              )}
+              {saveStatus.error && (
+                <span className="save-status-indicator error">
+                  ⚠ {t('review.saveFailed')}
+                </span>
+              )}
             </div>
-            <span className="progress-text">{progress}% {t('app.progress')}</span>
-          </div>
+          ) : (
+            <div className="progress-container">
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{
+                    width: `${progress}%`,
+                    backgroundColor: getProgressColor()
+                  }}
+                />
+              </div>
+              <span className="progress-text">{progress}% {t('app.progress')}</span>
+            </div>
+          )}
         </div>
 
         <div className="header-right">

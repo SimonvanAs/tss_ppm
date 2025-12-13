@@ -25,7 +25,19 @@
       "actions": "Acciones",
       "view": "Ver",
       "continue": "Continuar",
-      "loading": "Cargando evaluaciones..."
+      "loading": "Cargando evaluaciones...",
+      "errorLoading": "Error al cargar evaluaciones"
+    },
+    "newReview": {
+      "title": "Crear Nueva Evaluación",
+      "year": "Año",
+      "employee": "Empleado",
+      "selectEmployee": "Seleccionar empleado...",
+      "manager": "Gerente",
+      "selectManager": "Seleccionar gerente...",
+      "tovLevel": "Nivel TOV/IDE",
+      "selectTovLevel": "Seleccionar nivel TOV...",
+      "create": "Crear Evaluación"
     },
     "team": {
       "title": "Resumen del Equipo",
@@ -88,7 +100,8 @@
       "pendingApprovals": "Aprobaciones Pendientes",
       "byStage": "Evaluaciones por Etapa",
       "byScore": "Distribución de Puntuaciones",
-      "recentActivity": "Actividad Reciente"
+      "recentActivity": "Actividad Reciente",
+      "noRecentReviews": "No hay evaluaciones recientes"
     },
     "allReviews": {
       "title": "Todas las Evaluaciones",
@@ -104,6 +117,7 @@
       "title": "Historial de Desempeño",
       "subtitleOwn": "Siga sus puntuaciones y tendencias de desempeño a lo largo del tiempo",
       "subtitleOther": "Historial de desempeño de {{name}}",
+      "noAccess": "No tiene permiso para ver el historial de desempeño de este empleado.",
       "totalReviews": "Total de Evaluaciones",
       "yearsSpan": "Rango de Años",
       "avgWhat": "Prom. QUÉ",
@@ -138,6 +152,11 @@
       "viewHistory": "Ver Historial",
       "metric": "Métrica",
       "status": "Estado"
+    },
+    "accessDenied": {
+      "message": "No tiene permiso para acceder a esta página.",
+      "currentRole": "Su rol actual",
+      "requiredRoles": "Roles requeridos"
     },
     "analytics": {
       "title": "Análisis de Desempeño",
@@ -296,12 +315,36 @@
         "createdBy": "Creado por",
         "totalEmployees": "Total de Empleados",
         "adjustments": "Ajustes Realizados",
-        "flaggedReviews": "Evaluaciones Marcadas"
+        "flaggedReviews": "Evaluaciones Marcadas",
+        "editSession": "Editar Sesión",
+        "sessionName": "Nombre de Sesión",
+        "sessionNotes": "Notas",
+        "notesPlaceholder": "Añadir notas de sesión, observaciones o decisiones...",
+        "nameLockedHint": "El nombre no se puede cambiar para sesiones en progreso"
       },
       "noSessions": "Sin sesiones de calibración",
       "noSessionsDesc": "Cree su primera sesión de calibración para comenzar a revisar y ajustar calificaciones",
       "loading": "Cargando datos de calibración...",
-      "error": "No se pudieron cargar los datos de calibración"
+      "error": "No se pudieron cargar los datos de calibración",
+      "readyToStart": "Listo para Iniciar Calibración",
+      "readyToStartDesc": "Iniciar la calibración capturará todas las puntuaciones de evaluación de fin de año para el alcance seleccionado. Luego puede revisar y ajustar las calificaciones según sea necesario.",
+      "sessionNotFound": "Sesión no encontrada",
+      "backToSession": "Volver a la Sesión",
+      "reportTitle": "Informe de Calibración",
+      "report": {
+        "sessionSummary": "Resumen de Sesión",
+        "adjustmentsMade": "Ajustes Realizados",
+        "originalPosition": "Posición Original",
+        "calibratedPosition": "Posición Calibrada",
+        "change": "Cambio",
+        "adjustmentsByFacilitator": "Ajustes por Facilitador",
+        "adjustments": "ajustes",
+        "avgWhatChange": "Prom. Cambio QUÉ",
+        "avgHowChange": "Prom. Cambio CÓMO",
+        "sessionNotes": "Notas de Sesión",
+        "generatedOn": "Generado el",
+        "systemName": "Sistema de Gestión de Desempeño TSS"
+      }
     }
   },
   "signature": {
@@ -334,6 +377,14 @@
   },
   "review": {
     "stages": {
+      "draft": "Borrador",
+      "goalSetting": "Definición de Objetivos",
+      "goalSettingComplete": "Objetivos Bloqueados",
+      "midYear": "Evaluación de Medio Año",
+      "midYearComplete": "Medio Año Completado",
+      "endYear": "Evaluación de Fin de Año",
+      "pendingSignatures": "Pendiente de Firmas",
+      "completed": "Completado",
       "DRAFT": "Borrador",
       "GOAL_SETTING": "Definición de Objetivos",
       "GOAL_SETTING_COMPLETE": "Objetivos Bloqueados",
@@ -363,7 +414,21 @@
       "goalSetting": "Establecer y definir los objetivos de desempeño para el período de evaluación",
       "midYear": "Revisión y puntuación del progreso de medio año",
       "endYear": "Evaluación final del desempeño de fin de año"
-    }
+    },
+    "saving": "Guardando...",
+    "saved": "Guardado",
+    "unsaved": "Cambios no guardados",
+    "saveFailed": "Error al guardar",
+    "notFound": "Evaluación No Encontrada",
+    "notFoundDesc": "La evaluación que busca no existe o no tiene acceso.",
+    "startGoalSetting": "Iniciar Definición de Objetivos",
+    "completeGoalSetting": "Completar Definición de Objetivos",
+    "startMidYear": "Iniciar Evaluación de Medio Año",
+    "completeMidYear": "Completar Medio Año",
+    "startEndYear": "Iniciar Evaluación de Fin de Año",
+    "completeEndYear": "Completar Fin de Año",
+    "awaitingSignatures": "Esta evaluación está esperando firmas",
+    "reviewCompleted": "Evaluación Completada"
   },
   "app": {
     "title": "Evaluación de Desempeño",
@@ -403,12 +468,19 @@
     "title": "Información del Empleado",
     "name": "Nombre del empleado",
     "namePlaceholder": "Ingrese nombre del empleado",
-    "role": "Título de función / Rol",
+    "role": "Título de Función",
+    "functionTitle": "Título de Función",
     "rolePlaceholder": "Ingrese título de función",
+    "selectFunctionTitle": "Seleccione título de función...",
+    "loadError": "Error al cargar títulos de función. Puede completar el formulario manualmente.",
     "businessUnit": "Unidad de Negocio",
     "businessUnitPlaceholder": "Ingrese unidad de negocio",
     "tovLevel": "Nivel IDE",
     "selectLevel": "Seleccione nivel",
+    "selectFunctionTitleFirst": "Seleccione primero el título de función",
+    "autoApplied": "aplicado automáticamente",
+    "noTovLevelMapping": "Este título de función no tiene asignación de Nivel IDE",
+    "manualSelectionRequired": "Contacte a RRHH para establecer su Nivel IDE",
     "reviewDate": "Fecha de evaluación",
     "managerName": "Nombre del gerente",
     "managerPlaceholder": "Ingrese nombre del gerente"
@@ -467,7 +539,13 @@
     "whatScore": "Puntuación QUÉ",
     "howScore": "Puntuación CÓMO",
     "position": "Su posición",
-    "scfVeto": "VETO SCF"
+    "scfVeto": "VETO SCF",
+    "legend": {
+      "immediateAttention": "Atención inmediata",
+      "developmentArea": "Área de desarrollo",
+      "goodPerformance": "Buen desempeño",
+      "exceptional": "Excepcional"
+    }
   },
   "selfAssessment": {
     "title": "Autoevaluación del Empleado",
@@ -483,7 +561,9 @@
     "download": "Descargar informe final",
     "clearSession": "Limpiar sesión",
     "confirmClear": "¿Está seguro de que desea limpiar esta sesión? Todos los datos se perderán.",
-    "saved": "Guardado"
+    "saved": "Guardado",
+    "save": "Guardar",
+    "downloadError": "Error al generar el informe. Por favor intente de nuevo."
   },
   "validation": {
     "required": "Este campo es obligatorio",
@@ -524,7 +604,9 @@
     "loading": "Cargando...",
     "save": "Guardar",
     "saving": "Guardando...",
+    "uploading": "Subiendo...",
     "cancel": "Cancelar",
+    "close": "Cerrar",
     "edit": "Editar",
     "delete": "Eliminar",
     "add": "Agregar",
@@ -533,10 +615,21 @@
     "search": "Buscar",
     "error": "Error",
     "accessDenied": "Acceso Denegado",
-    "goBack": "Volver"
+    "goBack": "Volver",
+    "year": "Año",
+    "status": "Estado",
+    "businessUnit": "Unidad de Negocio",
+    "date": "Fecha",
+    "all": "Todos",
+    "selectOption": "Seleccionar...",
+    "create": "Crear",
+    "creating": "Creando...",
+    "logout": "Cerrar sesión"
   },
   "admin": {
     "title": "Portal de Administración",
+    "backToApp": "Volver a la Aplicación",
+    "toggleMenu": "Alternar menú",
     "sections": {
       "management": "Gestión",
       "configuration": "Configuración",
@@ -549,6 +642,10 @@
       "functionTitles": "Títulos de Función",
       "tovLevels": "Niveles TOV",
       "competencies": "Competencias",
+      "import": "Importar Revisiones",
+      "startNewYear": "Iniciar Nuevo Año",
+      "settings": "Configuración",
+      "branding": "Marca",
       "opcos": "OpCos",
       "global": "Global"
     },
@@ -638,7 +735,36 @@
       "addFirst": "Agregar Primer Título de Función",
       "deleteTitle": "Eliminar Título de Función",
       "deleteMessage": "¿Está seguro de que desea eliminar \"{{name}}\"? Esta acción no se puede deshacer.",
-      "error": "No se pudieron cargar los títulos de función"
+      "error": "No se pudieron cargar los títulos de función",
+      "assignedUsers": "Usuarios Asignados",
+      "cannotDelete": "No Se Puede Eliminar el Título de Función",
+      "deleteBlocked": "{{count}} usuario(s) asignado(s)",
+      "deleteBlockedMessage": "No se puede eliminar \"{{name}}\" porque {{count}} usuario(s) están actualmente asignados a este título de función.",
+      "assignedUsersTitle": "Usuarios con este título de función",
+      "andMoreUsers": "...y {{count}} usuario(s) más",
+      "reassignInstructions": "Para eliminar este título de función, primero debe reasignar todos los usuarios a un título de función diferente en Gestión de Usuarios.",
+      "export": {
+        "button": "Exportar a Excel",
+        "exporting": "Exportando..."
+      },
+      "import": {
+        "button": "Importar desde Excel",
+        "title": "Importar Títulos de Función",
+        "instructions": "Requisitos del formato de archivo Excel:",
+        "note": "Los nombres de las columnas son flexibles y se detectarán automáticamente. La primera fila debe contener encabezados.",
+        "selectFile": "Seleccionar Archivo",
+        "noFileSelected": "Por favor seleccione un archivo para subir.",
+        "invalidFileType": "Tipo de archivo no válido. Suba un archivo Excel (.xlsx, .xls).",
+        "fileTooLarge": "El tamaño del archivo excede el límite de 10MB.",
+        "uploading": "Subiendo...",
+        "upload": "Subir e Importar",
+        "complete": "¡Importación Completa!",
+        "totalRows": "Total de Filas",
+        "created": "Creados",
+        "updated": "Actualizados",
+        "skipped": "Omitidos",
+        "errors": "Errores"
+      }
     },
     "tovLevels": {
       "title": "Niveles TOV/IDE",
@@ -686,6 +812,59 @@
       "addFirst": "Agregar Primera Competencia",
       "error": "No se pudieron cargar las competencias"
     },
+    "import": {
+      "title": "Importar Revisiones Históricas",
+      "subtitle": "Suba un archivo Excel para importar revisiones de desempeño anteriores al sistema.",
+      "instructions": "Requisitos de Formato del Archivo",
+      "formatDescription": "Su archivo Excel debe contener las siguientes columnas:",
+      "note": "Nota: Los nombres de las columnas son flexibles y se detectarán automáticamente. La primera fila debe contener encabezados.",
+      "uploadTitle": "Subir Archivo",
+      "selectFile": "Seleccionar Archivo",
+      "upload": "Subir e Importar",
+      "uploading": "Subiendo...",
+      "invalidFileType": "Tipo de archivo inválido. Por favor suba un archivo Excel (.xlsx, .xls) o CSV.",
+      "fileTooLarge": "El archivo excede el límite de 10MB.",
+      "noFileSelected": "Por favor seleccione un archivo para subir.",
+      "uploadError": "Error al subir el archivo. Por favor intente de nuevo.",
+      "complete": "¡Importación Completa!",
+      "totalRows": "Filas Totales",
+      "created": "Creados",
+      "updated": "Actualizados",
+      "skipped": "Omitidos",
+      "errors": "Errores",
+      "importAnother": "Importar Otro Archivo",
+      "remove": "Eliminar"
+    },
+    "startNewYear": {
+      "title": "Iniciar Nuevo Año de Desempeño",
+      "subtitle": "Cree formularios de evaluación para todos los empleados elegibles en una sola acción",
+      "configureTitle": "Configurar Nuevo Año",
+      "selectYear": "Seleccionar Año de Desempeño",
+      "includeManagers": "Incluir usuarios con rol de Gerente",
+      "includeManagersHint": "Por defecto, solo los empleados reciben formularios de evaluación. Marque esto para incluir también a los gerentes.",
+      "preview": "Vista Previa",
+      "previewTitle": "Vista Previa - Año de Desempeño {{year}}",
+      "willCreate": "Se Crearán",
+      "willSkip": "Se Omitirán",
+      "totalEmployees": "Total de Empleados",
+      "employee": "Empleado",
+      "manager": "Gerente",
+      "tovLevel": "Nivel TOV",
+      "notes": "Notas",
+      "createReviews": "Crear {{count}} Formularios de Evaluación",
+      "noEligibleEmployees": "No se encontraron empleados elegibles. Todos los empleados pueden ya tener formularios de evaluación para este año.",
+      "creating": "Creando Formularios de Evaluación...",
+      "pleaseWait": "Por favor espere mientras creamos los formularios de evaluación.",
+      "complete": "¡Formularios de Evaluación Creados Exitosamente!",
+      "created": "creados",
+      "skipped": "omitidos",
+      "failed": "fallidos",
+      "details": "Detalles de Creación",
+      "startAnother": "Iniciar Otro Año",
+      "confirmTitle": "Confirmar Creación",
+      "confirmMessage": "Está a punto de crear {{count}} formularios de evaluación para el año de desempeño {{year}}. Esta acción no se puede deshacer.",
+      "confirmCreate": "Crear Evaluaciones"
+    },
     "opcos": {
       "title": "Gestión de OpCo",
       "subtitle": "Gestione las empresas operativas en toda la organización",
@@ -709,7 +888,15 @@
       "noItems": "No hay OpCos configurados",
       "noItemsDesc": "Cree su primera empresa operativa",
       "addFirst": "Agregar Primer OpCo",
-      "error": "No se pudieron cargar los OpCos"
+      "error": "No se pudieron cargar los OpCos",
+      "logo": "Logo",
+      "uploadLogo": "Subir Logo",
+      "removeLogo": "Eliminar logo",
+      "logoHint": "PNG, JPG o SVG (máx 2MB). Tamaño recomendado: 200x80px",
+      "logoInvalidType": "Seleccione un archivo de imagen (PNG, JPG, GIF o SVG)",
+      "logoTooLarge": "El archivo del logo es demasiado grande. El tamaño máximo es 2MB",
+      "logoUploadFailed": "Error al subir el logo. Los demás cambios se guardaron correctamente.",
+      "uploadingLogo": "Subiendo logo..."
     },
     "global": {
       "title": "Panel Global",
@@ -742,6 +929,70 @@
       "whisper": "Servicio Whisper",
       "available": "Disponible",
       "error": "No se pudo cargar el panel global"
+    },
+    "settings": {
+      "title": "Configuración del Flujo de Trabajo",
+      "subtitle": "Configure ciclos de revisión, aprobaciones y notificaciones",
+      "saved": "Configuración guardada exitosamente",
+      "error": "Error al guardar la configuración",
+      "reviewCycle": {
+        "title": "Fechas del Ciclo de Revisión",
+        "description": "Establezca fechas predeterminadas para cada período de revisión",
+        "goalSetting": "Período de Establecimiento de Objetivos",
+        "midYear": "Revisión de Medio Año",
+        "endYear": "Revisión de Fin de Año",
+        "start": "Fecha de Inicio",
+        "end": "Fecha de Fin",
+        "dateError": "La fecha de fin debe ser posterior a la fecha de inicio",
+        "overlapError": "Los períodos de revisión no pueden superponerse"
+      },
+      "approvals": {
+        "title": "Requisitos de Aprobación",
+        "description": "Configure qué etapas requieren aprobaciones",
+        "stage": "Etapa",
+        "managerApproval": "Aprobación del Gerente",
+        "hrApproval": "Aprobación de RRHH"
+      },
+      "signatures": {
+        "title": "Requisitos de Firma",
+        "description": "Configure los requisitos de firma para revisiones completadas",
+        "employee": "Requerir Firma del Empleado",
+        "manager": "Requerir Firma del Gerente"
+      },
+      "notifications": {
+        "title": "Notificaciones",
+        "comingSoon": "Las notificaciones por correo electrónico estarán disponibles en una actualización futura",
+        "enabled": "Habilitar Notificaciones",
+        "reminderDays": "Días antes de la fecha límite",
+        "overdueInterval": "Intervalo de recordatorio de atrasos (días)",
+        "onApprovals": "Notificar sobre aprobaciones pendientes"
+      }
+    },
+    "branding": {
+      "title": "Configuración de Marca",
+      "subtitle": "Personalice la apariencia para cada empresa operativa",
+      "selectOpco": "Seleccionar OpCo",
+      "saved": "Marca guardada exitosamente",
+      "error": "Error al guardar la marca",
+      "logo": {
+        "title": "Logo",
+        "noLogo": "Sin logo establecido",
+        "upload": "Subir Logo",
+        "uploadHint": "Recomendado: PNG o SVG, máximo 2MB",
+        "url": "O ingrese la URL del logo",
+        "remove": "Eliminar Logo"
+      },
+      "colors": {
+        "title": "Colores",
+        "primary": "Color Primario",
+        "accent": "Color de Acento",
+        "preview": "Vista Previa"
+      },
+      "css": {
+        "title": "CSS Personalizado",
+        "description": "Avanzado: Agregue anulaciones de CSS personalizadas",
+        "warning": "Advertencia: CSS inválido puede afectar la apariencia de la aplicación"
+      }
     }
   }
 }

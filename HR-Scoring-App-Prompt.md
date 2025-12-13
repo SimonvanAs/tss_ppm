@@ -8,7 +8,8 @@ Build a comprehensive web-based HR performance scoring application that replaces
 ## 🏗️ Core Architecture
 
 ### Technology Stack
-- **Frontend Framework**: React (single-page application)
+- **Frontend Framework**: React 19 with Vite 7 (single-page application)
+- **Routing**: React Router v7
 - **Styling**: Corporate/professional design with Tahoma font
 - **Brand Colors**:
   - Primary Magenta: `#CC0E70` (used as accent, gradient backgrounds, focus states)
@@ -17,15 +18,25 @@ Build a comprehensive web-based HR performance scoring application that replaces
   - Pink gradient background (subtle, using magenta with transparency)
   - Section cards with gradient border highlights
   - Focus states in magenta color
-- **Storage**: Browser localStorage (14-day retention max)
+- **Storage**: PostgreSQL database via Fastify API backend (with browser localStorage fallback for drafts)
+- **Authentication**: Keycloak JS adapter v26 (OIDC/EntraID federation)
+- **Backend**: Fastify + Prisma ORM + PostgreSQL
 - **Output Format**: DOCX (Microsoft Word format)
 - **Security**: XSS and SQL injection prevention on all input fields
+- **Voice Input**: 
+  - Browser: Transformers.js with Whisper (WebGPU/WASM)
+  - Server: faster-whisper Python service (Docker)
 
 ### Multi-User Architecture
 - **User Roles**: 
-  - Managers (create and complete reviews)
-  - Admins (company-wide settings and analytics)
-- **Session Management**: Individual sessions per review, stored locally
+  - **EMPLOYEE**: View/edit own reviews, self-assessment
+  - **MANAGER**: Score team reviews, approve goal changes, view team dashboard
+  - **HR**: View all reviews, organization statistics, calibration sessions
+  - **OPCO_ADMIN**: Manage OpCo settings, users, competencies
+  - **TSS_SUPER_ADMIN**: Cross-OpCo management, global settings
+- **Authentication**: Keycloak with OIDC/EntraID federation
+- **Session Management**: Database-backed reviews with full audit trail
+- **Multi-Operating Company (OpCo)**: Support for multiple operating companies with isolated data
 - **Future Integration**: AFAS HRIS system (design with this in mind)
 
 ---
@@ -34,7 +45,13 @@ Build a comprehensive web-based HR performance scoring application that replaces
 
 ### 1. WHAT-Axis: Goals & Results (Flexible, up to 9 criteria)
 
+#### Goal Types (Implemented):
+- **Standard Goals**: Regular performance goals
+- **KAR Objectives** (Optional, per OpCo): Key Account Responsibilities
+- **SCF Objectives** (Optional, per OpCo): Strategic Company Focus
+
 #### Field Structure per Criterion:
+- **Goal Type**: Dropdown (Standard, KAR, SCF) - shown as badge in UI
 - **Goal Label/Title**: Text input
   - Placeholder text (light grey): "SMART formulated goal"
   - No character limit
@@ -63,6 +80,8 @@ Build a comprehensive web-based HR performance scoring application that replaces
   WHAT Score = Σ(Goal Score × Weight) / 100
   Result: 1.00 to 3.00
   ```
+- **SCF VETO Rule**: If ANY SCF objective scores 1, overall WHAT score = 1.00 (overrides weighted average)
+- **Goal Sections**: Separate visual sections for Standard Goals, KAR Objectives, and SCF Objectives
 - **Validation**: All goals with content must be scored and weighted before download
 
 ---
@@ -78,33 +97,42 @@ Build a comprehensive web-based HR performance scoring application that replaces
   - C = 3
   - D = 4 (but for 3×3 grid, this maps to 3)
 
+#### Detailed Competency Scoring (Implemented):
+- **6 Competencies per TOV Level**: Each level has 6 specific competencies
+- **Individual Scoring**: Each competency scored 1-3
+- **VETO Rule**: If ANY competency = 1, overall HOW Score = 1.00
+- **Competency Categories**: Organized by category and subcategory
+- **Competency Notes**: Optional explanation text per competency
+- **Per-OpCo Configuration**: Competencies configurable per operating company
+
 #### Level Descriptions:
-**[Client to provide the 4 level text descriptions - to be hardcoded]**
+**[Client to provide the 4 level text descriptions - stored in database, configurable per OpCo]**
 
 Level A (Score 1):
 ```
-[Text to be provided by client]
+[Text configurable in admin portal]
 ```
 
 Level B (Score 2):
 ```
-[Text to be provided by client]
+[Text configurable in admin portal]
 ```
 
 Level C (Score 3):
 ```
-[Text to be provided by client]
+[Text configurable in admin portal]
 ```
 
 Level D (Score 4 → maps to 3 for grid):
 ```
-[Text to be provided by client]
+[Text configurable in admin portal]
 ```
 
 #### Display Rules:
 - Only show the **selected level description** in the app interface
 - Only include the **selected level description** in the final report
-- No need to display all four options after selection
+- Show all 6 competencies for selected level with scoring inputs
+- Display competency notes in report if provided
 
 ---
 
@@ -536,7 +564,58 @@ onMouseUp / onTouchEnd / onMouseLeave → stopListening()
 
 ---
 
-## 📊 Analytics & Reporting Dashboard (Admin Feature)
+## 📊 Analytics & Reporting Dashboard
+
+### Multi-Level Analytics (Implemented):
+- **Level Selector**: Filter by Manager Team, Business Unit, or Company-Wide
+- **Interactive 9-Grid Visualization**: 
+  - Click any cell to view employees in that position
+  - Employee count per cell
+  - Color-coded distribution
+- **Distribution Charts**: 
+  - Current vs. target distribution
+  - Performance distribution bars
+- **Statistics**:
+  - Total employees
+  - Average WHAT and HOW scores
+  - Top performers count
+- **Export Options**:
+  - Excel export
+  - PDF export
+  - PowerPoint export
+- **Access Control**: 
+  - Managers: View own team only
+  - HR: View Business Unit level
+  - Admins: View Company-Wide level
+
+### Team Performance Dashboard (Manager Feature):
+- **Team Overview Page**: 
+  - Direct reports list with current review status
+  - Team 9-grid visualization showing all team members
+  - Sortable table with WHAT/HOW scores
+  - Filter by year and status
+- **Team Statistics**:
+  - Team size
+  - Completion rate
+  - Average scores
+  - Top performers identification
+
+### Historical Performance Tracking:
+- **Performance History Dashboard**:
+  - Year-over-year score comparison
+  - Trend line charts (WHAT and HOW scores over time)
+  - Historical 9-grid positions
+  - Score change indicators (improving/declining/stable)
+- **Year Range Filtering**:
+  - Select specific year ranges
+  - Include/exclude mid-year reviews
+- **Export Options**:
+  - Excel export with historical data
+  - PDF export with charts
+- **Access Control**:
+  - Employees: View own history
+  - Managers: View team member history
+  - HR: View any employee history
 
 ### Analytics to Track:
 1. **Team Performance Distribution**:
@@ -567,7 +646,8 @@ onMouseUp / onTouchEnd / onMouseLeave → stopListening()
 
 ### Export Options:
 - Download analytics as PDF
-- Export data as CSV
+- Export data as CSV/Excel
+- PowerPoint presentations
 - Share view with HR team
 
 ### Privacy:
@@ -591,10 +671,29 @@ onMouseUp / onTouchEnd / onMouseLeave → stopListening()
   - Whitelist allowed characters
 
 ### Data Storage:
-- **Current**: Browser localStorage only
-- **Encryption**: Consider encrypting sensitive data before storing
-- **Access Control**: Session-based access (future multi-user)
-- **Data Retention**: 14-day automatic cleanup
+- **Primary**: PostgreSQL database via Fastify API backend
+- **Fallback**: Browser localStorage for draft sessions (14-day retention max)
+- **Encryption**: Data encrypted in transit (HTTPS/TLS)
+- **Access Control**: Role-based access control (RBAC) via Keycloak
+- **Data Retention**: Configurable per OpCo
+- **Audit Trail**: Full audit logging for all review changes
+
+### Authentication & Authorization:
+- **Keycloak Integration**: 
+  - OIDC/EntraID federation
+  - Single Sign-On (SSO) support
+  - Token-based API authentication
+  - Automatic token refresh
+- **Role-Based Access Control (RBAC)**:
+  - Employee: Own reviews only
+  - Manager: Team reviews + approvals
+  - HR: All reviews + analytics
+  - OpCo Admin: OpCo-wide management
+  - Super Admin: Cross-OpCo access
+- **Protected Routes**: 
+  - Route-level access control
+  - Component-level role guards
+  - Automatic redirect on unauthorized access
 
 ### GDPR Compliance:
 - **Notice**: Inform users about data storage
@@ -602,25 +701,84 @@ onMouseUp / onTouchEnd / onMouseLeave → stopListening()
 - **Right to Delete**: Easy session clearing
 - **Data Minimization**: Collect only necessary data
 - **Privacy Policy**: Link to company privacy policy
+- **Data Export**: Users can export their own data
+- **Audit Logs**: Track all data access and modifications
 
 ### Future Considerations (AFAS Integration):
-- OAuth 2.0 authentication
-- Role-based access control (RBAC)
+- Direct AFAS HRIS API integration
+- Automated employee data sync
+- Import historical reviews from AFAS
 - Encrypted data transmission (HTTPS/TLS)
-- Audit logs for data access
 - Regular security audits
+
+---
+
+## 🎨 UI/UX Enhancements (Implemented)
+
+### Translation System:
+- **Complete i18n Support**: All UI elements translated
+- **Languages**: English, Spanish, Dutch
+- **Translation Keys**: Centralized in JSON files
+- **Fallback Handling**: Graceful fallback to English if translation missing
+- **Footer Attribution**: Robot icon (🤖) with "Made with AI assistance" text
+
+### Responsive Design:
+- **Mobile Optimization**: Touch-friendly interfaces
+- **Tablet Support**: Optimized layouts for tablets
+- **Desktop**: Full-featured experience
+- **Grid Visualization**: Responsive 9-grid displays
+
+### Accessibility:
+- **ARIA Labels**: All interactive elements properly labeled
+- **Keyboard Navigation**: Full keyboard support
+- **Screen Reader Support**: Semantic HTML structure
+- **Color Contrast**: WCAG 2.1 AA compliant
 
 ---
 
 ## 🚀 Admin Features & Settings
 
-### Admin Dashboard:
-- **Access Control**: Manage user roles and permissions
-- **Company Settings**:
-  - Upload/update company logo
-  - Set default HOW-axis level descriptions
-  - Configure email templates
-  - Set language defaults
+### Admin Portal (Implemented):
+- **Admin Dashboard**: 
+  - Overview statistics (total users, active reviews, completion rates)
+  - Quick actions for common tasks
+  - Recent activity feed
+- **User Management**:
+  - View all users with roles and status
+  - Search and filter users
+  - Edit user roles and assignments
+  - Assign managers and business units
+- **Organization Chart**:
+  - Visual hierarchy of reporting structure
+  - Drag-and-drop to change manager assignments
+  - Expand/collapse tree view
+  - Search functionality
+- **Function Titles Management**:
+  - Create/edit/delete function titles
+  - Sort order configuration
+  - Description fields
+- **TOV Levels Management**:
+  - Configure TOV/IDE levels (A, B, C, D)
+  - Set level descriptions per language
+  - Code and name management
+- **Competencies Management**:
+  - Manage competency definitions per TOV level
+  - Category and subcategory organization
+  - Multi-language support
+- **OpCo Management** (Super Admin):
+  - Create/edit operating companies
+  - Configure OpCo identifiers and domains
+  - Domain-based user assignment
+  - OpCo-specific settings
+- **Global Dashboard** (Super Admin):
+  - Cross-OpCo overview
+  - System health monitoring
+  - Database and service status
+  - OpCo comparison statistics
+- **Import Reviews**:
+  - Bulk import from Excel/CSV
+  - Validation and error reporting
+  - Preview before import
 
 ### Configuration Options:
 1. **Review Period Settings**:
@@ -649,6 +807,116 @@ onMouseUp / onTouchEnd / onMouseLeave → stopListening()
 
 ---
 
+## 🔄 Review Workflow & Stages
+
+### Multi-Stage Review Process (Implemented):
+- **Stage 1: Goal Setting**:
+  - Manager sets goals and weights
+  - Employee can view (read-only)
+  - Status: `GOAL_SETTING`
+  
+- **Stage 2: Mid-Year Review**:
+  - Manager scores goals and competencies
+  - Employee completes self-assessment
+  - Status: `MID_YEAR_REVIEW`
+  
+- **Stage 3: End-Year Review**:
+  - Final scoring and calibration
+  - Manager comments
+  - Status: `END_YEAR_REVIEW`
+
+### Signature Workflow (Implemented):
+- **Employee Signature**:
+  - Employee acknowledges review completion
+  - Signature timestamp recorded
+  - Status: `PENDING_EMPLOYEE_SIGNATURE` → `EMPLOYEE_SIGNED`
+  
+- **Manager Signature**:
+  - Manager confirms review discussion
+  - Signature timestamp recorded
+  - Status: `PENDING_MANAGER_SIGNATURE` → `MANAGER_SIGNED`
+  
+- **Completed Status**: `SIGNED` (both signatures received)
+
+### Approval Workflow:
+- **Goal Change Requests**:
+  - Employee/Manager can request goal modifications
+  - Pending approvals shown in Approvals page
+  - Manager/HR can approve or reject
+  - Types: Add Goal, Edit Goal, Delete Goal
+
+- **Stage Completion**:
+  - Manager marks stage as complete
+  - Triggers workflow to next stage
+  - Notifications sent (future)
+
+---
+
+## 🎯 Calibration System
+
+### Calibration Sessions (Implemented):
+- **Purpose**: Ensure consistency and fairness across performance ratings
+- **Session Types**:
+  - **Manager Team**: Single manager's direct reports
+  - **Business Unit**: All employees in a business unit
+  - **Company-Wide**: All employees across organization
+
+### Session Workflow:
+1. **DRAFT**: Session being prepared
+2. **SCHEDULED**: Session scheduled but not started
+3. **IN_PROGRESS**: Active calibration meeting
+4. **PENDING_APPROVAL**: Awaiting final approval
+5. **COMPLETED**: Calibration finalized
+6. **CANCELLED**: Session cancelled
+
+### Calibration Features:
+- **Session Creation**:
+  - Name, year, scope selection
+  - Business unit selection (if applicable)
+  - Participant management (facilitators, observers)
+  
+- **Score Snapshot**:
+  - Original scores captured at session start
+  - Original grid positions preserved
+  - Cannot be modified after snapshot
+  
+- **Calibration Adjustments**:
+  - Adjust WHAT and HOW scores
+  - Add adjustment notes
+  - Track who made adjustments
+  - Flag items for review
+  
+- **Distribution Analysis**:
+  - Current distribution vs. target
+  - Original vs. calibrated comparison
+  - Anomaly detection (unusual patterns)
+  - Distribution enforcement options
+  
+- **Calibration Grid**:
+  - Interactive 9-grid visualization
+  - Click cell to view employees
+  - Filter by grid position
+  - Show original vs. calibrated positions
+  
+- **Manager Comparison**:
+  - Compare manager scoring patterns
+  - Identify deviations from company average
+  - Highlight managers with unusual distributions
+  
+- **Calibration Report**:
+  - Session summary
+  - All adjustments made
+  - Distribution comparisons
+  - Facilitator statistics
+  - Export to Excel/PDF
+
+### Access Control:
+- **HR+**: Create and manage calibration sessions
+- **Participants**: View and adjust scores during session
+- **Observers**: View-only access
+
+---
+
 ## 📋 Implementation Phases
 
 ### Phase 1: Core Functionality (MVP)
@@ -673,22 +941,263 @@ onMouseUp / onTouchEnd / onMouseLeave → stopListening()
 - Draft export option
 - Email session code
 
-### Phase 3: Multi-User & Analytics
-- User authentication (prepare for AFAS)
-- Admin dashboard
-- Analytics and reporting
-- Team performance views
-- Manager activity tracking
-- Data export features
+### Phase 3: Multi-User & Analytics ✅ **COMPLETE**
+- ✅ Keycloak authentication with OIDC/EntraID
+- ✅ Role-based access control (Employee, Manager, HR, Admin)
+- ✅ Admin dashboard with user management
+- ✅ Multi-level analytics (Manager, BU, Company)
+- ✅ Team performance dashboard
+- ✅ Historical performance tracking
+- ✅ Manager activity tracking
+- ✅ Data export features (Excel, PDF, PowerPoint)
+- ✅ Organization chart management
+- ✅ Function titles and TOV levels management
+- ✅ Competencies management
+- ✅ OpCo management (multi-tenant)
 
-### Phase 4: Advanced Features & Integration
-- AFAS HRIS integration
-- Import employee data
-- Historical review comparison
-- Goal templates
-- Advanced analytics
-- Notification system
-- Audit trail
+### Phase 4: Advanced Features & Integration ✅ **COMPLETE**
+- ✅ Database-backed reviews (PostgreSQL)
+- ✅ Full API backend (Fastify + Prisma)
+- ✅ Calibration system with sessions
+- ✅ Multi-stage review workflow
+- ✅ Signature workflow (employee + manager)
+- ✅ Approval system for goal changes
+- ✅ Historical review comparison
+- ✅ Advanced analytics with drill-down
+- ✅ Audit trail for all changes
+- ⏳ AFAS HRIS integration (future)
+- ⏳ Import employee data from AFAS (future)
+- ⏳ Goal templates (future)
+- ⏳ Notification system (future)
+
+---
+
+## ⚙️ Non-Functional Requirements
+
+### Performance Requirements
+
+#### Response Time:
+- **Page Load Time**: < 3 seconds for initial page load (95th percentile)
+- **API Response Time**: < 500ms for standard CRUD operations (95th percentile)
+- **Voice Input Processing**: < 2 seconds for transcription (browser) or < 5 seconds (server)
+- **Auto-Save**: Completes within 500ms without blocking UI
+- **Report Generation**: DOCX generation completes within 5 seconds
+- **Search/Filter Operations**: < 1 second for filtering lists (up to 1000 items)
+- **Analytics Dashboard Load**: < 3 seconds for aggregated data
+
+#### Throughput:
+- **Concurrent Users**: Support 50+ concurrent users per OpCo
+- **API Requests**: Handle 100+ requests per second per OpCo
+- **Database Queries**: Optimize queries to handle 1000+ reviews per OpCo
+- **Export Operations**: Support 10+ concurrent report generations
+
+#### Resource Utilization:
+- **Frontend Bundle Size**: Initial bundle < 500KB (gzipped)
+- **Memory Usage**: Browser memory < 200MB during normal operation
+- **Database Size**: Efficient storage for 10,000+ reviews per OpCo
+- **Server Resources**: API server handles 4GB RAM, 2 CPU cores minimum
+
+### Scalability Requirements
+
+#### Horizontal Scalability:
+- **Frontend**: Stateless design allows multiple instances behind load balancer
+- **API**: Stateless API design supports horizontal scaling
+- **Database**: PostgreSQL with connection pooling (max 100 connections)
+- **Keycloak**: Supports clustering for high availability
+
+#### Vertical Scalability:
+- **Database Growth**: Support 100,000+ reviews across all OpCos
+- **User Growth**: Support 1,000+ users per OpCo
+- **Data Retention**: Configurable retention policies per OpCo
+
+#### Multi-Tenancy:
+- **OpCo Isolation**: Complete data isolation between operating companies
+- **Resource Quotas**: Per-OpCo limits configurable (users, reviews, storage)
+- **Performance Isolation**: One OpCo's load doesn't impact others
+
+### Reliability & Availability Requirements
+
+#### Uptime:
+- **Target Availability**: 99.5% uptime (approximately 3.65 days downtime per year)
+- **Scheduled Maintenance**: Planned maintenance windows with user notification
+- **Unplanned Downtime**: < 4 hours per incident (target)
+
+#### Fault Tolerance:
+- **Database Failover**: Automatic failover to standby database (future)
+- **API Redundancy**: Multiple API instances with health checks
+- **Graceful Degradation**: Core functionality available if non-critical features fail
+- **Error Recovery**: Automatic retry for transient failures
+
+#### Data Integrity:
+- **Transaction Consistency**: ACID compliance for all database operations
+- **Audit Trail**: Immutable audit logs for all data changes
+- **Backup Integrity**: Verified backups with restore testing
+- **Data Validation**: Server-side validation prevents invalid data storage
+
+### Security Requirements
+
+#### Authentication & Authorization:
+- **Single Sign-On**: Keycloak with OIDC/EntraID federation
+- **Session Management**: Secure session tokens with automatic refresh
+- **Role-Based Access Control**: Granular permissions per role
+- **Password Policy**: Enforced via Keycloak (if applicable)
+- **Multi-Factor Authentication**: Supported via Keycloak (optional)
+
+#### Data Protection:
+- **Encryption in Transit**: HTTPS/TLS 1.2+ for all communications
+- **Encryption at Rest**: Database encryption (future enhancement)
+- **PII Protection**: Personal data encrypted and access-controlled
+- **Input Sanitization**: XSS and SQL injection prevention on all inputs
+- **Output Encoding**: Proper encoding for all user-generated content
+
+#### Security Monitoring:
+- **Audit Logging**: All authentication, authorization, and data access events logged
+- **Security Alerts**: Failed login attempts, unauthorized access attempts
+- **Vulnerability Scanning**: Regular dependency and code scanning
+- **Penetration Testing**: Annual security audits with remediation
+
+#### Compliance:
+- **GDPR Compliance**: 
+  - Right to access, rectification, erasure
+  - Data portability
+  - Privacy by design
+  - Data processing documentation
+- **Data Retention**: Configurable retention policies per OpCo
+- **Privacy Policy**: Comprehensive privacy notice and consent management
+
+### Usability Requirements
+
+#### User Experience:
+- **Learning Curve**: New users productive within 30 minutes
+- **Task Completion**: 90% of users complete review without help
+- **Error Messages**: Clear, actionable error messages in user's language
+- **Help Documentation**: Contextual help and tooltips available
+
+#### Accessibility:
+- **WCAG 2.1 AA Compliance**: All UI elements meet accessibility standards
+- **Keyboard Navigation**: Full functionality via keyboard only
+- **Screen Reader Support**: Semantic HTML and ARIA labels
+- **Color Contrast**: Minimum 4.5:1 contrast ratio for text
+- **Multi-Language**: Complete translations for EN, ES, NL
+
+#### Responsive Design:
+- **Desktop**: Full-featured experience (1024px+)
+- **Tablet**: Optimized layout (768px - 1024px)
+- **Mobile**: Core functionality available (< 768px)
+- **Touch Targets**: Minimum 44×44px for mobile interactions
+
+### Maintainability Requirements
+
+#### Code Quality:
+- **Code Standards**: ESLint/Prettier for consistent formatting
+- **Type Safety**: TypeScript for API, PropTypes for React components
+- **Documentation**: Inline code comments and API documentation
+- **Test Coverage**: Minimum 70% code coverage for critical paths
+
+#### Architecture:
+- **Modular Design**: Separation of concerns (frontend, API, database)
+- **API Versioning**: Versioned API endpoints (`/api/v1/`)
+- **Database Migrations**: Version-controlled schema migrations
+- **Configuration Management**: Environment-based configuration
+
+#### Deployment:
+- **CI/CD Pipeline**: Automated testing and deployment
+- **Rollback Capability**: Quick rollback to previous version
+- **Zero-Downtime Deployment**: Blue-green or canary deployments
+- **Docker Containerization**: Consistent environments across stages
+
+### Portability Requirements
+
+#### Platform Support:
+- **Operating Systems**: Windows, macOS, Linux (browser-based)
+- **Browsers**: Chrome, Firefox, Safari, Edge (latest 2 versions)
+- **Database**: PostgreSQL 14+ (standard SQL, no vendor lock-in)
+- **Container Runtime**: Docker-compatible (Docker, Podman, etc.)
+
+#### Integration:
+- **API Standards**: RESTful API with OpenAPI/Swagger documentation
+- **Authentication**: Standard OIDC/OAuth 2.0 protocols
+- **Data Export**: Standard formats (CSV, Excel, PDF, DOCX)
+- **Future Integrations**: Design for AFAS HRIS, email systems, etc.
+
+### Monitoring & Logging Requirements
+
+#### Application Monitoring:
+- **Health Checks**: `/health` endpoint for all services
+- **Performance Metrics**: Response times, error rates, throughput
+- **Resource Monitoring**: CPU, memory, disk usage
+- **User Activity**: Page views, feature usage, error tracking
+
+#### Logging:
+- **Structured Logging**: JSON format for all application logs
+- **Log Levels**: DEBUG, INFO, WARN, ERROR with appropriate filtering
+- **Centralized Logging**: Aggregated logs for analysis (future: ELK/Loki)
+- **Log Retention**: 90 days for application logs, 1 year for audit logs
+
+#### Alerting:
+- **Critical Errors**: Immediate alerts for system failures
+- **Performance Degradation**: Alerts when response times exceed thresholds
+- **Security Events**: Alerts for suspicious activity
+- **Capacity Planning**: Alerts when approaching resource limits
+
+### Backup & Disaster Recovery Requirements
+
+#### Backup Strategy:
+- **Database Backups**: Daily automated backups with 30-day retention
+- **Backup Verification**: Weekly restore testing to verify backup integrity
+- **Backup Storage**: Off-site storage for disaster recovery
+- **Backup Encryption**: Encrypted backups (future enhancement)
+
+#### Recovery Objectives:
+- **Recovery Time Objective (RTO)**: < 4 hours for full system recovery
+- **Recovery Point Objective (RPO)**: < 24 hours (maximum data loss)
+- **Disaster Recovery Plan**: Documented procedures for various failure scenarios
+- **Regular Testing**: Quarterly disaster recovery drills
+
+#### Data Retention:
+- **Active Reviews**: Indefinite retention (until deleted by user/admin)
+- **Completed Reviews**: Configurable retention per OpCo (default: 7 years)
+- **Audit Logs**: 7-year retention for compliance
+- **Backup Retention**: 30 days for daily backups, 1 year for monthly archives
+
+### Documentation Requirements
+
+#### User Documentation:
+- **User Guides**: Manager, Employee, HR, Admin guides
+- **Quick Reference**: One-page cheat sheets
+- **Video Tutorials**: Step-by-step video guides
+- **FAQ Section**: Common questions and answers
+
+#### Technical Documentation:
+- **API Documentation**: OpenAPI/Swagger specification
+- **Architecture Diagrams**: System architecture and data flow
+- **Deployment Guides**: Step-by-step deployment instructions
+- **Troubleshooting Guides**: Common issues and solutions
+
+#### Operational Documentation:
+- **Runbooks**: Procedures for common operational tasks
+- **Incident Response**: Procedures for security and system incidents
+- **Change Management**: Process for deploying changes
+- **Configuration Management**: Environment configuration documentation
+
+### Compliance & Legal Requirements
+
+#### Data Protection:
+- **GDPR**: Full compliance with EU General Data Protection Regulation
+- **Data Processing Agreements**: Contracts with data processors
+- **Privacy Impact Assessments**: Regular PIAs for new features
+- **Data Breach Notification**: Procedures for reporting breaches within 72 hours
+
+#### Industry Standards:
+- **ISO 27001**: Security management (future certification)
+- **SOC 2**: Security, availability, processing integrity (future)
+- **OWASP Top 10**: Protection against common vulnerabilities
+
+#### Audit & Reporting:
+- **Audit Trails**: Complete audit logs for compliance reviews
+- **Regular Audits**: Annual security and compliance audits
+- **Reporting**: Compliance reports for stakeholders
+- **Documentation**: Maintain compliance documentation
 
 ---
 
@@ -855,8 +1364,10 @@ A feature/module is considered complete when:
 - [ ] Complete HOW-axis level description texts
 - [ ] Email server/service for session code emails
 - [ ] Exact analytics requirements from HR team
-- [ ] User authentication method (SSO, OAuth, custom)
+- [x] User authentication method: **Keycloak with OIDC/EntraID** ✅
 - [ ] Data retention policies beyond 14 days
+- [ ] Notification system requirements (email, in-app)
+- [ ] Goal template structure and approval workflow
 
 ---
 
@@ -907,6 +1418,35 @@ A feature/module is considered complete when:
 
 ---
 
-**Document Version**: 1.0  
-**Last Updated**: December 2025  
-**Next Review**: After Phase 1 completion
+**Document Version**: 2.0  
+**Last Updated**: January 2025  
+**Next Review**: After Phase 4 completion
+
+---
+
+## 📝 Implementation Status Summary
+
+### ✅ Completed Features (Phases 1-4):
+- ✅ Core scoring system (WHAT/HOW axes, 9-grid)
+- ✅ Multi-language support (EN, ES, NL)
+- ✅ Voice input (browser + server Whisper)
+- ✅ DOCX report generation
+- ✅ Keycloak authentication & RBAC
+- ✅ Database backend (PostgreSQL + Fastify)
+- ✅ Multi-stage review workflow
+- ✅ Signature system
+- ✅ Calibration sessions
+- ✅ Multi-level analytics
+- ✅ Team performance dashboard
+- ✅ Historical performance tracking
+- ✅ Admin portal (users, org chart, settings)
+- ✅ OpCo management (multi-tenant)
+- ✅ Approval workflow
+- ✅ Complete translation system
+
+### ⏳ Future Enhancements:
+- ⏳ AFAS HRIS integration
+- ⏳ Goal templates
+- ⏳ Notification system
+- ⏳ Advanced reporting
+- ⏳ Mobile native apps

@@ -114,6 +114,8 @@ export const usersRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
         role: user.role,
         functionTitle: user.functionTitle?.name || null,
         tovLevel: user.tovLevel?.code || null,
+        // Fall back to function title's TOV level if user doesn't have one directly set
+        tovLevelId: user.tovLevelId || user.functionTitle?.tovLevelId || null,
         managerId: user.managerId,
         isActive: user.isActive,
       })),
@@ -192,51 +194,65 @@ export const usersRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
     },
     preHandler: [fastify.authorize(UserRole.MANAGER, UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
   }, async (request, reply) => {
-    const { id } = request.params as { id: string };
+    try {
+      const { id } = request.params as { id: string };
 
-    const user = await fastify.prisma.user.findFirst({
-      where: {
-        id,
-        ...withTenantFilter(request),
-      },
-      include: {
-        functionTitle: true,
-        tovLevel: true,
-        manager: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
+      const user = await fastify.prisma.user.findFirst({
+        where: {
+          id,
+          ...withTenantFilter(request),
+        },
+        include: {
+          functionTitle: true,
+          tovLevel: true,
+          manager: {
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+          directReports: {
+            where: { isActive: true },
+            select: {
+              id: true,
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+          opco: {
+            select: {
+              id: true,
+              name: true,
+              displayName: true,
+            },
           },
         },
-        directReports: {
-          where: { isActive: true },
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            email: true,
-          },
-        },
-      },
-    });
+      });
 
-    if (!user) {
-      return reply.status(404).send({
-        error: { message: 'User not found', statusCode: 404 },
+      if (!user) {
+        return reply.status(404).send({
+          error: { message: 'User not found', statusCode: 404 },
+        });
+      }
+
+      // Audit log access to user data
+      await fastify.audit.logFromRequest(request, {
+        entityType: 'User',
+        entityId: user.id,
+        action: 'READ',
+        metadata: { targetEmail: user.email },
+      });
+
+      return user;
+    } catch (err) {
+      fastify.log.error({ err, params: request.params }, 'Error fetching user by ID');
+      return reply.status(500).send({
+        error: { message: 'Internal server error', statusCode: 500 },
       });
     }
-
-    // Audit log access to user data
-    await fastify.audit.logFromRequest(request, {
-      entityType: 'User',
-      entityId: user.id,
-      action: 'READ',
-      metadata: { targetEmail: user.email },
-    });
-
-    return user;
   });
 
   // Create user

@@ -6,7 +6,7 @@ const LanguageContext = createContext();
 export function LanguageProvider({ children, initialLanguage = 'en' }) {
   const [language, setLanguage] = useState(initialLanguage);
 
-  const t = useCallback((key) => {
+  const t = useCallback((key, interpolations = {}) => {
     const keys = key.split('.');
     let value = translations[language];
 
@@ -22,7 +22,16 @@ export function LanguageProvider({ children, initialLanguage = 'en' }) {
       }
     }
 
-    return value || key;
+    let result = value || key;
+
+    // Handle interpolation: replace {{key}} with values
+    if (typeof result === 'string' && interpolations) {
+      Object.entries(interpolations).forEach(([k, v]) => {
+        result = result.replace(new RegExp(`\\{\\{${k}\\}\\}`, 'g'), v);
+      });
+    }
+
+    return result;
   }, [language]);
 
   const changeLanguage = useCallback((newLanguage) => {

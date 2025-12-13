@@ -3,32 +3,70 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { adminApi } from '../../services/api';
 
 // Org Chart Node Component
-function OrgNode({ user, children, level, expanded, onToggle, onDrop, onDragStart, onEdit, highlightId, t }) {
+function OrgNode({ user, children, level, expanded, onToggle, onDrop, onDragStart, onDragEnd, onEdit, highlightId, draggingId, t }) {
   const [isDragOver, setIsDragOver] = useState(false);
   const isHighlighted = highlightId === user.id;
+  const isDragging = draggingId === user.id;
 
   const handleDragStart = (e) => {
     e.dataTransfer.setData('userId', user.id);
     e.dataTransfer.effectAllowed = 'move';
+    
+    // Create a custom drag image for better visual feedback
+    try {
+      const dragImage = e.currentTarget.cloneNode(true);
+      dragImage.style.opacity = '0.8';
+      dragImage.style.transform = 'rotate(2deg)';
+      dragImage.style.position = 'absolute';
+      dragImage.style.top = '-1000px';
+      dragImage.style.pointerEvents = 'none';
+      document.body.appendChild(dragImage);
+      e.dataTransfer.setDragImage(dragImage, e.offsetX, e.offsetY);
+      
+      // Clean up drag image after a short delay
+      setTimeout(() => {
+        if (document.body.contains(dragImage)) {
+          document.body.removeChild(dragImage);
+        }
+      }, 0);
+    } catch (err) {
+      // Fallback if drag image creation fails
+      console.warn('Failed to create drag image:', err);
+    }
+    
     onDragStart(user.id);
   };
 
   const handleDragOver = (e) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent bubbling to parent nodes
     e.dataTransfer.dropEffect = 'move';
     setIsDragOver(true);
   };
 
-  const handleDragLeave = () => {
-    setIsDragOver(false);
+  const handleDragLeave = (e) => {
+    // Only set to false if actually leaving the node (not entering a child)
+    // relatedTarget might be null in some browsers (Safari), so we need to handle that
+    const relatedTarget = e.relatedTarget;
+    if (!relatedTarget || !e.currentTarget.contains(relatedTarget)) {
+      setIsDragOver(false);
+    }
   };
 
   const handleDrop = (e) => {
     e.preventDefault();
+    e.stopPropagation(); // Prevent bubbling to parent nodes
     setIsDragOver(false);
     const draggedUserId = e.dataTransfer.getData('userId');
     if (draggedUserId && draggedUserId !== user.id) {
       onDrop(draggedUserId, user.id);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsDragOver(false);
+    if (onDragEnd) {
+      onDragEnd();
     }
   };
 
@@ -43,12 +81,13 @@ function OrgNode({ user, children, level, expanded, onToggle, onDrop, onDragStar
   return (
     <div className="org-node-wrapper" style={{ marginLeft: level > 0 ? '40px' : 0 }}>
       <div
-        className={`org-node ${isDragOver ? 'drag-over' : ''} ${isHighlighted ? 'highlighted' : ''}`}
+        className={`org-node ${isDragOver ? 'drag-over' : ''} ${isHighlighted ? 'highlighted' : ''} ${isDragging ? 'dragging' : ''}`}
         draggable
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
+        onDragEnd={handleDragEnd}
         style={{
           borderLeftColor: roleColors[user.role] || '#666',
         }}
@@ -65,7 +104,12 @@ function OrgNode({ user, children, level, expanded, onToggle, onDrop, onDragStar
             {children.length > 0 && (
               <button
                 className="org-node-toggle"
-                onClick={() => onToggle(user.id)}
+                draggable={false}
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onToggle(user.id);
+                }}
                 aria-label={expanded ? 'Collapse' : 'Expand'}
               >
                 {expanded ? '−' : '+'}
@@ -73,7 +117,12 @@ function OrgNode({ user, children, level, expanded, onToggle, onDrop, onDragStar
             )}
             <button
               className="org-node-edit"
-              onClick={() => onEdit(user)}
+              draggable={false}
+              onMouseDown={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(user);
+              }}
               aria-label="Edit"
             >
               <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
@@ -102,8 +151,10 @@ function OrgNode({ user, children, level, expanded, onToggle, onDrop, onDragStar
               onToggle={onToggle}
               onDrop={onDrop}
               onDragStart={onDragStart}
+              onDragEnd={onDragEnd}
               onEdit={onEdit}
               highlightId={highlightId}
+              draggingId={draggingId}
               t={t}
             />
           ))}
@@ -271,13 +322,17 @@ export function OrgChart() {
   };
 
   const handleDrop = async (draggedUserId, newManagerId) => {
-    if (draggedUserId === newManagerId) return;
+    if (draggedUserId === newManagerId) {
+      setDraggingId(null);
+      return;
+    }
 
     // Check for circular reference
     let current = users.find(u => u.id === newManagerId);
     while (current) {
       if (current.id === draggedUserId) {
         alert(t('admin.orgChart.circularError'));
+        setDraggingId(null);
         return;
       }
       current = users.find(u => u.id === current.managerId);
@@ -288,7 +343,12 @@ export function OrgChart() {
       await loadUsers();
     } catch (err) {
       console.error('Failed to update manager:', err);
+    } finally {
+      setDraggingId(null);
     }
+  };
+
+  const handleDragEnd = () => {
     setDraggingId(null);
   };
 
@@ -365,9 +425,17 @@ export function OrgChart() {
         .org-node:hover {
           box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
+        .org-node:active {
+          cursor: grabbing;
+        }
+        .org-node.dragging {
+          opacity: 0.5;
+          transform: scale(0.98);
+        }
         .org-node.drag-over {
           border-color: #004A91;
           background: #f0f7ff;
+          box-shadow: 0 0 0 2px rgba(0, 74, 145, 0.2);
         }
         .org-node.highlighted {
           border-color: #CC0E70;
@@ -500,8 +568,10 @@ export function OrgChart() {
                 onToggle={handleToggle}
                 onDrop={handleDrop}
                 onDragStart={setDraggingId}
+                onDragEnd={handleDragEnd}
                 onEdit={setEditingUser}
                 highlightId={highlightId}
+                draggingId={draggingId}
                 t={t}
               />
             ))

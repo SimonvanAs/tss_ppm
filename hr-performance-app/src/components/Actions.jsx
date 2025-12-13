@@ -296,19 +296,19 @@ function PreviewModal({ formData, sessionCode, onClose }) {
               <div className="preview-grid-legend">
                 <div className="preview-legend-item">
                   <span className="preview-legend-color" style={{ backgroundColor: '#DC3545' }} />
-                  <span>Immediate attention</span>
+                  <span>{t('grid.legend.immediateAttention') || 'Immediate attention'}</span>
                 </div>
                 <div className="preview-legend-item">
                   <span className="preview-legend-color" style={{ backgroundColor: '#FFA500' }} />
-                  <span>Development area</span>
+                  <span>{t('grid.legend.developmentArea') || 'Development area'}</span>
                 </div>
                 <div className="preview-legend-item">
                   <span className="preview-legend-color" style={{ backgroundColor: '#28A745' }} />
-                  <span>Good performance</span>
+                  <span>{t('grid.legend.goodPerformance') || 'Good performance'}</span>
                 </div>
                 <div className="preview-legend-item">
                   <span className="preview-legend-color" style={{ backgroundColor: '#1B5E20' }} />
-                  <span>Exceptional</span>
+                  <span>{t('grid.legend.exceptional') || 'Exceptional'}</span>
                 </div>
               </div>
             </div>

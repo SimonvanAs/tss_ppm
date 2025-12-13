@@ -274,7 +274,7 @@ class ApiClient {
     if (endpoint.includes('/reviews')) return { reviews: MOCK_DATA.reviews };
     if (endpoint.includes('/users/me')) return MOCK_DATA.users[0];
     if (endpoint.match(/\/users\/[^/]+\/team/)) return { teamMembers: MOCK_DATA.teamMembers };
-    if (endpoint.includes('/users')) return { users: MOCK_DATA.users };
+    if (endpoint.includes('/users')) return { data: MOCK_DATA.users, pagination: { page: 1, limit: 50, total: MOCK_DATA.users.length, totalPages: 1 } };
     if (endpoint.match(/\/calibration\/sessions\/[^/]+\/items/)) return { items: MOCK_DATA.calibrationItems };
     if (endpoint.match(/\/calibration\/sessions\/[^/]+\/distribution/)) return {
       original: { tiers: { topTalent: 5, solidPerformer: 8, needsAttention: 4, concern: 3 } },
@@ -463,6 +463,51 @@ export const adminApi = {
   createFunctionTitle: (data) => apiClient.post('/admin/function-titles', data),
   updateFunctionTitle: (id, data) => apiClient.patch(`/admin/function-titles/${id}`, data),
   deleteFunctionTitle: (id) => apiClient.delete(`/admin/function-titles/${id}`),
+  exportFunctionTitles: async () => {
+    const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+    const token = apiClient.accessToken;
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/admin/function-titles/export`, {
+      method: 'GET',
+      headers,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || 'Failed to export function titles');
+    }
+
+    return response.blob();
+  },
+  bulkImportFunctionTitles: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+    const token = apiClient.accessToken;
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/admin/function-titles/bulk`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error?.message || 'Failed to import function titles');
+    }
+
+    return data;
+  },
 
   // TOV Levels
   getTovLevels: () => apiClient.get('/admin/tov-levels'),
@@ -489,6 +534,33 @@ export const adminApi = {
   createBusinessUnit: (data) => apiClient.post('/admin/business-units', data),
   updateBusinessUnit: (id, data) => apiClient.patch(`/admin/business-units/${id}`, data),
   deleteBusinessUnit: (id) => apiClient.delete(`/admin/business-units/${id}`),
+
+  // Settings
+  getSettings: (opcoId = null) => apiClient.get('/admin/settings', opcoId ? { opcoId } : {}),
+  updateSettings: (data) => apiClient.patch('/admin/settings', data),
+  updateBranding: (opcoId, data) => apiClient.patch('/admin/settings/branding', { opcoId, ...data }),
+  uploadLogo: async (opcoId, file) => {
+    const formData = new FormData();
+    formData.append('logo', file);
+    formData.append('opcoId', opcoId);
+
+    const token = window.keycloak?.token;
+    const response = await fetch(`${apiClient.baseURL}/admin/settings/logo`, {
+      method: 'POST',
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error?.message || 'Failed to upload logo');
+    }
+
+    return response.json();
+  },
+
+  // Bulk review cycle creation (Start New Performance Year)
+  bulkCreateReviewCycles: (data) => apiClient.post('/admin/review-cycles/bulk', data),
 };
 
 // Analytics

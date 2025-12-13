@@ -61,7 +61,11 @@ export function HistoryDashboard() {
 
         // Load reviews for target user
         const reviewsData = await reviewsApi.list({ employeeId: targetUserId });
-        setReviews(reviewsData.reviews || reviewsData || []);
+        // Handle different API response formats
+        const reviewsList = Array.isArray(reviewsData)
+          ? reviewsData
+          : (Array.isArray(reviewsData?.data) ? reviewsData.data : (reviewsData?.reviews || []));
+        setReviews(reviewsList);
 
         // Load target user info if not own history
         if (!isOwnHistory) {

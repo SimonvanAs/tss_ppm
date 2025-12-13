@@ -1,5 +1,6 @@
 export { MyReviews } from './MyReviews';
 export { NewReview } from './NewReview';
+export { ReviewForm } from './ReviewForm';
 export { TeamOverview } from './TeamOverview';
 export { Approvals } from './Approvals';
 export { HRDashboard } from './HRDashboard';
@@ -24,4 +25,6 @@ export {
   OpCoManagement,
   GlobalDashboard,
   ImportReviews,
+  WorkflowSettings,
+  BrandingSettings,
 } from './admin';

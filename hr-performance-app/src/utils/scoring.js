@@ -166,8 +166,8 @@ export function validateForm(formData) {
   if (!formData.employeeName?.trim()) {
     errors.push('employeeName');
   }
-  if (!formData.role?.trim()) {
-    errors.push('role');
+  if (!formData.functionTitle) {
+    errors.push('functionTitle');
   }
   if (!formData.businessUnit?.trim()) {
     errors.push('businessUnit');
@@ -222,7 +222,7 @@ export function calculateProgress(formData) {
   let progress = 0;
 
   // Employee info (30%)
-  const employeeFields = ['employeeName', 'role', 'businessUnit', 'tovLevel', 'reviewDate'];
+  const employeeFields = ['employeeName', 'functionTitle', 'businessUnit', 'tovLevel', 'reviewDate'];
   const filledEmployeeFields = employeeFields.filter(field => formData[field]?.toString().trim());
   progress += (filledEmployeeFields.length / employeeFields.length) * 30;
 

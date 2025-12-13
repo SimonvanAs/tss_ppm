@@ -208,22 +208,21 @@ export function WhisperProvider({ children }) {
   }, [loadModel, activeBackend]);
 
   // Detect best backend on mount
+  // NOTE: Defaulting to server for faster testing (no model download)
+  // Change back to browser detection when ready for production
   useEffect(() => {
     async function detectBackend() {
       setIsDetectingBackend(true);
 
-      try {
-        const best = await getBestWhisperBackend();
-
-        if (best === 'server' || isMobileDevice()) {
-          setActiveBackend('server');
-        } else {
-          setActiveBackend('browser');
-        }
-      } catch (err) {
-        console.warn('Backend detection failed, using server:', err);
-        setActiveBackend('server');
-      }
+      // For testing: always use server backend to avoid model download delay
+      // TODO: Restore browser detection for production:
+      // const best = await getBestWhisperBackend();
+      // if (best === 'server' || isMobileDevice()) {
+      //   setActiveBackend('server');
+      // } else {
+      //   setActiveBackend('browser');
+      // }
+      setActiveBackend('server');
 
       setIsDetectingBackend(false);
     }

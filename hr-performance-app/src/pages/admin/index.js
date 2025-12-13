@@ -8,3 +8,6 @@ export { Competencies } from './Competencies';
 export { OpCoManagement } from './OpCoManagement';
 export { GlobalDashboard } from './GlobalDashboard';
 export { ImportReviews } from './ImportReviews';
+export { StartNewYear } from './StartNewYear';
+export { WorkflowSettings } from './WorkflowSettings';
+export { BrandingSettings } from './BrandingSettings';

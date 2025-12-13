@@ -281,7 +281,7 @@ describe('calculateTotalWeight', () => {
 describe('validateForm', () => {
   const validFormData = {
     employeeName: 'John Doe',
-    role: 'Developer',
+    functionTitle: 'ft-uuid-123',
     businessUnit: 'Engineering',
     tovLevel: 'B',
     reviewDate: '2024-01-15',
@@ -354,7 +354,7 @@ describe('calculateProgress', () => {
   it('should calculate partial progress for employee info', () => {
     const data = {
       employeeName: 'John',
-      role: 'Developer',
+      functionTitle: 'ft-uuid-123',
     };
     // 2/5 * 30% = 12%
     expect(calculateProgress(data)).toBe(12);
@@ -363,7 +363,7 @@ describe('calculateProgress', () => {
   it('should include goal progress', () => {
     const data = {
       employeeName: 'John',
-      role: 'Developer',
+      functionTitle: 'ft-uuid-123',
       businessUnit: 'Eng',
       tovLevel: 'B',
       reviewDate: '2024-01-01',
@@ -391,7 +391,7 @@ describe('calculateProgress', () => {
   it('should calculate 100% for complete form', () => {
     const data = {
       employeeName: 'John',
-      role: 'Developer',
+      functionTitle: 'ft-uuid-123',
       businessUnit: 'Eng',
       tovLevel: 'B',
       reviewDate: '2024-01-01',

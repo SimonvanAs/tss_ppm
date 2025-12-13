@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { adminApi } from '../../services/api';
 
-function OpCoModal({ opco, onSave, onClose, t }) {
+function OpCoModal({ opco, onSave, onClose, onLogoUploaded, t }) {
   const [formData, setFormData] = useState({
     name: opco?.name || '',
     displayName: opco?.displayName || '',
@@ -11,6 +11,38 @@ function OpCoModal({ opco, onSave, onClose, t }) {
   });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(opco?.settings?.branding?.logoUrl || null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError(t('admin.opcos.logoInvalidType'));
+        return;
+      }
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        setError(t('admin.opcos.logoTooLarge'));
+        return;
+      }
+      setLogoFile(file);
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setError(null);
+    }
+  };
+
+  const handleRemoveLogo = () => {
+    setLogoFile(null);
+    setLogoPreview(null);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,7 +54,26 @@ function OpCoModal({ opco, onSave, onClose, t }) {
     setSaving(true);
     setError(null);
     try {
-      await onSave(formData);
+      // Save OpCo data first
+      const savedOpco = await onSave(formData);
+
+      // If there's a new logo file, upload it
+      if (logoFile && savedOpco?.id) {
+        setUploadingLogo(true);
+        try {
+          await adminApi.uploadLogo(savedOpco.id, logoFile);
+          if (onLogoUploaded) onLogoUploaded();
+        } catch (logoErr) {
+          console.error('Logo upload failed:', logoErr);
+          // Don't fail the whole operation if logo upload fails
+          setError(t('admin.opcos.logoUploadFailed'));
+          setSaving(false);
+          setUploadingLogo(false);
+          return;
+        }
+        setUploadingLogo(false);
+      }
+
       onClose();
     } catch (err) {
       setError(err.message);
@@ -89,6 +140,97 @@ function OpCoModal({ opco, onSave, onClose, t }) {
               </p>
             </div>
 
+            <div className="admin-form-group">
+              <label className="admin-form-label">{t('admin.opcos.logo')}</label>
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                padding: '12px',
+                border: '2px dashed #ddd',
+                borderRadius: '8px',
+                background: '#fafafa',
+              }}>
+                {logoPreview ? (
+                  <div style={{ position: 'relative' }}>
+                    <img
+                      src={logoPreview}
+                      alt="Logo preview"
+                      style={{
+                        width: '80px',
+                        height: '80px',
+                        objectFit: 'contain',
+                        borderRadius: '8px',
+                        border: '1px solid #ddd',
+                        background: '#fff',
+                      }}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveLogo}
+                      style={{
+                        position: 'absolute',
+                        top: '-8px',
+                        right: '-8px',
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        border: 'none',
+                        background: '#dc3545',
+                        color: '#fff',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '14px',
+                        fontWeight: 'bold',
+                      }}
+                      title={t('admin.opcos.removeLogo')}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ) : (
+                  <div style={{
+                    width: '80px',
+                    height: '80px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: '#eee',
+                    borderRadius: '8px',
+                    color: '#999',
+                  }}>
+                    <svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+                      <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                    </svg>
+                  </div>
+                )}
+                <div style={{ flex: 1 }}>
+                  <input
+                    type="file"
+                    id="logo-upload"
+                    accept="image/*"
+                    onChange={handleLogoChange}
+                    style={{ display: 'none' }}
+                  />
+                  <label
+                    htmlFor="logo-upload"
+                    className="admin-btn admin-btn-secondary admin-btn-sm"
+                    style={{ cursor: 'pointer', display: 'inline-block' }}
+                  >
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" style={{ marginRight: '6px', verticalAlign: 'middle' }}>
+                      <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+                    </svg>
+                    {t('admin.opcos.uploadLogo')}
+                  </label>
+                  <p style={{ fontSize: '11px', color: '#666', marginTop: '8px', marginBottom: 0 }}>
+                    {t('admin.opcos.logoHint')}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {opco && (
               <div className="admin-form-group">
                 <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
@@ -104,11 +246,11 @@ function OpCoModal({ opco, onSave, onClose, t }) {
           </div>
 
           <div className="admin-modal-footer">
-            <button type="button" className="admin-btn admin-btn-secondary" onClick={onClose}>
+            <button type="button" className="admin-btn admin-btn-secondary" onClick={onClose} disabled={saving || uploadingLogo}>
               {t('common.cancel')}
             </button>
-            <button type="submit" className="admin-btn admin-btn-primary" disabled={saving}>
-              {saving ? t('common.saving') : t('common.save')}
+            <button type="submit" className="admin-btn admin-btn-primary" disabled={saving || uploadingLogo}>
+              {uploadingLogo ? t('admin.opcos.uploadingLogo') : saving ? t('common.saving') : t('common.save')}
             </button>
           </div>
         </form>
@@ -156,12 +298,16 @@ export function OpCoManagement() {
   };
 
   const handleSave = async (data) => {
+    let savedOpco;
     if (editingItem) {
-      await adminApi.updateOpCo(editingItem.id, data);
+      savedOpco = await adminApi.updateOpCo(editingItem.id, data);
+      // Ensure we have the ID from the existing item
+      savedOpco = { ...savedOpco, id: editingItem.id };
     } else {
-      await adminApi.createOpCo(data);
+      savedOpco = await adminApi.createOpCo(data);
     }
     await loadData();
+    return savedOpco;
   };
 
   // Filter OpCos
@@ -327,6 +473,7 @@ export function OpCoManagement() {
           opco={editingItem}
           onSave={handleSave}
           onClose={() => setShowModal(false)}
+          onLogoUploaded={loadData}
           t={t}
         />
       )}

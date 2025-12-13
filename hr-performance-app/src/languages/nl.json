@@ -25,7 +25,19 @@
       "actions": "Acties",
       "view": "Bekijken",
       "continue": "Doorgaan",
-      "loading": "Beoordelingen laden..."
+      "loading": "Beoordelingen laden...",
+      "errorLoading": "Fout bij laden beoordelingen"
+    },
+    "newReview": {
+      "title": "Nieuwe Beoordeling Aanmaken",
+      "year": "Jaar",
+      "employee": "Medewerker",
+      "selectEmployee": "Selecteer medewerker...",
+      "manager": "Manager",
+      "selectManager": "Selecteer manager...",
+      "tovLevel": "TOV/IDE Niveau",
+      "selectTovLevel": "Selecteer TOV niveau...",
+      "create": "Beoordeling Aanmaken"
     },
     "team": {
       "title": "Team Overzicht",
@@ -88,7 +100,8 @@
       "pendingApprovals": "Openstaande Goedkeuringen",
       "byStage": "Beoordelingen per Fase",
       "byScore": "Score Verdeling",
-      "recentActivity": "Recente Activiteit"
+      "recentActivity": "Recente Activiteit",
+      "noRecentReviews": "Geen recente beoordelingen"
     },
     "allReviews": {
       "title": "Alle Beoordelingen",
@@ -104,6 +117,7 @@
       "title": "Prestatie Geschiedenis",
       "subtitleOwn": "Volg uw prestatiescores en trends door de tijd",
       "subtitleOther": "Prestatie geschiedenis voor {{name}}",
+      "noAccess": "U heeft geen toestemming om de prestatiegeschiedenis van deze medewerker te bekijken.",
       "totalReviews": "Totaal Beoordelingen",
       "yearsSpan": "Jaren Bereik",
       "avgWhat": "Gem. WAT",
@@ -138,6 +152,11 @@
       "viewHistory": "Bekijk Geschiedenis",
       "metric": "Metriek",
       "status": "Status"
+    },
+    "accessDenied": {
+      "message": "U heeft geen toestemming om deze pagina te bekijken.",
+      "currentRole": "Uw huidige rol",
+      "requiredRoles": "Vereiste rollen"
     },
     "analytics": {
       "title": "Prestatie Analytics",
@@ -296,12 +315,36 @@
         "createdBy": "Aangemaakt door",
         "totalEmployees": "Totaal Medewerkers",
         "adjustments": "Aanpassingen Gemaakt",
-        "flaggedReviews": "Gemarkeerde Beoordelingen"
+        "flaggedReviews": "Gemarkeerde Beoordelingen",
+        "editSession": "Sessie Bewerken",
+        "sessionName": "Sessienaam",
+        "sessionNotes": "Notities",
+        "notesPlaceholder": "Voeg sessie notities, observaties of beslissingen toe...",
+        "nameLockedHint": "Naam kan niet worden gewijzigd voor lopende sessies"
       },
       "noSessions": "Geen kalibratie sessies",
       "noSessionsDesc": "Maak uw eerste kalibratie sessie aan om beoordelingen te reviewen en aan te passen",
       "loading": "Kalibratie gegevens laden...",
-      "error": "Kalibratie gegevens konden niet worden geladen"
+      "error": "Kalibratie gegevens konden niet worden geladen",
+      "readyToStart": "Klaar om Kalibratie te Starten",
+      "readyToStartDesc": "Het starten van de kalibratie maakt een momentopname van alle eindjaarsbeoordelingsscores voor het geselecteerde bereik. U kunt vervolgens de beoordelingen bekijken en aanpassen indien nodig.",
+      "sessionNotFound": "Sessie niet gevonden",
+      "backToSession": "Terug naar Sessie",
+      "reportTitle": "Kalibratie Rapport",
+      "report": {
+        "sessionSummary": "Sessie Samenvatting",
+        "adjustmentsMade": "Aanpassingen Gemaakt",
+        "originalPosition": "Originele Positie",
+        "calibratedPosition": "Gekalibreerde Positie",
+        "change": "Wijziging",
+        "adjustmentsByFacilitator": "Aanpassingen per Facilitator",
+        "adjustments": "aanpassingen",
+        "avgWhatChange": "Gem. WAT Wijziging",
+        "avgHowChange": "Gem. HOE Wijziging",
+        "sessionNotes": "Sessie Notities",
+        "generatedOn": "Gegenereerd op",
+        "systemName": "TSS Prestatiebeheersysteem"
+      }
     }
   },
   "signature": {
@@ -334,6 +377,14 @@
   },
   "review": {
     "stages": {
+      "draft": "Concept",
+      "goalSetting": "Doelen Stellen",
+      "goalSettingComplete": "Doelen Vergrendeld",
+      "midYear": "Halfjaarlijkse Beoordeling",
+      "midYearComplete": "Halfjaar Afgerond",
+      "endYear": "Eindejaars Beoordeling",
+      "pendingSignatures": "Wacht op Handtekeningen",
+      "completed": "Afgerond",
       "DRAFT": "Concept",
       "GOAL_SETTING": "Doelen Stellen",
       "GOAL_SETTING_COMPLETE": "Doelen Vergrendeld",
@@ -363,7 +414,21 @@
       "goalSetting": "Stel prestatie doelen vast voor de beoordelingsperiode",
       "midYear": "Halfjaarlijkse voortgang beoordeling en scoring",
       "endYear": "Definitieve eindejaars prestatie-evaluatie"
-    }
+    },
+    "saving": "Opslaan...",
+    "saved": "Opgeslagen",
+    "unsaved": "Niet-opgeslagen wijzigingen",
+    "saveFailed": "Opslaan mislukt",
+    "notFound": "Beoordeling Niet Gevonden",
+    "notFoundDesc": "De beoordeling die u zoekt bestaat niet of u heeft geen toegang.",
+    "startGoalSetting": "Start Doelen Stellen",
+    "completeGoalSetting": "Voltooi Doelen Stellen",
+    "startMidYear": "Start Halfjaarlijkse Beoordeling",
+    "completeMidYear": "Voltooi Halfjaar",
+    "startEndYear": "Start Eindejaars Beoordeling",
+    "completeEndYear": "Voltooi Eindjaar",
+    "awaitingSignatures": "Deze beoordeling wacht op handtekeningen",
+    "reviewCompleted": "Beoordeling Voltooid"
   },
   "app": {
     "title": "Beoordelingsgesprek",
@@ -403,12 +468,19 @@
     "title": "Medewerkersinformatie",
     "name": "Naam medewerker",
     "namePlaceholder": "Voer naam medewerker in",
-    "role": "Functietitel / Rol",
+    "role": "Functietitel",
+    "functionTitle": "Functietitel",
     "rolePlaceholder": "Voer functietitel in",
+    "selectFunctionTitle": "Selecteer functietitel...",
+    "loadError": "Functietitels laden mislukt. U kunt het formulier handmatig invullen.",
     "businessUnit": "Business Unit",
     "businessUnitPlaceholder": "Voer business unit in",
     "tovLevel": "TOV-Niveau",
     "selectLevel": "Selecteer niveau",
+    "selectFunctionTitleFirst": "Selecteer eerst functietitel",
+    "autoApplied": "automatisch toegepast",
+    "noTovLevelMapping": "Deze functietitel heeft geen TOV-Niveau koppeling",
+    "manualSelectionRequired": "Neem contact op met HR om uw TOV-Niveau in te stellen",
     "reviewDate": "Beoordelingsdatum",
     "managerName": "Naam manager",
     "managerPlaceholder": "Voer naam manager in"
@@ -467,7 +539,13 @@
     "whatScore": "WAT Score",
     "howScore": "HOE Score",
     "position": "Uw positie",
-    "scfVeto": "SCF VETO"
+    "scfVeto": "SCF VETO",
+    "legend": {
+      "immediateAttention": "Onmiddellijke aandacht",
+      "developmentArea": "Ontwikkelgebied",
+      "goodPerformance": "Goede prestatie",
+      "exceptional": "Uitzonderlijk"
+    }
   },
   "selfAssessment": {
     "title": "Zelfevaluatie medewerker",
@@ -479,11 +557,13 @@
   },
   "actions": {
     "preview": "Voorbeeld rapport",
+    "save": "Opslaan",
     "saveDraft": "Conceptrapport downloaden",
     "download": "Definitief rapport downloaden",
     "clearSession": "Sessie wissen",
     "confirmClear": "Weet u zeker dat u deze sessie wilt wissen? Alle gegevens gaan verloren.",
-    "saved": "Opgeslagen"
+    "saved": "Opgeslagen",
+    "downloadError": "Fout bij genereren rapport. Probeer het opnieuw."
   },
   "validation": {
     "required": "Dit veld is verplicht",
@@ -524,7 +604,9 @@
     "loading": "Laden...",
     "save": "Opslaan",
     "saving": "Opslaan...",
+    "uploading": "Uploaden...",
     "cancel": "Annuleren",
+    "close": "Sluiten",
     "edit": "Bewerken",
     "delete": "Verwijderen",
     "add": "Toevoegen",
@@ -533,10 +615,21 @@
     "search": "Zoeken",
     "error": "Fout",
     "accessDenied": "Toegang Geweigerd",
-    "goBack": "Terug"
+    "goBack": "Terug",
+    "year": "Jaar",
+    "status": "Status",
+    "businessUnit": "Business Unit",
+    "date": "Datum",
+    "all": "Alle",
+    "selectOption": "Selecteren...",
+    "create": "Aanmaken",
+    "creating": "Aanmaken...",
+    "logout": "Uitloggen"
   },
   "admin": {
     "title": "Beheerportaal",
+    "backToApp": "Terug naar App",
+    "toggleMenu": "Menu wisselen",
     "sections": {
       "management": "Beheer",
       "configuration": "Configuratie",
@@ -549,6 +642,10 @@
       "functionTitles": "Functietitels",
       "tovLevels": "TOV Niveaus",
       "competencies": "Competenties",
+      "import": "Reviews Importeren",
+      "startNewYear": "Nieuw Jaar Starten",
+      "settings": "Instellingen",
+      "branding": "Huisstijl",
       "opcos": "OpCo's",
       "global": "Globaal"
     },
@@ -638,7 +735,36 @@
       "addFirst": "Eerste Functietitel Toevoegen",
       "deleteTitle": "Functietitel Verwijderen",
       "deleteMessage": "Weet u zeker dat u \"{{name}}\" wilt verwijderen? Deze actie kan niet ongedaan worden gemaakt.",
-      "error": "Functietitels konden niet worden geladen"
+      "error": "Functietitels konden niet worden geladen",
+      "assignedUsers": "Toegewezen Gebruikers",
+      "cannotDelete": "Kan Functietitel Niet Verwijderen",
+      "deleteBlocked": "{{count}} gebruiker(s) toegewezen",
+      "deleteBlockedMessage": "Kan \"{{name}}\" niet verwijderen omdat {{count}} gebruiker(s) momenteel aan deze functietitel zijn toegewezen.",
+      "assignedUsersTitle": "Gebruikers met deze functietitel",
+      "andMoreUsers": "...en nog {{count}} gebruiker(s)",
+      "reassignInstructions": "Om deze functietitel te verwijderen, moet u eerst alle gebruikers toewijzen aan een andere functietitel in Gebruikersbeheer.",
+      "export": {
+        "button": "Exporteren naar Excel",
+        "exporting": "Exporteren..."
+      },
+      "import": {
+        "button": "Importeren vanuit Excel",
+        "title": "Functietitels Importeren",
+        "instructions": "Excel-bestandsformatvereisten:",
+        "note": "Kolomnamen zijn flexibel en worden automatisch gedetecteerd. De eerste rij moet koppen bevatten.",
+        "selectFile": "Bestand Selecteren",
+        "noFileSelected": "Selecteer een bestand om te uploaden.",
+        "invalidFileType": "Ongeldig bestandstype. Upload een Excel-bestand (.xlsx, .xls).",
+        "fileTooLarge": "Bestandsgrootte overschrijdt de limiet van 10MB.",
+        "uploading": "Uploaden...",
+        "upload": "Uploaden en Importeren",
+        "complete": "Import Voltooid!",
+        "totalRows": "Totaal Rijen",
+        "created": "Aangemaakt",
+        "updated": "Bijgewerkt",
+        "skipped": "Overgeslagen",
+        "errors": "Fouten"
+      }
     },
     "tovLevels": {
       "title": "TOV/IDE Niveaus",
@@ -686,6 +812,59 @@
       "addFirst": "Eerste Competentie Toevoegen",
       "error": "Competenties konden niet worden geladen"
     },
+    "import": {
+      "title": "Historische Reviews Importeren",
+      "subtitle": "Upload een Excel-bestand om eerdere prestatiebeoordelingen in het systeem te importeren.",
+      "instructions": "Bestandsformaat Vereisten",
+      "formatDescription": "Uw Excel-bestand moet de volgende kolommen bevatten:",
+      "note": "Opmerking: Kolomnamen zijn flexibel en worden automatisch gedetecteerd. De eerste rij moet koppen bevatten.",
+      "uploadTitle": "Bestand Uploaden",
+      "selectFile": "Bestand Selecteren",
+      "upload": "Uploaden en Importeren",
+      "uploading": "Uploaden...",
+      "invalidFileType": "Ongeldig bestandstype. Upload een Excel (.xlsx, .xls) of CSV-bestand.",
+      "fileTooLarge": "Bestandsgrootte overschrijdt de limiet van 10MB.",
+      "noFileSelected": "Selecteer een bestand om te uploaden.",
+      "uploadError": "Uploaden mislukt. Probeer het opnieuw.",
+      "complete": "Import Voltooid!",
+      "totalRows": "Totaal Rijen",
+      "created": "Aangemaakt",
+      "updated": "Bijgewerkt",
+      "skipped": "Overgeslagen",
+      "errors": "Fouten",
+      "importAnother": "Nog een Bestand Importeren",
+      "remove": "Verwijderen"
+    },
+    "startNewYear": {
+      "title": "Nieuw Prestatiejaar Starten",
+      "subtitle": "Maak beoordelingsformulieren aan voor alle in aanmerking komende medewerkers in één actie",
+      "configureTitle": "Nieuw Jaar Configureren",
+      "selectYear": "Selecteer Prestatiejaar",
+      "includeManagers": "Gebruikers met Manager-rol opnemen",
+      "includeManagersHint": "Standaard ontvangen alleen medewerkers beoordelingsformulieren. Vink dit aan om ook managers op te nemen.",
+      "preview": "Voorbeeld",
+      "previewTitle": "Voorbeeld - {{year}} Prestatiejaar",
+      "willCreate": "Wordt Aangemaakt",
+      "willSkip": "Wordt Overgeslagen",
+      "totalEmployees": "Totaal Medewerkers",
+      "employee": "Medewerker",
+      "manager": "Manager",
+      "tovLevel": "TOV Niveau",
+      "notes": "Opmerkingen",
+      "createReviews": "{{count}} Beoordelingsformulieren Aanmaken",
+      "noEligibleEmployees": "Geen in aanmerking komende medewerkers gevonden. Alle medewerkers hebben mogelijk al beoordelingsformulieren voor dit jaar.",
+      "creating": "Beoordelingsformulieren Aanmaken...",
+      "pleaseWait": "Even geduld terwijl we de beoordelingsformulieren aanmaken.",
+      "complete": "Beoordelingsformulieren Succesvol Aangemaakt!",
+      "created": "aangemaakt",
+      "skipped": "overgeslagen",
+      "failed": "mislukt",
+      "details": "Aanmaakdetails",
+      "startAnother": "Nog een Jaar Starten",
+      "confirmTitle": "Aanmaken Bevestigen",
+      "confirmMessage": "U staat op het punt {{count}} beoordelingsformulieren aan te maken voor het prestatiejaar {{year}}. Deze actie kan niet ongedaan worden gemaakt.",
+      "confirmCreate": "Aanmaken"
+    },
     "opcos": {
       "title": "OpCo Beheer",
       "subtitle": "Beheer werkmaatschappijen binnen de organisatie",
@@ -709,7 +888,15 @@
       "noItems": "Geen OpCo's geconfigureerd",
       "noItemsDesc": "Maak uw eerste werkmaatschappij aan",
       "addFirst": "Eerste OpCo Toevoegen",
-      "error": "OpCo's konden niet worden geladen"
+      "error": "OpCo's konden niet worden geladen",
+      "logo": "Logo",
+      "uploadLogo": "Logo Uploaden",
+      "removeLogo": "Logo verwijderen",
+      "logoHint": "PNG, JPG of SVG (max 2MB). Aanbevolen formaat: 200x80px",
+      "logoInvalidType": "Selecteer een afbeeldingsbestand (PNG, JPG, GIF of SVG)",
+      "logoTooLarge": "Logobestand is te groot. Maximale grootte is 2MB",
+      "logoUploadFailed": "Logo uploaden mislukt. Overige wijzigingen zijn opgeslagen.",
+      "uploadingLogo": "Logo uploaden..."
     },
     "global": {
       "title": "Globaal Dashboard",
@@ -742,6 +929,70 @@
       "whisper": "Whisper Service",
       "available": "Beschikbaar",
       "error": "Globaal dashboard kon niet worden geladen"
+    },
+    "settings": {
+      "title": "Workflow Instellingen",
+      "subtitle": "Configureer beoordelingscycli, goedkeuringen en meldingen",
+      "saved": "Instellingen succesvol opgeslagen",
+      "error": "Instellingen opslaan mislukt",
+      "reviewCycle": {
+        "title": "Beoordelingscyclus Data",
+        "description": "Stel standaard data in voor elke beoordelingsperiode",
+        "goalSetting": "Doelstelling Periode",
+        "midYear": "Halfjaarlijkse Beoordeling",
+        "endYear": "Eindjaar Beoordeling",
+        "start": "Startdatum",
+        "end": "Einddatum",
+        "dateError": "Einddatum moet na startdatum liggen",
+        "overlapError": "Beoordelingsperiodes mogen niet overlappen"
+      },
+      "approvals": {
+        "title": "Goedkeuringsvereisten",
+        "description": "Configureer welke stappen goedkeuring vereisen",
+        "stage": "Fase",
+        "managerApproval": "Manager Goedkeuring",
+        "hrApproval": "HR Goedkeuring"
+      },
+      "signatures": {
+        "title": "Handtekeningvereisten",
+        "description": "Configureer handtekeningvereisten voor afgeronde beoordelingen",
+        "employee": "Handtekening Medewerker Vereist",
+        "manager": "Handtekening Manager Vereist"
+      },
+      "notifications": {
+        "title": "Meldingen",
+        "comingSoon": "E-mailmeldingen komen beschikbaar in een toekomstige update",
+        "enabled": "Meldingen Inschakelen",
+        "reminderDays": "Dagen voor deadline",
+        "overdueInterval": "Interval achterstallige herinneringen (dagen)",
+        "onApprovals": "Melden bij openstaande goedkeuringen"
+      }
+    },
+    "branding": {
+      "title": "Huisstijl Instellingen",
+      "subtitle": "Pas het uiterlijk aan voor elke werkmaatschappij",
+      "selectOpco": "Selecteer OpCo",
+      "saved": "Huisstijl succesvol opgeslagen",
+      "error": "Huisstijl opslaan mislukt",
+      "logo": {
+        "title": "Logo",
+        "noLogo": "Geen logo ingesteld",
+        "upload": "Logo Uploaden",
+        "uploadHint": "Aanbevolen: PNG of SVG, max 2MB",
+        "url": "Of voer logo URL in",
+        "remove": "Logo Verwijderen"
+      },
+      "colors": {
+        "title": "Kleuren",
+        "primary": "Primaire Kleur",
+        "accent": "Accent Kleur",
+        "preview": "Voorbeeld"
+      },
+      "css": {
+        "title": "Aangepaste CSS",
+        "description": "Geavanceerd: Voeg aangepaste CSS overschrijvingen toe",
+        "warning": "Waarschuwing: Ongeldige CSS kan het uiterlijk van de applicatie verstoren"
+      }
     }
   }
 }

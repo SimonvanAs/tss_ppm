@@ -11,6 +11,7 @@ import { PrivacyPolicy } from './components/PrivacyPolicy';
 import {
   MyReviews,
   NewReview,
+  ReviewForm,
   TeamOverview,
   Approvals,
   HRDashboard,
@@ -30,6 +31,9 @@ import {
   OpCoManagement,
   GlobalDashboard,
   ImportReviews,
+  StartNewYear,
+  WorkflowSettings,
+  BrandingSettings,
 } from './pages';
 import './App.css';
 
@@ -72,7 +76,12 @@ function PageWrapper({ children, showNav = true }) {
         {children}
       </main>
       <footer className="app-footer">
-        <span className="app-footer-ai">Made with AI assistance</span>
+        <span className="app-footer-ai">
+          <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
+            <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5 2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5z"/>
+          </svg>
+          <span>Made with AI assistance</span>
+        </span>
         <div className="app-footer-links">
           <button
             className="app-footer-link privacy-link"
@@ -144,9 +153,13 @@ function AppRouter() {
         element={
           <ProtectedRoute roles={['MANAGER', 'HR', 'OPCO_ADMIN', 'TSS_SUPER_ADMIN']}>
             <LanguageProvider>
-              <PageWrapper>
-                <NewReview />
-              </PageWrapper>
+              <WhisperProvider>
+                <FormProvider>
+                  <PageWrapper>
+                    <NewReview />
+                  </PageWrapper>
+                </FormProvider>
+              </WhisperProvider>
             </LanguageProvider>
           </ProtectedRoute>
         }
@@ -350,6 +363,8 @@ function AppRouter() {
         <Route path="tov-levels" element={<TovLevels />} />
         <Route path="competencies" element={<Competencies />} />
         <Route path="import" element={<ImportReviews />} />
+        <Route path="start-new-year" element={<StartNewYear />} />
+        <Route path="settings" element={<WorkflowSettings />} />
         <Route
           path="opcos"
           element={
@@ -366,23 +381,26 @@ function AppRouter() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="branding"
+          element={
+            <ProtectedRoute roles={['TSS_SUPER_ADMIN']}>
+              <BrandingSettings />
+            </ProtectedRoute>
+          }
+        />
       </Route>
 
-      {/* API-backed review form route (for future use) */}
+      {/* API-backed review form */}
       <Route
         path="/review/:reviewId"
         element={
           <ProtectedRoute>
             <LanguageProvider>
               <WhisperProvider>
-                <FormProvider>
-                  <PageWrapper showNav={false}>
-                    <div className="card" style={{ padding: 48, textAlign: 'center' }}>
-                      <h2 style={{ color: '#004A91', margin: '0 0 16px' }}>Review Details</h2>
-                      <p style={{ color: '#666' }}>API-backed review editing coming soon</p>
-                    </div>
-                  </PageWrapper>
-                </FormProvider>
+                <PageWrapper showNav={false}>
+                  <ReviewForm />
+                </PageWrapper>
               </WhisperProvider>
             </LanguageProvider>
           </ProtectedRoute>

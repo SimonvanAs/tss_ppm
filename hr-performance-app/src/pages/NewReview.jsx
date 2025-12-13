@@ -38,8 +38,18 @@ export function NewReview() {
         adminApi.getTovLevels(),
       ]);
 
-      setEmployees(employeesData.data || employeesData || []);
-      setTovLevels(tovLevelsData.data || tovLevelsData || []);
+      // Extract array from response (handle both { data: [...] } and direct array)
+      const employeesList = Array.isArray(employeesData)
+        ? employeesData
+        : (Array.isArray(employeesData?.data) ? employeesData.data : []);
+      const tovLevelsList = Array.isArray(tovLevelsData)
+        ? tovLevelsData
+        : (Array.isArray(tovLevelsData?.data) ? tovLevelsData.data : []);
+
+      console.log('Loaded employees:', employeesList.length, 'TOV levels:', tovLevelsList.length);
+
+      setEmployees(employeesList);
+      setTovLevels(tovLevelsList);
 
       // Set default manager to current user if they are a manager
       if (user?.id && !formData.managerId) {
@@ -47,7 +57,7 @@ export function NewReview() {
       }
     } catch (err) {
       console.error('Failed to load data:', err);
-      setError(err.message);
+      setError(err.message || 'Failed to load form data');
     } finally {
       setIsLoading(false);
     }
@@ -57,11 +67,16 @@ export function NewReview() {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
 
-    // Auto-fill TOV level when employee is selected
+    // Auto-fill manager and TOV level when employee is selected
     if (name === 'employeeId') {
       const selectedEmployee = employees.find(emp => emp.id === value);
-      if (selectedEmployee?.tovLevelId) {
-        setFormData(prev => ({ ...prev, tovLevelId: selectedEmployee.tovLevelId }));
+      if (selectedEmployee) {
+        setFormData(prev => ({
+          ...prev,
+          // Use employee's manager if available, otherwise keep current
+          managerId: selectedEmployee.managerId || prev.managerId,
+          tovLevelId: selectedEmployee.tovLevelId || prev.tovLevelId,
+        }));
       }
     }
   };

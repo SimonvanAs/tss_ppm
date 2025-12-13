@@ -103,19 +103,19 @@ export function PerformanceGrid() {
       <div className="grid-legend">
         <div className="legend-item">
           <span className="legend-color" style={{ backgroundColor: '#DC3545' }} />
-          <span>Immediate attention</span>
+          <span>{t('grid.legend.immediateAttention') || 'Immediate attention'}</span>
         </div>
         <div className="legend-item">
           <span className="legend-color" style={{ backgroundColor: '#FFA500' }} />
-          <span>Development area</span>
+          <span>{t('grid.legend.developmentArea') || 'Development area'}</span>
         </div>
         <div className="legend-item">
           <span className="legend-color" style={{ backgroundColor: '#28A745' }} />
-          <span>Good performance</span>
+          <span>{t('grid.legend.goodPerformance') || 'Good performance'}</span>
         </div>
         <div className="legend-item">
           <span className="legend-color" style={{ backgroundColor: '#1B5E20' }} />
-          <span>Exceptional</span>
+          <span>{t('grid.legend.exceptional') || 'Exceptional'}</span>
         </div>
       </div>
     </section>

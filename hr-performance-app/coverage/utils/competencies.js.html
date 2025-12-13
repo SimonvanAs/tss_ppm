@@ -1,0 +1,2623 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for utils/competencies.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../prettify.css" />
+    <link rel="stylesheet" href="../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../index.html">All files</a> / <a href="index.html">utils</a> competencies.js</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>2/2</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/0</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>2/2</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a>
+<a name='L96'></a><a href='#L96'>96</a>
+<a name='L97'></a><a href='#L97'>97</a>
+<a name='L98'></a><a href='#L98'>98</a>
+<a name='L99'></a><a href='#L99'>99</a>
+<a name='L100'></a><a href='#L100'>100</a>
+<a name='L101'></a><a href='#L101'>101</a>
+<a name='L102'></a><a href='#L102'>102</a>
+<a name='L103'></a><a href='#L103'>103</a>
+<a name='L104'></a><a href='#L104'>104</a>
+<a name='L105'></a><a href='#L105'>105</a>
+<a name='L106'></a><a href='#L106'>106</a>
+<a name='L107'></a><a href='#L107'>107</a>
+<a name='L108'></a><a href='#L108'>108</a>
+<a name='L109'></a><a href='#L109'>109</a>
+<a name='L110'></a><a href='#L110'>110</a>
+<a name='L111'></a><a href='#L111'>111</a>
+<a name='L112'></a><a href='#L112'>112</a>
+<a name='L113'></a><a href='#L113'>113</a>
+<a name='L114'></a><a href='#L114'>114</a>
+<a name='L115'></a><a href='#L115'>115</a>
+<a name='L116'></a><a href='#L116'>116</a>
+<a name='L117'></a><a href='#L117'>117</a>
+<a name='L118'></a><a href='#L118'>118</a>
+<a name='L119'></a><a href='#L119'>119</a>
+<a name='L120'></a><a href='#L120'>120</a>
+<a name='L121'></a><a href='#L121'>121</a>
+<a name='L122'></a><a href='#L122'>122</a>
+<a name='L123'></a><a href='#L123'>123</a>
+<a name='L124'></a><a href='#L124'>124</a>
+<a name='L125'></a><a href='#L125'>125</a>
+<a name='L126'></a><a href='#L126'>126</a>
+<a name='L127'></a><a href='#L127'>127</a>
+<a name='L128'></a><a href='#L128'>128</a>
+<a name='L129'></a><a href='#L129'>129</a>
+<a name='L130'></a><a href='#L130'>130</a>
+<a name='L131'></a><a href='#L131'>131</a>
+<a name='L132'></a><a href='#L132'>132</a>
+<a name='L133'></a><a href='#L133'>133</a>
+<a name='L134'></a><a href='#L134'>134</a>
+<a name='L135'></a><a href='#L135'>135</a>
+<a name='L136'></a><a href='#L136'>136</a>
+<a name='L137'></a><a href='#L137'>137</a>
+<a name='L138'></a><a href='#L138'>138</a>
+<a name='L139'></a><a href='#L139'>139</a>
+<a name='L140'></a><a href='#L140'>140</a>
+<a name='L141'></a><a href='#L141'>141</a>
+<a name='L142'></a><a href='#L142'>142</a>
+<a name='L143'></a><a href='#L143'>143</a>
+<a name='L144'></a><a href='#L144'>144</a>
+<a name='L145'></a><a href='#L145'>145</a>
+<a name='L146'></a><a href='#L146'>146</a>
+<a name='L147'></a><a href='#L147'>147</a>
+<a name='L148'></a><a href='#L148'>148</a>
+<a name='L149'></a><a href='#L149'>149</a>
+<a name='L150'></a><a href='#L150'>150</a>
+<a name='L151'></a><a href='#L151'>151</a>
+<a name='L152'></a><a href='#L152'>152</a>
+<a name='L153'></a><a href='#L153'>153</a>
+<a name='L154'></a><a href='#L154'>154</a>
+<a name='L155'></a><a href='#L155'>155</a>
+<a name='L156'></a><a href='#L156'>156</a>
+<a name='L157'></a><a href='#L157'>157</a>
+<a name='L158'></a><a href='#L158'>158</a>
+<a name='L159'></a><a href='#L159'>159</a>
+<a name='L160'></a><a href='#L160'>160</a>
+<a name='L161'></a><a href='#L161'>161</a>
+<a name='L162'></a><a href='#L162'>162</a>
+<a name='L163'></a><a href='#L163'>163</a>
+<a name='L164'></a><a href='#L164'>164</a>
+<a name='L165'></a><a href='#L165'>165</a>
+<a name='L166'></a><a href='#L166'>166</a>
+<a name='L167'></a><a href='#L167'>167</a>
+<a name='L168'></a><a href='#L168'>168</a>
+<a name='L169'></a><a href='#L169'>169</a>
+<a name='L170'></a><a href='#L170'>170</a>
+<a name='L171'></a><a href='#L171'>171</a>
+<a name='L172'></a><a href='#L172'>172</a>
+<a name='L173'></a><a href='#L173'>173</a>
+<a name='L174'></a><a href='#L174'>174</a>
+<a name='L175'></a><a href='#L175'>175</a>
+<a name='L176'></a><a href='#L176'>176</a>
+<a name='L177'></a><a href='#L177'>177</a>
+<a name='L178'></a><a href='#L178'>178</a>
+<a name='L179'></a><a href='#L179'>179</a>
+<a name='L180'></a><a href='#L180'>180</a>
+<a name='L181'></a><a href='#L181'>181</a>
+<a name='L182'></a><a href='#L182'>182</a>
+<a name='L183'></a><a href='#L183'>183</a>
+<a name='L184'></a><a href='#L184'>184</a>
+<a name='L185'></a><a href='#L185'>185</a>
+<a name='L186'></a><a href='#L186'>186</a>
+<a name='L187'></a><a href='#L187'>187</a>
+<a name='L188'></a><a href='#L188'>188</a>
+<a name='L189'></a><a href='#L189'>189</a>
+<a name='L190'></a><a href='#L190'>190</a>
+<a name='L191'></a><a href='#L191'>191</a>
+<a name='L192'></a><a href='#L192'>192</a>
+<a name='L193'></a><a href='#L193'>193</a>
+<a name='L194'></a><a href='#L194'>194</a>
+<a name='L195'></a><a href='#L195'>195</a>
+<a name='L196'></a><a href='#L196'>196</a>
+<a name='L197'></a><a href='#L197'>197</a>
+<a name='L198'></a><a href='#L198'>198</a>
+<a name='L199'></a><a href='#L199'>199</a>
+<a name='L200'></a><a href='#L200'>200</a>
+<a name='L201'></a><a href='#L201'>201</a>
+<a name='L202'></a><a href='#L202'>202</a>
+<a name='L203'></a><a href='#L203'>203</a>
+<a name='L204'></a><a href='#L204'>204</a>
+<a name='L205'></a><a href='#L205'>205</a>
+<a name='L206'></a><a href='#L206'>206</a>
+<a name='L207'></a><a href='#L207'>207</a>
+<a name='L208'></a><a href='#L208'>208</a>
+<a name='L209'></a><a href='#L209'>209</a>
+<a name='L210'></a><a href='#L210'>210</a>
+<a name='L211'></a><a href='#L211'>211</a>
+<a name='L212'></a><a href='#L212'>212</a>
+<a name='L213'></a><a href='#L213'>213</a>
+<a name='L214'></a><a href='#L214'>214</a>
+<a name='L215'></a><a href='#L215'>215</a>
+<a name='L216'></a><a href='#L216'>216</a>
+<a name='L217'></a><a href='#L217'>217</a>
+<a name='L218'></a><a href='#L218'>218</a>
+<a name='L219'></a><a href='#L219'>219</a>
+<a name='L220'></a><a href='#L220'>220</a>
+<a name='L221'></a><a href='#L221'>221</a>
+<a name='L222'></a><a href='#L222'>222</a>
+<a name='L223'></a><a href='#L223'>223</a>
+<a name='L224'></a><a href='#L224'>224</a>
+<a name='L225'></a><a href='#L225'>225</a>
+<a name='L226'></a><a href='#L226'>226</a>
+<a name='L227'></a><a href='#L227'>227</a>
+<a name='L228'></a><a href='#L228'>228</a>
+<a name='L229'></a><a href='#L229'>229</a>
+<a name='L230'></a><a href='#L230'>230</a>
+<a name='L231'></a><a href='#L231'>231</a>
+<a name='L232'></a><a href='#L232'>232</a>
+<a name='L233'></a><a href='#L233'>233</a>
+<a name='L234'></a><a href='#L234'>234</a>
+<a name='L235'></a><a href='#L235'>235</a>
+<a name='L236'></a><a href='#L236'>236</a>
+<a name='L237'></a><a href='#L237'>237</a>
+<a name='L238'></a><a href='#L238'>238</a>
+<a name='L239'></a><a href='#L239'>239</a>
+<a name='L240'></a><a href='#L240'>240</a>
+<a name='L241'></a><a href='#L241'>241</a>
+<a name='L242'></a><a href='#L242'>242</a>
+<a name='L243'></a><a href='#L243'>243</a>
+<a name='L244'></a><a href='#L244'>244</a>
+<a name='L245'></a><a href='#L245'>245</a>
+<a name='L246'></a><a href='#L246'>246</a>
+<a name='L247'></a><a href='#L247'>247</a>
+<a name='L248'></a><a href='#L248'>248</a>
+<a name='L249'></a><a href='#L249'>249</a>
+<a name='L250'></a><a href='#L250'>250</a>
+<a name='L251'></a><a href='#L251'>251</a>
+<a name='L252'></a><a href='#L252'>252</a>
+<a name='L253'></a><a href='#L253'>253</a>
+<a name='L254'></a><a href='#L254'>254</a>
+<a name='L255'></a><a href='#L255'>255</a>
+<a name='L256'></a><a href='#L256'>256</a>
+<a name='L257'></a><a href='#L257'>257</a>
+<a name='L258'></a><a href='#L258'>258</a>
+<a name='L259'></a><a href='#L259'>259</a>
+<a name='L260'></a><a href='#L260'>260</a>
+<a name='L261'></a><a href='#L261'>261</a>
+<a name='L262'></a><a href='#L262'>262</a>
+<a name='L263'></a><a href='#L263'>263</a>
+<a name='L264'></a><a href='#L264'>264</a>
+<a name='L265'></a><a href='#L265'>265</a>
+<a name='L266'></a><a href='#L266'>266</a>
+<a name='L267'></a><a href='#L267'>267</a>
+<a name='L268'></a><a href='#L268'>268</a>
+<a name='L269'></a><a href='#L269'>269</a>
+<a name='L270'></a><a href='#L270'>270</a>
+<a name='L271'></a><a href='#L271'>271</a>
+<a name='L272'></a><a href='#L272'>272</a>
+<a name='L273'></a><a href='#L273'>273</a>
+<a name='L274'></a><a href='#L274'>274</a>
+<a name='L275'></a><a href='#L275'>275</a>
+<a name='L276'></a><a href='#L276'>276</a>
+<a name='L277'></a><a href='#L277'>277</a>
+<a name='L278'></a><a href='#L278'>278</a>
+<a name='L279'></a><a href='#L279'>279</a>
+<a name='L280'></a><a href='#L280'>280</a>
+<a name='L281'></a><a href='#L281'>281</a>
+<a name='L282'></a><a href='#L282'>282</a>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a>
+<a name='L287'></a><a href='#L287'>287</a>
+<a name='L288'></a><a href='#L288'>288</a>
+<a name='L289'></a><a href='#L289'>289</a>
+<a name='L290'></a><a href='#L290'>290</a>
+<a name='L291'></a><a href='#L291'>291</a>
+<a name='L292'></a><a href='#L292'>292</a>
+<a name='L293'></a><a href='#L293'>293</a>
+<a name='L294'></a><a href='#L294'>294</a>
+<a name='L295'></a><a href='#L295'>295</a>
+<a name='L296'></a><a href='#L296'>296</a>
+<a name='L297'></a><a href='#L297'>297</a>
+<a name='L298'></a><a href='#L298'>298</a>
+<a name='L299'></a><a href='#L299'>299</a>
+<a name='L300'></a><a href='#L300'>300</a>
+<a name='L301'></a><a href='#L301'>301</a>
+<a name='L302'></a><a href='#L302'>302</a>
+<a name='L303'></a><a href='#L303'>303</a>
+<a name='L304'></a><a href='#L304'>304</a>
+<a name='L305'></a><a href='#L305'>305</a>
+<a name='L306'></a><a href='#L306'>306</a>
+<a name='L307'></a><a href='#L307'>307</a>
+<a name='L308'></a><a href='#L308'>308</a>
+<a name='L309'></a><a href='#L309'>309</a>
+<a name='L310'></a><a href='#L310'>310</a>
+<a name='L311'></a><a href='#L311'>311</a>
+<a name='L312'></a><a href='#L312'>312</a>
+<a name='L313'></a><a href='#L313'>313</a>
+<a name='L314'></a><a href='#L314'>314</a>
+<a name='L315'></a><a href='#L315'>315</a>
+<a name='L316'></a><a href='#L316'>316</a>
+<a name='L317'></a><a href='#L317'>317</a>
+<a name='L318'></a><a href='#L318'>318</a>
+<a name='L319'></a><a href='#L319'>319</a>
+<a name='L320'></a><a href='#L320'>320</a>
+<a name='L321'></a><a href='#L321'>321</a>
+<a name='L322'></a><a href='#L322'>322</a>
+<a name='L323'></a><a href='#L323'>323</a>
+<a name='L324'></a><a href='#L324'>324</a>
+<a name='L325'></a><a href='#L325'>325</a>
+<a name='L326'></a><a href='#L326'>326</a>
+<a name='L327'></a><a href='#L327'>327</a>
+<a name='L328'></a><a href='#L328'>328</a>
+<a name='L329'></a><a href='#L329'>329</a>
+<a name='L330'></a><a href='#L330'>330</a>
+<a name='L331'></a><a href='#L331'>331</a>
+<a name='L332'></a><a href='#L332'>332</a>
+<a name='L333'></a><a href='#L333'>333</a>
+<a name='L334'></a><a href='#L334'>334</a>
+<a name='L335'></a><a href='#L335'>335</a>
+<a name='L336'></a><a href='#L336'>336</a>
+<a name='L337'></a><a href='#L337'>337</a>
+<a name='L338'></a><a href='#L338'>338</a>
+<a name='L339'></a><a href='#L339'>339</a>
+<a name='L340'></a><a href='#L340'>340</a>
+<a name='L341'></a><a href='#L341'>341</a>
+<a name='L342'></a><a href='#L342'>342</a>
+<a name='L343'></a><a href='#L343'>343</a>
+<a name='L344'></a><a href='#L344'>344</a>
+<a name='L345'></a><a href='#L345'>345</a>
+<a name='L346'></a><a href='#L346'>346</a>
+<a name='L347'></a><a href='#L347'>347</a>
+<a name='L348'></a><a href='#L348'>348</a>
+<a name='L349'></a><a href='#L349'>349</a>
+<a name='L350'></a><a href='#L350'>350</a>
+<a name='L351'></a><a href='#L351'>351</a>
+<a name='L352'></a><a href='#L352'>352</a>
+<a name='L353'></a><a href='#L353'>353</a>
+<a name='L354'></a><a href='#L354'>354</a>
+<a name='L355'></a><a href='#L355'>355</a>
+<a name='L356'></a><a href='#L356'>356</a>
+<a name='L357'></a><a href='#L357'>357</a>
+<a name='L358'></a><a href='#L358'>358</a>
+<a name='L359'></a><a href='#L359'>359</a>
+<a name='L360'></a><a href='#L360'>360</a>
+<a name='L361'></a><a href='#L361'>361</a>
+<a name='L362'></a><a href='#L362'>362</a>
+<a name='L363'></a><a href='#L363'>363</a>
+<a name='L364'></a><a href='#L364'>364</a>
+<a name='L365'></a><a href='#L365'>365</a>
+<a name='L366'></a><a href='#L366'>366</a>
+<a name='L367'></a><a href='#L367'>367</a>
+<a name='L368'></a><a href='#L368'>368</a>
+<a name='L369'></a><a href='#L369'>369</a>
+<a name='L370'></a><a href='#L370'>370</a>
+<a name='L371'></a><a href='#L371'>371</a>
+<a name='L372'></a><a href='#L372'>372</a>
+<a name='L373'></a><a href='#L373'>373</a>
+<a name='L374'></a><a href='#L374'>374</a>
+<a name='L375'></a><a href='#L375'>375</a>
+<a name='L376'></a><a href='#L376'>376</a>
+<a name='L377'></a><a href='#L377'>377</a>
+<a name='L378'></a><a href='#L378'>378</a>
+<a name='L379'></a><a href='#L379'>379</a>
+<a name='L380'></a><a href='#L380'>380</a>
+<a name='L381'></a><a href='#L381'>381</a>
+<a name='L382'></a><a href='#L382'>382</a>
+<a name='L383'></a><a href='#L383'>383</a>
+<a name='L384'></a><a href='#L384'>384</a>
+<a name='L385'></a><a href='#L385'>385</a>
+<a name='L386'></a><a href='#L386'>386</a>
+<a name='L387'></a><a href='#L387'>387</a>
+<a name='L388'></a><a href='#L388'>388</a>
+<a name='L389'></a><a href='#L389'>389</a>
+<a name='L390'></a><a href='#L390'>390</a>
+<a name='L391'></a><a href='#L391'>391</a>
+<a name='L392'></a><a href='#L392'>392</a>
+<a name='L393'></a><a href='#L393'>393</a>
+<a name='L394'></a><a href='#L394'>394</a>
+<a name='L395'></a><a href='#L395'>395</a>
+<a name='L396'></a><a href='#L396'>396</a>
+<a name='L397'></a><a href='#L397'>397</a>
+<a name='L398'></a><a href='#L398'>398</a>
+<a name='L399'></a><a href='#L399'>399</a>
+<a name='L400'></a><a href='#L400'>400</a>
+<a name='L401'></a><a href='#L401'>401</a>
+<a name='L402'></a><a href='#L402'>402</a>
+<a name='L403'></a><a href='#L403'>403</a>
+<a name='L404'></a><a href='#L404'>404</a>
+<a name='L405'></a><a href='#L405'>405</a>
+<a name='L406'></a><a href='#L406'>406</a>
+<a name='L407'></a><a href='#L407'>407</a>
+<a name='L408'></a><a href='#L408'>408</a>
+<a name='L409'></a><a href='#L409'>409</a>
+<a name='L410'></a><a href='#L410'>410</a>
+<a name='L411'></a><a href='#L411'>411</a>
+<a name='L412'></a><a href='#L412'>412</a>
+<a name='L413'></a><a href='#L413'>413</a>
+<a name='L414'></a><a href='#L414'>414</a>
+<a name='L415'></a><a href='#L415'>415</a>
+<a name='L416'></a><a href='#L416'>416</a>
+<a name='L417'></a><a href='#L417'>417</a>
+<a name='L418'></a><a href='#L418'>418</a>
+<a name='L419'></a><a href='#L419'>419</a>
+<a name='L420'></a><a href='#L420'>420</a>
+<a name='L421'></a><a href='#L421'>421</a>
+<a name='L422'></a><a href='#L422'>422</a>
+<a name='L423'></a><a href='#L423'>423</a>
+<a name='L424'></a><a href='#L424'>424</a>
+<a name='L425'></a><a href='#L425'>425</a>
+<a name='L426'></a><a href='#L426'>426</a>
+<a name='L427'></a><a href='#L427'>427</a>
+<a name='L428'></a><a href='#L428'>428</a>
+<a name='L429'></a><a href='#L429'>429</a>
+<a name='L430'></a><a href='#L430'>430</a>
+<a name='L431'></a><a href='#L431'>431</a>
+<a name='L432'></a><a href='#L432'>432</a>
+<a name='L433'></a><a href='#L433'>433</a>
+<a name='L434'></a><a href='#L434'>434</a>
+<a name='L435'></a><a href='#L435'>435</a>
+<a name='L436'></a><a href='#L436'>436</a>
+<a name='L437'></a><a href='#L437'>437</a>
+<a name='L438'></a><a href='#L438'>438</a>
+<a name='L439'></a><a href='#L439'>439</a>
+<a name='L440'></a><a href='#L440'>440</a>
+<a name='L441'></a><a href='#L441'>441</a>
+<a name='L442'></a><a href='#L442'>442</a>
+<a name='L443'></a><a href='#L443'>443</a>
+<a name='L444'></a><a href='#L444'>444</a>
+<a name='L445'></a><a href='#L445'>445</a>
+<a name='L446'></a><a href='#L446'>446</a>
+<a name='L447'></a><a href='#L447'>447</a>
+<a name='L448'></a><a href='#L448'>448</a>
+<a name='L449'></a><a href='#L449'>449</a>
+<a name='L450'></a><a href='#L450'>450</a>
+<a name='L451'></a><a href='#L451'>451</a>
+<a name='L452'></a><a href='#L452'>452</a>
+<a name='L453'></a><a href='#L453'>453</a>
+<a name='L454'></a><a href='#L454'>454</a>
+<a name='L455'></a><a href='#L455'>455</a>
+<a name='L456'></a><a href='#L456'>456</a>
+<a name='L457'></a><a href='#L457'>457</a>
+<a name='L458'></a><a href='#L458'>458</a>
+<a name='L459'></a><a href='#L459'>459</a>
+<a name='L460'></a><a href='#L460'>460</a>
+<a name='L461'></a><a href='#L461'>461</a>
+<a name='L462'></a><a href='#L462'>462</a>
+<a name='L463'></a><a href='#L463'>463</a>
+<a name='L464'></a><a href='#L464'>464</a>
+<a name='L465'></a><a href='#L465'>465</a>
+<a name='L466'></a><a href='#L466'>466</a>
+<a name='L467'></a><a href='#L467'>467</a>
+<a name='L468'></a><a href='#L468'>468</a>
+<a name='L469'></a><a href='#L469'>469</a>
+<a name='L470'></a><a href='#L470'>470</a>
+<a name='L471'></a><a href='#L471'>471</a>
+<a name='L472'></a><a href='#L472'>472</a>
+<a name='L473'></a><a href='#L473'>473</a>
+<a name='L474'></a><a href='#L474'>474</a>
+<a name='L475'></a><a href='#L475'>475</a>
+<a name='L476'></a><a href='#L476'>476</a>
+<a name='L477'></a><a href='#L477'>477</a>
+<a name='L478'></a><a href='#L478'>478</a>
+<a name='L479'></a><a href='#L479'>479</a>
+<a name='L480'></a><a href='#L480'>480</a>
+<a name='L481'></a><a href='#L481'>481</a>
+<a name='L482'></a><a href='#L482'>482</a>
+<a name='L483'></a><a href='#L483'>483</a>
+<a name='L484'></a><a href='#L484'>484</a>
+<a name='L485'></a><a href='#L485'>485</a>
+<a name='L486'></a><a href='#L486'>486</a>
+<a name='L487'></a><a href='#L487'>487</a>
+<a name='L488'></a><a href='#L488'>488</a>
+<a name='L489'></a><a href='#L489'>489</a>
+<a name='L490'></a><a href='#L490'>490</a>
+<a name='L491'></a><a href='#L491'>491</a>
+<a name='L492'></a><a href='#L492'>492</a>
+<a name='L493'></a><a href='#L493'>493</a>
+<a name='L494'></a><a href='#L494'>494</a>
+<a name='L495'></a><a href='#L495'>495</a>
+<a name='L496'></a><a href='#L496'>496</a>
+<a name='L497'></a><a href='#L497'>497</a>
+<a name='L498'></a><a href='#L498'>498</a>
+<a name='L499'></a><a href='#L499'>499</a>
+<a name='L500'></a><a href='#L500'>500</a>
+<a name='L501'></a><a href='#L501'>501</a>
+<a name='L502'></a><a href='#L502'>502</a>
+<a name='L503'></a><a href='#L503'>503</a>
+<a name='L504'></a><a href='#L504'>504</a>
+<a name='L505'></a><a href='#L505'>505</a>
+<a name='L506'></a><a href='#L506'>506</a>
+<a name='L507'></a><a href='#L507'>507</a>
+<a name='L508'></a><a href='#L508'>508</a>
+<a name='L509'></a><a href='#L509'>509</a>
+<a name='L510'></a><a href='#L510'>510</a>
+<a name='L511'></a><a href='#L511'>511</a>
+<a name='L512'></a><a href='#L512'>512</a>
+<a name='L513'></a><a href='#L513'>513</a>
+<a name='L514'></a><a href='#L514'>514</a>
+<a name='L515'></a><a href='#L515'>515</a>
+<a name='L516'></a><a href='#L516'>516</a>
+<a name='L517'></a><a href='#L517'>517</a>
+<a name='L518'></a><a href='#L518'>518</a>
+<a name='L519'></a><a href='#L519'>519</a>
+<a name='L520'></a><a href='#L520'>520</a>
+<a name='L521'></a><a href='#L521'>521</a>
+<a name='L522'></a><a href='#L522'>522</a>
+<a name='L523'></a><a href='#L523'>523</a>
+<a name='L524'></a><a href='#L524'>524</a>
+<a name='L525'></a><a href='#L525'>525</a>
+<a name='L526'></a><a href='#L526'>526</a>
+<a name='L527'></a><a href='#L527'>527</a>
+<a name='L528'></a><a href='#L528'>528</a>
+<a name='L529'></a><a href='#L529'>529</a>
+<a name='L530'></a><a href='#L530'>530</a>
+<a name='L531'></a><a href='#L531'>531</a>
+<a name='L532'></a><a href='#L532'>532</a>
+<a name='L533'></a><a href='#L533'>533</a>
+<a name='L534'></a><a href='#L534'>534</a>
+<a name='L535'></a><a href='#L535'>535</a>
+<a name='L536'></a><a href='#L536'>536</a>
+<a name='L537'></a><a href='#L537'>537</a>
+<a name='L538'></a><a href='#L538'>538</a>
+<a name='L539'></a><a href='#L539'>539</a>
+<a name='L540'></a><a href='#L540'>540</a>
+<a name='L541'></a><a href='#L541'>541</a>
+<a name='L542'></a><a href='#L542'>542</a>
+<a name='L543'></a><a href='#L543'>543</a>
+<a name='L544'></a><a href='#L544'>544</a>
+<a name='L545'></a><a href='#L545'>545</a>
+<a name='L546'></a><a href='#L546'>546</a>
+<a name='L547'></a><a href='#L547'>547</a>
+<a name='L548'></a><a href='#L548'>548</a>
+<a name='L549'></a><a href='#L549'>549</a>
+<a name='L550'></a><a href='#L550'>550</a>
+<a name='L551'></a><a href='#L551'>551</a>
+<a name='L552'></a><a href='#L552'>552</a>
+<a name='L553'></a><a href='#L553'>553</a>
+<a name='L554'></a><a href='#L554'>554</a>
+<a name='L555'></a><a href='#L555'>555</a>
+<a name='L556'></a><a href='#L556'>556</a>
+<a name='L557'></a><a href='#L557'>557</a>
+<a name='L558'></a><a href='#L558'>558</a>
+<a name='L559'></a><a href='#L559'>559</a>
+<a name='L560'></a><a href='#L560'>560</a>
+<a name='L561'></a><a href='#L561'>561</a>
+<a name='L562'></a><a href='#L562'>562</a>
+<a name='L563'></a><a href='#L563'>563</a>
+<a name='L564'></a><a href='#L564'>564</a>
+<a name='L565'></a><a href='#L565'>565</a>
+<a name='L566'></a><a href='#L566'>566</a>
+<a name='L567'></a><a href='#L567'>567</a>
+<a name='L568'></a><a href='#L568'>568</a>
+<a name='L569'></a><a href='#L569'>569</a>
+<a name='L570'></a><a href='#L570'>570</a>
+<a name='L571'></a><a href='#L571'>571</a>
+<a name='L572'></a><a href='#L572'>572</a>
+<a name='L573'></a><a href='#L573'>573</a>
+<a name='L574'></a><a href='#L574'>574</a>
+<a name='L575'></a><a href='#L575'>575</a>
+<a name='L576'></a><a href='#L576'>576</a>
+<a name='L577'></a><a href='#L577'>577</a>
+<a name='L578'></a><a href='#L578'>578</a>
+<a name='L579'></a><a href='#L579'>579</a>
+<a name='L580'></a><a href='#L580'>580</a>
+<a name='L581'></a><a href='#L581'>581</a>
+<a name='L582'></a><a href='#L582'>582</a>
+<a name='L583'></a><a href='#L583'>583</a>
+<a name='L584'></a><a href='#L584'>584</a>
+<a name='L585'></a><a href='#L585'>585</a>
+<a name='L586'></a><a href='#L586'>586</a>
+<a name='L587'></a><a href='#L587'>587</a>
+<a name='L588'></a><a href='#L588'>588</a>
+<a name='L589'></a><a href='#L589'>589</a>
+<a name='L590'></a><a href='#L590'>590</a>
+<a name='L591'></a><a href='#L591'>591</a>
+<a name='L592'></a><a href='#L592'>592</a>
+<a name='L593'></a><a href='#L593'>593</a>
+<a name='L594'></a><a href='#L594'>594</a>
+<a name='L595'></a><a href='#L595'>595</a>
+<a name='L596'></a><a href='#L596'>596</a>
+<a name='L597'></a><a href='#L597'>597</a>
+<a name='L598'></a><a href='#L598'>598</a>
+<a name='L599'></a><a href='#L599'>599</a>
+<a name='L600'></a><a href='#L600'>600</a>
+<a name='L601'></a><a href='#L601'>601</a>
+<a name='L602'></a><a href='#L602'>602</a>
+<a name='L603'></a><a href='#L603'>603</a>
+<a name='L604'></a><a href='#L604'>604</a>
+<a name='L605'></a><a href='#L605'>605</a>
+<a name='L606'></a><a href='#L606'>606</a>
+<a name='L607'></a><a href='#L607'>607</a>
+<a name='L608'></a><a href='#L608'>608</a>
+<a name='L609'></a><a href='#L609'>609</a>
+<a name='L610'></a><a href='#L610'>610</a>
+<a name='L611'></a><a href='#L611'>611</a>
+<a name='L612'></a><a href='#L612'>612</a>
+<a name='L613'></a><a href='#L613'>613</a>
+<a name='L614'></a><a href='#L614'>614</a>
+<a name='L615'></a><a href='#L615'>615</a>
+<a name='L616'></a><a href='#L616'>616</a>
+<a name='L617'></a><a href='#L617'>617</a>
+<a name='L618'></a><a href='#L618'>618</a>
+<a name='L619'></a><a href='#L619'>619</a>
+<a name='L620'></a><a href='#L620'>620</a>
+<a name='L621'></a><a href='#L621'>621</a>
+<a name='L622'></a><a href='#L622'>622</a>
+<a name='L623'></a><a href='#L623'>623</a>
+<a name='L624'></a><a href='#L624'>624</a>
+<a name='L625'></a><a href='#L625'>625</a>
+<a name='L626'></a><a href='#L626'>626</a>
+<a name='L627'></a><a href='#L627'>627</a>
+<a name='L628'></a><a href='#L628'>628</a>
+<a name='L629'></a><a href='#L629'>629</a>
+<a name='L630'></a><a href='#L630'>630</a>
+<a name='L631'></a><a href='#L631'>631</a>
+<a name='L632'></a><a href='#L632'>632</a>
+<a name='L633'></a><a href='#L633'>633</a>
+<a name='L634'></a><a href='#L634'>634</a>
+<a name='L635'></a><a href='#L635'>635</a>
+<a name='L636'></a><a href='#L636'>636</a>
+<a name='L637'></a><a href='#L637'>637</a>
+<a name='L638'></a><a href='#L638'>638</a>
+<a name='L639'></a><a href='#L639'>639</a>
+<a name='L640'></a><a href='#L640'>640</a>
+<a name='L641'></a><a href='#L641'>641</a>
+<a name='L642'></a><a href='#L642'>642</a>
+<a name='L643'></a><a href='#L643'>643</a>
+<a name='L644'></a><a href='#L644'>644</a>
+<a name='L645'></a><a href='#L645'>645</a>
+<a name='L646'></a><a href='#L646'>646</a>
+<a name='L647'></a><a href='#L647'>647</a>
+<a name='L648'></a><a href='#L648'>648</a>
+<a name='L649'></a><a href='#L649'>649</a>
+<a name='L650'></a><a href='#L650'>650</a>
+<a name='L651'></a><a href='#L651'>651</a>
+<a name='L652'></a><a href='#L652'>652</a>
+<a name='L653'></a><a href='#L653'>653</a>
+<a name='L654'></a><a href='#L654'>654</a>
+<a name='L655'></a><a href='#L655'>655</a>
+<a name='L656'></a><a href='#L656'>656</a>
+<a name='L657'></a><a href='#L657'>657</a>
+<a name='L658'></a><a href='#L658'>658</a>
+<a name='L659'></a><a href='#L659'>659</a>
+<a name='L660'></a><a href='#L660'>660</a>
+<a name='L661'></a><a href='#L661'>661</a>
+<a name='L662'></a><a href='#L662'>662</a>
+<a name='L663'></a><a href='#L663'>663</a>
+<a name='L664'></a><a href='#L664'>664</a>
+<a name='L665'></a><a href='#L665'>665</a>
+<a name='L666'></a><a href='#L666'>666</a>
+<a name='L667'></a><a href='#L667'>667</a>
+<a name='L668'></a><a href='#L668'>668</a>
+<a name='L669'></a><a href='#L669'>669</a>
+<a name='L670'></a><a href='#L670'>670</a>
+<a name='L671'></a><a href='#L671'>671</a>
+<a name='L672'></a><a href='#L672'>672</a>
+<a name='L673'></a><a href='#L673'>673</a>
+<a name='L674'></a><a href='#L674'>674</a>
+<a name='L675'></a><a href='#L675'>675</a>
+<a name='L676'></a><a href='#L676'>676</a>
+<a name='L677'></a><a href='#L677'>677</a>
+<a name='L678'></a><a href='#L678'>678</a>
+<a name='L679'></a><a href='#L679'>679</a>
+<a name='L680'></a><a href='#L680'>680</a>
+<a name='L681'></a><a href='#L681'>681</a>
+<a name='L682'></a><a href='#L682'>682</a>
+<a name='L683'></a><a href='#L683'>683</a>
+<a name='L684'></a><a href='#L684'>684</a>
+<a name='L685'></a><a href='#L685'>685</a>
+<a name='L686'></a><a href='#L686'>686</a>
+<a name='L687'></a><a href='#L687'>687</a>
+<a name='L688'></a><a href='#L688'>688</a>
+<a name='L689'></a><a href='#L689'>689</a>
+<a name='L690'></a><a href='#L690'>690</a>
+<a name='L691'></a><a href='#L691'>691</a>
+<a name='L692'></a><a href='#L692'>692</a>
+<a name='L693'></a><a href='#L693'>693</a>
+<a name='L694'></a><a href='#L694'>694</a>
+<a name='L695'></a><a href='#L695'>695</a>
+<a name='L696'></a><a href='#L696'>696</a>
+<a name='L697'></a><a href='#L697'>697</a>
+<a name='L698'></a><a href='#L698'>698</a>
+<a name='L699'></a><a href='#L699'>699</a>
+<a name='L700'></a><a href='#L700'>700</a>
+<a name='L701'></a><a href='#L701'>701</a>
+<a name='L702'></a><a href='#L702'>702</a>
+<a name='L703'></a><a href='#L703'>703</a>
+<a name='L704'></a><a href='#L704'>704</a>
+<a name='L705'></a><a href='#L705'>705</a>
+<a name='L706'></a><a href='#L706'>706</a>
+<a name='L707'></a><a href='#L707'>707</a>
+<a name='L708'></a><a href='#L708'>708</a>
+<a name='L709'></a><a href='#L709'>709</a>
+<a name='L710'></a><a href='#L710'>710</a>
+<a name='L711'></a><a href='#L711'>711</a>
+<a name='L712'></a><a href='#L712'>712</a>
+<a name='L713'></a><a href='#L713'>713</a>
+<a name='L714'></a><a href='#L714'>714</a>
+<a name='L715'></a><a href='#L715'>715</a>
+<a name='L716'></a><a href='#L716'>716</a>
+<a name='L717'></a><a href='#L717'>717</a>
+<a name='L718'></a><a href='#L718'>718</a>
+<a name='L719'></a><a href='#L719'>719</a>
+<a name='L720'></a><a href='#L720'>720</a>
+<a name='L721'></a><a href='#L721'>721</a>
+<a name='L722'></a><a href='#L722'>722</a>
+<a name='L723'></a><a href='#L723'>723</a>
+<a name='L724'></a><a href='#L724'>724</a>
+<a name='L725'></a><a href='#L725'>725</a>
+<a name='L726'></a><a href='#L726'>726</a>
+<a name='L727'></a><a href='#L727'>727</a>
+<a name='L728'></a><a href='#L728'>728</a>
+<a name='L729'></a><a href='#L729'>729</a>
+<a name='L730'></a><a href='#L730'>730</a>
+<a name='L731'></a><a href='#L731'>731</a>
+<a name='L732'></a><a href='#L732'>732</a>
+<a name='L733'></a><a href='#L733'>733</a>
+<a name='L734'></a><a href='#L734'>734</a>
+<a name='L735'></a><a href='#L735'>735</a>
+<a name='L736'></a><a href='#L736'>736</a>
+<a name='L737'></a><a href='#L737'>737</a>
+<a name='L738'></a><a href='#L738'>738</a>
+<a name='L739'></a><a href='#L739'>739</a>
+<a name='L740'></a><a href='#L740'>740</a>
+<a name='L741'></a><a href='#L741'>741</a>
+<a name='L742'></a><a href='#L742'>742</a>
+<a name='L743'></a><a href='#L743'>743</a>
+<a name='L744'></a><a href='#L744'>744</a>
+<a name='L745'></a><a href='#L745'>745</a>
+<a name='L746'></a><a href='#L746'>746</a>
+<a name='L747'></a><a href='#L747'>747</a>
+<a name='L748'></a><a href='#L748'>748</a>
+<a name='L749'></a><a href='#L749'>749</a>
+<a name='L750'></a><a href='#L750'>750</a>
+<a name='L751'></a><a href='#L751'>751</a>
+<a name='L752'></a><a href='#L752'>752</a>
+<a name='L753'></a><a href='#L753'>753</a>
+<a name='L754'></a><a href='#L754'>754</a>
+<a name='L755'></a><a href='#L755'>755</a>
+<a name='L756'></a><a href='#L756'>756</a>
+<a name='L757'></a><a href='#L757'>757</a>
+<a name='L758'></a><a href='#L758'>758</a>
+<a name='L759'></a><a href='#L759'>759</a>
+<a name='L760'></a><a href='#L760'>760</a>
+<a name='L761'></a><a href='#L761'>761</a>
+<a name='L762'></a><a href='#L762'>762</a>
+<a name='L763'></a><a href='#L763'>763</a>
+<a name='L764'></a><a href='#L764'>764</a>
+<a name='L765'></a><a href='#L765'>765</a>
+<a name='L766'></a><a href='#L766'>766</a>
+<a name='L767'></a><a href='#L767'>767</a>
+<a name='L768'></a><a href='#L768'>768</a>
+<a name='L769'></a><a href='#L769'>769</a>
+<a name='L770'></a><a href='#L770'>770</a>
+<a name='L771'></a><a href='#L771'>771</a>
+<a name='L772'></a><a href='#L772'>772</a>
+<a name='L773'></a><a href='#L773'>773</a>
+<a name='L774'></a><a href='#L774'>774</a>
+<a name='L775'></a><a href='#L775'>775</a>
+<a name='L776'></a><a href='#L776'>776</a>
+<a name='L777'></a><a href='#L777'>777</a>
+<a name='L778'></a><a href='#L778'>778</a>
+<a name='L779'></a><a href='#L779'>779</a>
+<a name='L780'></a><a href='#L780'>780</a>
+<a name='L781'></a><a href='#L781'>781</a>
+<a name='L782'></a><a href='#L782'>782</a>
+<a name='L783'></a><a href='#L783'>783</a>
+<a name='L784'></a><a href='#L784'>784</a>
+<a name='L785'></a><a href='#L785'>785</a>
+<a name='L786'></a><a href='#L786'>786</a>
+<a name='L787'></a><a href='#L787'>787</a>
+<a name='L788'></a><a href='#L788'>788</a>
+<a name='L789'></a><a href='#L789'>789</a>
+<a name='L790'></a><a href='#L790'>790</a>
+<a name='L791'></a><a href='#L791'>791</a>
+<a name='L792'></a><a href='#L792'>792</a>
+<a name='L793'></a><a href='#L793'>793</a>
+<a name='L794'></a><a href='#L794'>794</a>
+<a name='L795'></a><a href='#L795'>795</a>
+<a name='L796'></a><a href='#L796'>796</a>
+<a name='L797'></a><a href='#L797'>797</a>
+<a name='L798'></a><a href='#L798'>798</a>
+<a name='L799'></a><a href='#L799'>799</a>
+<a name='L800'></a><a href='#L800'>800</a>
+<a name='L801'></a><a href='#L801'>801</a>
+<a name='L802'></a><a href='#L802'>802</a>
+<a name='L803'></a><a href='#L803'>803</a>
+<a name='L804'></a><a href='#L804'>804</a>
+<a name='L805'></a><a href='#L805'>805</a>
+<a name='L806'></a><a href='#L806'>806</a>
+<a name='L807'></a><a href='#L807'>807</a>
+<a name='L808'></a><a href='#L808'>808</a>
+<a name='L809'></a><a href='#L809'>809</a>
+<a name='L810'></a><a href='#L810'>810</a>
+<a name='L811'></a><a href='#L811'>811</a>
+<a name='L812'></a><a href='#L812'>812</a>
+<a name='L813'></a><a href='#L813'>813</a>
+<a name='L814'></a><a href='#L814'>814</a>
+<a name='L815'></a><a href='#L815'>815</a>
+<a name='L816'></a><a href='#L816'>816</a>
+<a name='L817'></a><a href='#L817'>817</a>
+<a name='L818'></a><a href='#L818'>818</a>
+<a name='L819'></a><a href='#L819'>819</a>
+<a name='L820'></a><a href='#L820'>820</a>
+<a name='L821'></a><a href='#L821'>821</a>
+<a name='L822'></a><a href='#L822'>822</a>
+<a name='L823'></a><a href='#L823'>823</a>
+<a name='L824'></a><a href='#L824'>824</a>
+<a name='L825'></a><a href='#L825'>825</a>
+<a name='L826'></a><a href='#L826'>826</a>
+<a name='L827'></a><a href='#L827'>827</a>
+<a name='L828'></a><a href='#L828'>828</a>
+<a name='L829'></a><a href='#L829'>829</a>
+<a name='L830'></a><a href='#L830'>830</a>
+<a name='L831'></a><a href='#L831'>831</a>
+<a name='L832'></a><a href='#L832'>832</a>
+<a name='L833'></a><a href='#L833'>833</a>
+<a name='L834'></a><a href='#L834'>834</a>
+<a name='L835'></a><a href='#L835'>835</a>
+<a name='L836'></a><a href='#L836'>836</a>
+<a name='L837'></a><a href='#L837'>837</a>
+<a name='L838'></a><a href='#L838'>838</a>
+<a name='L839'></a><a href='#L839'>839</a>
+<a name='L840'></a><a href='#L840'>840</a>
+<a name='L841'></a><a href='#L841'>841</a>
+<a name='L842'></a><a href='#L842'>842</a>
+<a name='L843'></a><a href='#L843'>843</a>
+<a name='L844'></a><a href='#L844'>844</a>
+<a name='L845'></a><a href='#L845'>845</a>
+<a name='L846'></a><a href='#L846'>846</a>
+<a name='L847'></a><a href='#L847'>847</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">// HOW-Axis Competency Framework - IDE (Complete Data)
+// 6 Competency Categories × 4 Levels = 24 Total Competencies
+&nbsp;
+export const competencies = {
+  A: [
+    {
+      id: 'result_driven_a',
+      category: 'Dedicated',
+      subcategory: 'Result driven',
+      title: {
+        en: 'Acts and focuses on achieving the agreed results within the set timeframe.',
+        nl: 'Handelt en focust op het behalen van de afgesproken resultaten binnen de gestelde tijdslijnen.',
+        es: 'Actúa y se enfoca en lograr los resultados acordados dentro del plazo establecido.'
+      },
+      indicators: {
+        en: [
+          'Holds on to and achieves the planned result.',
+          'Actively confirms agreements after a meeting.',
+          'Is able to show the results of his/her actions at any given time.',
+          'Offers regular updates on what results have been achieved.',
+          'Asks for the expected objectives and results.'
+        ],
+        nl: [
+          'Houdt vast aan en behaalt het geplande resultaat.',
+          'Bevestigt actief afspraken na een vergadering.',
+          'Kan op elk moment de resultaten van zijn/haar acties tonen.',
+          'Biedt regelmatig updates over welke resultaten zijn behaald.',
+          'Vraagt naar de verwachte doelstellingen en resultaten.'
+        ],
+        es: [
+          'Mantiene y logra el resultado planificado.',
+          'Confirma activamente los acuerdos después de una reunión.',
+          'Es capaz de mostrar los resultados de sus acciones en cualquier momento.',
+          'Ofrece actualizaciones regulares sobre qué resultados se han logrado.',
+          'Pregunta por los objetivos y resultados esperados.'
+        ]
+      }
+    },
+    {
+      id: 'committed_a',
+      category: 'Dedicated',
+      subcategory: 'Committed',
+      title: {
+        en: 'Knows the framework of goals, priorities and the culture of the organization and accepts them. Commitment means "keeping your word".',
+        nl: 'Kent het kader van doelen, prioriteiten en de cultuur van de organisatie en accepteert deze. Commitment betekent "je woord houden".',
+        es: 'Conoce el marco de objetivos, prioridades y la cultura de la organización y los acepta. El compromiso significa "cumplir tu palabra".'
+      },
+      indicators: {
+        en: [
+          'Keeps him or her self informed on the policies that have been set by the management.',
+          'In case of doubt, he/she checks with others if the chosen approach is in line with the objectives and priorities of the Business unit and/or team.',
+          'Takes actions to realize things timely while involving the right support.',
+          'Uses the organization resources in a responsible manner.',
+          'In terms of behaviour adapts to the expectations of the Business unit / team.',
+          'Speaks in positive and professional terms about the Business unit / team.'
+        ],
+        nl: [
+          'Houdt zich op de hoogte van het beleid dat door het management is vastgesteld.',
+          'Controleert bij twijfel met anderen of de gekozen aanpak in lijn is met de doelstellingen en prioriteiten van de Business unit en/of team.',
+          'Neemt acties om dingen tijdig te realiseren met betrokkenheid van de juiste ondersteuning.',
+          'Gebruikt de organisatiemiddelen op verantwoorde wijze.',
+          'Past gedrag aan aan de verwachtingen van de Business unit / team.',
+          'Spreekt in positieve en professionele termen over de Business unit / team.'
+        ],
+        es: [
+          'Se mantiene informado sobre las políticas establecidas por la dirección.',
+          'En caso de duda, verifica con otros si el enfoque elegido está en línea con los objetivos y prioridades de la unidad de negocio y/o equipo.',
+          'Toma acciones para realizar las cosas a tiempo involucrando el apoyo adecuado.',
+          'Utiliza los recursos de la organización de manera responsable.',
+          'En términos de comportamiento, se adapta a las expectativas de la unidad de negocio / equipo.',
+          'Habla en términos positivos y profesionales sobre la unidad de negocio / equipo.'
+        ]
+      }
+    },
+    {
+      id: 'entrepreneurial_a',
+      category: 'Entrepreneurial',
+      subcategory: 'Entrepreneurial',
+      title: {
+        en: 'Continuously sees opportunities to improve the company solutions and creates (customer) value. Shows the will to use the opportunities.',
+        nl: 'Ziet voortdurend kansen om de bedrijfsoplossingen te verbeteren en creëert (klant)waarde. Toont de wil om de kansen te benutten.',
+        es: 'Ve continuamente oportunidades para mejorar las soluciones de la empresa y crea valor (para el cliente). Muestra la voluntad de aprovechar las oportunidades.'
+      },
+      indicators: {
+        en: [
+          'Contributes to the clear specification of the known and perhaps unknown expectations and basic needs of the customer.',
+          'Is able to oversee the context of a question and offers additional information on top of the original requested solution.',
+          'Points out the opportunities in the profession and the market instead of the risks.',
+          'Sets ambitious goals to contribute to value creation for the organization.',
+          'Takes actions when opportunities arise or to eliminate failures.',
+          'Spots opportunities and threats and follows up on them.'
+        ],
+        nl: [
+          'Draagt bij aan de duidelijke specificatie van de bekende en mogelijk onbekende verwachtingen en basisbehoeften van de klant.',
+          'Is in staat de context van een vraag te overzien en biedt aanvullende informatie bovenop de oorspronkelijk gevraagde oplossing.',
+          'Wijst op de kansen in het vakgebied en de markt in plaats van op de risico\'s.',
+          'Stelt ambitieuze doelen om bij te dragen aan waardecreatie voor de organisatie.',
+          'Neemt actie wanneer kansen zich voordoen of om fouten te elimineren.',
+          'Signaleert kansen en bedreigingen en volgt deze op.'
+        ],
+        es: [
+          'Contribuye a la especificación clara de las expectativas conocidas y quizás desconocidas y necesidades básicas del cliente.',
+          'Es capaz de supervisar el contexto de una pregunta y ofrece información adicional además de la solución solicitada originalmente.',
+          'Señala las oportunidades en la profesión y el mercado en lugar de los riesgos.',
+          'Establece objetivos ambiciosos para contribuir a la creación de valor para la organización.',
+          'Toma acciones cuando surgen oportunidades o para eliminar fallos.',
+          'Detecta oportunidades y amenazas y les da seguimiento.'
+        ]
+      }
+    },
+    {
+      id: 'ambition_a',
+      category: 'Entrepreneurial',
+      subcategory: 'Ambition',
+      title: {
+        en: 'Shows eagerness for taking up new responsibilities and seizes opportunities for development immediately.',
+        nl: 'Toont gretigheid voor het opnemen van nieuwe verantwoordelijkheden en grijpt onmiddellijk ontwikkelingskansen aan.',
+        es: 'Muestra entusiasmo por asumir nuevas responsabilidades y aprovecha inmediatamente las oportunidades de desarrollo.'
+      },
+      indicators: {
+        en: [
+          'Follows the organizational changes.',
+          'Shows the will to work more independently in the future.',
+          'Sets up a development plan and asks for development opportunities.',
+          'Reacts enthusiastically to more extensive or more difficult tasks / responsibilities.',
+          'Is continuously looking for opportunities to improve own expertise.'
+        ],
+        nl: [
+          'Volgt de organisatieveranderingen.',
+          'Toont de wil om in de toekomst meer zelfstandig te werken.',
+          'Stelt een ontwikkelplan op en vraagt om ontwikkelingskansen.',
+          'Reageert enthousiast op uitgebreidere of moeilijkere taken / verantwoordelijkheden.',
+          'Is voortdurend op zoek naar mogelijkheden om eigen expertise te verbeteren.'
+        ],
+        es: [
+          'Sigue los cambios organizacionales.',
+          'Muestra la voluntad de trabajar de manera más independiente en el futuro.',
+          'Elabora un plan de desarrollo y solicita oportunidades de desarrollo.',
+          'Reacciona con entusiasmo ante tareas / responsabilidades más extensas o difíciles.',
+          'Busca continuamente oportunidades para mejorar su propia experiencia.'
+        ]
+      }
+    },
+    {
+      id: 'market_oriented_a',
+      category: 'Innovative',
+      subcategory: 'Market oriented',
+      title: {
+        en: 'Follows the development of the market, field of expertise and technology.',
+        nl: 'Volgt de ontwikkeling van de markt, vakgebied en technologie.',
+        es: 'Sigue el desarrollo del mercado, campo de especialización y tecnología.'
+      },
+      indicators: {
+        en: [
+          'Actively obtains information and knowledge about relevant market and technological trends.',
+          'Shows to be a field expert.',
+          'Is aware of the capabilities of the competition in the same market or field of expertise.',
+          'Contributing to content of internal and external meetings for the business unit as well as organization.',
+          'Makes sure he/she is informed on developments within the field of expertise by networking with colleagues in the field and develops own view.'
+        ],
+        nl: [
+          'Verkrijgt actief informatie en kennis over relevante markt- en technologische trends.',
+          'Toont zich als vakexpert.',
+          'Is zich bewust van de capaciteiten van de concurrentie in dezelfde markt of vakgebied.',
+          'Draagt bij aan de inhoud van interne en externe bijeenkomsten voor zowel de business unit als de organisatie.',
+          'Zorgt ervoor dat hij/zij op de hoogte is van ontwikkelingen binnen het vakgebied door te netwerken met collega\'s in het veld en ontwikkelt eigen visie.'
+        ],
+        es: [
+          'Obtiene activamente información y conocimiento sobre tendencias relevantes del mercado y tecnológicas.',
+          'Demuestra ser un experto en el campo.',
+          'Es consciente de las capacidades de la competencia en el mismo mercado o campo de especialización.',
+          'Contribuye al contenido de reuniones internas y externas para la unidad de negocio así como para la organización.',
+          'Se asegura de estar informado sobre desarrollos dentro del campo de especialización conectando con colegas en el campo y desarrolla su propia visión.'
+        ]
+      }
+    },
+    {
+      id: 'customer_focused_a',
+      category: 'Innovative',
+      subcategory: 'Customer focused',
+      title: {
+        en: 'Knows the customer\'s request and responds with a proposal that is appropriate for the customer.',
+        nl: 'Kent het verzoek van de klant en reageert met een voorstel dat passend is voor de klant.',
+        es: 'Conoce la solicitud del cliente y responde con una propuesta adecuada para el cliente.'
+      },
+      indicators: {
+        en: [
+          'Asks direct questions to map the customer\'s spoken and unspoken wishes and needs in order to exceed expectations.',
+          'Asks for help in time to prevent an undesired result.',
+          'Turns a question into appropriate, specific and innovative solutions.',
+          'Checks the level of feasibility of agreements.',
+          'Reacts quickly and adequately to questions and complaints of customers.',
+          'Is always aware of the effect of his/her actions on customer satisfaction.'
+        ],
+        nl: [
+          'Stelt directe vragen om de uitgesproken en onuitgesproken wensen en behoeften van de klant in kaart te brengen om verwachtingen te overtreffen.',
+          'Vraagt tijdig om hulp om een ongewenst resultaat te voorkomen.',
+          'Zet een vraag om in passende, specifieke en innovatieve oplossingen.',
+          'Controleert het niveau van haalbaarheid van afspraken.',
+          'Reageert snel en adequaat op vragen en klachten van klanten.',
+          'Is zich altijd bewust van het effect van zijn/haar acties op klanttevredenheid.'
+        ],
+        es: [
+          'Hace preguntas directas para mapear los deseos y necesidades expresados y no expresados del cliente para superar las expectativas.',
+          'Pide ayuda a tiempo para prevenir un resultado no deseado.',
+          'Convierte una pregunta en soluciones apropiadas, específicas e innovadoras.',
+          'Verifica el nivel de viabilidad de los acuerdos.',
+          'Reacciona rápida y adecuadamente a preguntas y quejas de clientes.',
+          'Siempre es consciente del efecto de sus acciones en la satisfacción del cliente.'
+        ]
+      }
+    }
+  ],
+  B: [
+    {
+      id: 'result_driven_b',
+      category: 'Dedicated',
+      subcategory: 'Result driven',
+      title: {
+        en: 'Sets ambitious goals independently in a proactive manner and meets them.',
+        nl: 'Stelt zelfstandig ambitieuze doelen op een proactieve manier en behaalt deze.',
+        es: 'Establece objetivos ambiciosos de manera independiente y proactiva y los cumple.'
+      },
+      indicators: {
+        en: [
+          'Sets ambitious objectives.',
+          'Achieves the result better and faster than expected.',
+          'Meets objectives.',
+          'Intervenes when the results are not achieved as expected.',
+          'Makes proposals for methods that are more efficient or effective.'
+        ],
+        nl: [
+          'Stelt ambitieuze doelstellingen.',
+          'Behaalt het resultaat beter en sneller dan verwacht.',
+          'Behaalt doelstellingen.',
+          'Grijpt in wanneer de resultaten niet zoals verwacht worden behaald.',
+          'Doet voorstellen voor methoden die efficiënter of effectiever zijn.'
+        ],
+        es: [
+          'Establece objetivos ambiciosos.',
+          'Logra el resultado mejor y más rápido de lo esperado.',
+          'Cumple los objetivos.',
+          'Interviene cuando los resultados no se logran como se esperaba.',
+          'Hace propuestas para métodos que son más eficientes o efectivos.'
+        ]
+      }
+    },
+    {
+      id: 'committed_b',
+      category: 'Dedicated',
+      subcategory: 'Committed',
+      title: {
+        en: 'Aligns his/her own behavior with the objectives, priorities and culture of the organization. Commitment meaning "what you say is what you do".',
+        nl: 'Stemt zijn/haar eigen gedrag af op de doelstellingen, prioriteiten en cultuur van de organisatie. Commitment betekent "wat je zegt is wat je doet".',
+        es: 'Alinea su propio comportamiento con los objetivos, prioridades y cultura de la organización. El compromiso significa "lo que dices es lo que haces".'
+      },
+      indicators: {
+        en: [
+          'Is aware of the business plan and priorities.',
+          'Is open to implementing chosen policies even if they do not correspond with the own interests or ideas.',
+          'Is aware of the relationship between own activities and the objectives as stated in the business plan.',
+          'Acts in accordance with the norms and values as they are experienced within the organizational unit.',
+          'Speaks about the organization in positive and professional terms.'
+        ],
+        nl: [
+          'Is zich bewust van het bedrijfsplan en prioriteiten.',
+          'Staat open voor het implementeren van gekozen beleid, zelfs als deze niet overeenkomen met eigen belangen of ideeën.',
+          'Is zich bewust van de relatie tussen eigen activiteiten en de doelstellingen zoals vermeld in het bedrijfsplan.',
+          'Handelt in overeenstemming met de normen en waarden zoals deze binnen de organisatie-eenheid worden ervaren.',
+          'Spreekt in positieve en professionele termen over de organisatie.'
+        ],
+        es: [
+          'Es consciente del plan de negocio y las prioridades.',
+          'Está abierto a implementar políticas elegidas incluso si no corresponden con los propios intereses o ideas.',
+          'Es consciente de la relación entre las propias actividades y los objetivos establecidos en el plan de negocio.',
+          'Actúa de acuerdo con las normas y valores tal como se experimentan dentro de la unidad organizacional.',
+          'Habla sobre la organización en términos positivos y profesionales.'
+        ]
+      }
+    },
+    {
+      id: 'entrepreneurial_b',
+      category: 'Entrepreneurial',
+      subcategory: 'Entrepreneurial',
+      title: {
+        en: 'Takes independent actions to use all the possibilities of business solutions and increases the added value.',
+        nl: 'Neemt zelfstandig actie om alle mogelijkheden van bedrijfsoplossingen te benutten en verhoogt de toegevoegde waarde.',
+        es: 'Toma acciones independientes para usar todas las posibilidades de soluciones empresariales y aumenta el valor agregado.'
+      },
+      indicators: {
+        en: [
+          'During the contacts with customers he/she aims at closing a concrete agreement that holds out prospects for relevant follow-up activities.',
+          'Sees and takes advantage of opportunities that arise.',
+          'Does proposals for actions that have added value for the market or the organizational unit.',
+          'Is aware of developments in the market that are important for their own field. Takes the initiative to convert the possibilities that this offers into added value for the organization or customer.',
+          'Is consciously engaged in increasing and optimizing own added value.'
+        ],
+        nl: [
+          'Streeft tijdens contacten met klanten naar het sluiten van een concreet akkoord dat perspectieven biedt voor relevante vervolgactiviteiten.',
+          'Ziet en benut kansen die zich voordoen.',
+          'Doet voorstellen voor acties die toegevoegde waarde hebben voor de markt of de organisatie-eenheid.',
+          'Is zich bewust van ontwikkelingen in de markt die belangrijk zijn voor het eigen vakgebied. Neemt het initiatief om de mogelijkheden die dit biedt om te zetten in toegevoegde waarde voor de organisatie of klant.',
+          'Is bewust bezig met het verhogen en optimaliseren van eigen toegevoegde waarde.'
+        ],
+        es: [
+          'Durante los contactos con clientes, tiene como objetivo cerrar un acuerdo concreto que ofrezca perspectivas para actividades de seguimiento relevantes.',
+          'Ve y aprovecha las oportunidades que surgen.',
+          'Hace propuestas de acciones que tienen valor agregado para el mercado o la unidad organizacional.',
+          'Es consciente de los desarrollos en el mercado que son importantes para su propio campo. Toma la iniciativa de convertir las posibilidades que esto ofrece en valor agregado para la organización o el cliente.',
+          'Está conscientemente comprometido en aumentar y optimizar su propio valor agregado.'
+        ]
+      }
+    },
+    {
+      id: 'ambition_b',
+      category: 'Entrepreneurial',
+      subcategory: 'Ambition',
+      title: {
+        en: 'Actively searches for new responsibilities and development possibilities, makes extra contributions to activities that are especially important for the organization.',
+        nl: 'Zoekt actief naar nieuwe verantwoordelijkheden en ontwikkelingsmogelijkheden, levert extra bijdragen aan activiteiten die bijzonder belangrijk zijn voor de organisatie.',
+        es: 'Busca activamente nuevas responsabilidades y posibilidades de desarrollo, hace contribuciones adicionales a actividades que son especialmente importantes para la organización.'
+      },
+      indicators: {
+        en: [
+          'Is aware of their own qualities and uses them.',
+          'Initiates search for development opportunities.',
+          'Attends specific trainings or searches for learning experiences so he/she can increase his/her expertise.',
+          'Asks for new challenges and responsibilities.',
+          'Seizes opportunities and initiates activities that are especially important for the organization and his/her own development.',
+          'Knows how to profile own added value in and outside the organization.'
+        ],
+        nl: [
+          'Is zich bewust van eigen kwaliteiten en gebruikt deze.',
+          'Initieert zoektocht naar ontwikkelingskansen.',
+          'Volgt specifieke trainingen of zoekt leerervaringen om zijn/haar expertise te vergroten.',
+          'Vraagt om nieuwe uitdagingen en verantwoordelijkheden.',
+          'Grijpt kansen aan en initieert activiteiten die vooral belangrijk zijn voor de organisatie en zijn/haar eigen ontwikkeling.',
+          'Weet eigen toegevoegde waarde binnen en buiten de organisatie te profileren.'
+        ],
+        es: [
+          'Es consciente de sus propias cualidades y las utiliza.',
+          'Inicia la búsqueda de oportunidades de desarrollo.',
+          'Asiste a capacitaciones específicas o busca experiencias de aprendizaje para aumentar su experiencia.',
+          'Solicita nuevos desafíos y responsabilidades.',
+          'Aprovecha oportunidades e inicia actividades que son especialmente importantes para la organización y su propio desarrollo.',
+          'Sabe cómo perfilar su propio valor agregado dentro y fuera de la organización.'
+        ]
+      }
+    },
+    {
+      id: 'market_oriented_b',
+      category: 'Innovative',
+      subcategory: 'Market oriented',
+      title: {
+        en: 'Uses his/her knowledge of the market and technology developments proactively and shares this knowledge with employees, colleagues and customers.',
+        nl: 'Gebruikt zijn/haar kennis van de markt en technologische ontwikkelingen proactief en deelt deze kennis met medewerkers, collega\'s en klanten.',
+        es: 'Utiliza su conocimiento del mercado y desarrollos tecnológicos de manera proactiva y comparte este conocimiento con empleados, colegas y clientes.'
+      },
+      indicators: {
+        en: [
+          'Observes and processes current market and technology developments into specific proposals and business solutions.',
+          'Uses his/her knowledge of trends and developments in his/her field of expertise in the own work situation.',
+          'Participates in knowledge networking.',
+          'Shares the knowledge he/she had on relevant developments and has a view on innovations.',
+          'Points out new relevant developments in the market or field of expertise to others in the immediate working environment.'
+        ],
+        nl: [
+          'Observeert en verwerkt actuele markt- en technologieontwikkelingen in specifieke voorstellen en bedrijfsoplossingen.',
+          'Gebruikt zijn/haar kennis van trends en ontwikkelingen in zijn/haar vakgebied in de eigen werksituatie.',
+          'Neemt deel aan kennisnetwerken.',
+          'Deelt de kennis die hij/zij heeft over relevante ontwikkelingen en heeft een visie op innovaties.',
+          'Wijst anderen in de directe werkomgeving op nieuwe relevante ontwikkelingen in de markt of vakgebied.'
+        ],
+        es: [
+          'Observa y procesa los desarrollos actuales del mercado y la tecnología en propuestas específicas y soluciones empresariales.',
+          'Utiliza su conocimiento de tendencias y desarrollos en su campo de especialización en su propia situación laboral.',
+          'Participa en redes de conocimiento.',
+          'Comparte el conocimiento que tiene sobre desarrollos relevantes y tiene una visión sobre innovaciones.',
+          'Señala nuevos desarrollos relevantes en el mercado o campo de especialización a otros en el entorno de trabajo inmediato.'
+        ]
+      }
+    },
+    {
+      id: 'customer_focused_b',
+      category: 'Innovative',
+      subcategory: 'Customer focused',
+      title: {
+        en: 'Thinks proactively together with the customer and comes up with appropriate proposals on his/her own initiative.',
+        nl: 'Denkt proactief mee met de klant en komt op eigen initiatief met passende voorstellen.',
+        es: 'Piensa proactivamente junto con el cliente y presenta propuestas apropiadas por iniciativa propia.'
+      },
+      indicators: {
+        en: [
+          'Asks questions on both short and long term customer needs in order to exceed expectations.',
+          'Investigates the objectives and possibilities of the customer, to subsequently come to specific and innovative proposals.',
+          'Brings the customer\'s injudicious decisions up for discussion and suggesting alternative possibility and improvement to address the customer needs in a better manner.',
+          'Indicates clearly what the customer can expect from the individual, the team, the business unit or the organization.',
+          'Is always aiming for improvement of customer care. During as well as after finishing an assignment.'
+        ],
+        nl: [
+          'Stelt vragen over zowel kortetermijn als langetermijn klantbehoeften om verwachtingen te overtreffen.',
+          'Onderzoekt de doelstellingen en mogelijkheden van de klant, om vervolgens tot specifieke en innovatieve voorstellen te komen.',
+          'Bespreekt onverstandige beslissingen van de klant en stelt alternatieve mogelijkheden en verbeteringen voor om de klantbehoeften beter te adresseren.',
+          'Geeft duidelijk aan wat de klant kan verwachten van het individu, het team, de business unit of de organisatie.',
+          'Streeft altijd naar verbetering van klantenservice. Zowel tijdens als na het voltooien van een opdracht.'
+        ],
+        es: [
+          'Hace preguntas sobre las necesidades del cliente a corto y largo plazo para superar las expectativas.',
+          'Investiga los objetivos y posibilidades del cliente, para posteriormente llegar a propuestas específicas e innovadoras.',
+          'Pone en discusión las decisiones imprudentes del cliente y sugiere posibilidades alternativas y mejoras para abordar las necesidades del cliente de mejor manera.',
+          'Indica claramente lo que el cliente puede esperar del individuo, el equipo, la unidad de negocio o la organización.',
+          'Siempre busca mejorar la atención al cliente. Durante y después de terminar una asignación.'
+        ]
+      }
+    }
+  ],
+  C: [
+    {
+      id: 'result_driven_c',
+      category: 'Dedicated',
+      subcategory: 'Result driven',
+      title: {
+        en: 'Encourages others in the immediate working environment to set ambitious objectives and meet them, also by showing exemplary behavior.',
+        nl: 'Moedigt anderen in de directe werkomgeving aan om ambitieuze doelstellingen te stellen en te behalen, ook door voorbeeldgedrag te tonen.',
+        es: 'Anima a otros en el entorno de trabajo inmediato a establecer objetivos ambiciosos y cumplirlos, también mostrando un comportamiento ejemplar.'
+      },
+      indicators: {
+        en: [
+          'Encourages employees/colleagues to set specific objectives and action plans.',
+          'Gives feedback on (not) achieving the desired result.',
+          'Sets measurable deadlines and standards for the results to be achieved for work they are (partially) responsible for.',
+          'Periodically evaluates the results of activities. Takes corrective action if the intended result is not likely to be achieved.',
+          'Takes actions to eliminate obstacles which have a negative effect on the results.'
+        ],
+        nl: [
+          'Moedigt medewerkers/collega\'s aan om specifieke doelstellingen en actieplannen op te stellen.',
+          'Geeft feedback over het (niet) behalen van het gewenste resultaat.',
+          'Stelt meetbare deadlines en standaarden voor de te behalen resultaten voor werk waarvoor zij (gedeeltelijk) verantwoordelijk zijn.',
+          'Evalueert periodiek de resultaten van activiteiten. Neemt corrigerende maatregelen als het beoogde resultaat waarschijnlijk niet wordt behaald.',
+          'Neemt actie om obstakels die een negatief effect hebben op de resultaten te elimineren.'
+        ],
+        es: [
+          'Anima a empleados/colegas a establecer objetivos específicos y planes de acción.',
+          'Da retroalimentación sobre (no) lograr el resultado deseado.',
+          'Establece plazos y estándares medibles para los resultados a alcanzar para el trabajo del que son (parcialmente) responsables.',
+          'Evalúa periódicamente los resultados de las actividades. Toma medidas correctivas si es probable que no se logre el resultado previsto.',
+          'Toma acciones para eliminar obstáculos que tienen un efecto negativo en los resultados.'
+        ]
+      }
+    },
+    {
+      id: 'committed_c',
+      category: 'Dedicated',
+      subcategory: 'Committed',
+      title: {
+        en: 'Encourages others in the immediate working environment to align own behavior with the objectives, priorities and culture of the organization and own Business Unit, showing exemplary behaviour.',
+        nl: 'Moedigt anderen in de directe werkomgeving aan om eigen gedrag af te stemmen op de doelstellingen, prioriteiten en cultuur van de organisatie en eigen Business Unit, door voorbeeldgedrag te tonen.',
+        es: 'Anima a otros en el entorno de trabajo inmediato a alinear su propio comportamiento con los objetivos, prioridades y cultura de la organización y su propia Unidad de Negocio, mostrando un comportamiento ejemplar.'
+      },
+      indicators: {
+        en: [
+          'Is involved in the development of policies and plans.',
+          'Monitors, within working environment, the alignment of activities to the objectives or priorities of the own Business Unit.',
+          'Monitors if the activities are in line with the goals and priorities of the Business Unit.',
+          'Is loyal to the management decisions in collaboration with others, even though they do not always match their own opinion.',
+          'Feels responsible at all times for achieving the goals and priorities and encourages others to do the same.',
+          'Creates constructive partnerships within or outside the organization in the interest of the organization or business unit objectives.'
+        ],
+        nl: [
+          'Is betrokken bij de ontwikkeling van beleid en plannen.',
+          'Bewaakt, binnen de werkomgeving, de afstemming van activiteiten op de doelstellingen of prioriteiten van de eigen Business Unit.',
+          'Bewaakt of de activiteiten in lijn zijn met de doelen en prioriteiten van de Business Unit.',
+          'Is loyaal aan managementbeslissingen in samenwerking met anderen, ook al komen deze niet altijd overeen met de eigen mening.',
+          'Voelt zich te allen tijde verantwoordelijk voor het behalen van de doelen en prioriteiten en moedigt anderen aan hetzelfde te doen.',
+          'Creëert constructieve partnerschappen binnen of buiten de organisatie in het belang van de organisatie of business unit doelstellingen.'
+        ],
+        es: [
+          'Está involucrado en el desarrollo de políticas y planes.',
+          'Monitorea, dentro del entorno de trabajo, la alineación de actividades con los objetivos o prioridades de su propia Unidad de Negocio.',
+          'Monitorea si las actividades están en línea con las metas y prioridades de la Unidad de Negocio.',
+          'Es leal a las decisiones de gestión en colaboración con otros, aunque no siempre coincidan con su propia opinión.',
+          'Se siente responsable en todo momento de lograr las metas y prioridades y anima a otros a hacer lo mismo.',
+          'Crea asociaciones constructivas dentro o fuera de la organización en interés de los objetivos de la organización o unidad de negocio.'
+        ]
+      }
+    },
+    {
+      id: 'entrepreneurial_c',
+      category: 'Entrepreneurial',
+      subcategory: 'Entrepreneurial',
+      title: {
+        en: 'Encourages others in the immediate working environment to make the most of the possibilities of selling business solutions. Shows exemplary behavior by translating opportunities into product proposals and business plans for the Business Unit.',
+        nl: 'Moedigt anderen in de directe werkomgeving aan om optimaal gebruik te maken van de mogelijkheden voor het verkopen van bedrijfsoplossingen. Toont voorbeeldgedrag door kansen te vertalen naar productvoorstellen en businessplannen voor de Business Unit.',
+        es: 'Anima a otros en el entorno de trabajo inmediato a aprovechar al máximo las posibilidades de vender soluciones empresariales. Muestra un comportamiento ejemplar traduciendo oportunidades en propuestas de productos y planes de negocio para la Unidad de Negocio.'
+      },
+      indicators: {
+        en: [
+          'Encourages others to take advantage of the opportunities that arise, outside the direct trigger by a (customer) conversation.',
+          'Shows appreciation for the colleagues who seize opportunities in the market or the field of expertise and takes (responsible) risks to achieve (financial) advantage.',
+          'Sees (sales) opportunities in the market and translates them into concrete (business) plans.',
+          'Does proposals (including financial substantiation) that meet the needs of the (potential) customers or developments in the market / field of expertise.',
+          'Is able to create rapid and adequate support for new products, services or markets, internally or externally.'
+        ],
+        nl: [
+          'Moedigt anderen aan om gebruik te maken van kansen die zich voordoen, buiten de directe aanleiding door een (klant)gesprek.',
+          'Toont waardering voor collega\'s die kansen in de markt of het vakgebied aangrijpen en (verantwoorde) risico\'s nemen om (financieel) voordeel te behalen.',
+          'Ziet (verkoop)kansen in de markt en vertaalt deze naar concrete (business)plannen.',
+          'Doet voorstellen (inclusief financiële onderbouwing) die voldoen aan de behoeften van de (potentiële) klanten of ontwikkelingen in de markt / vakgebied.',
+          'Is in staat om snel en adequaat draagvlak te creëren voor nieuwe producten, diensten of markten, intern of extern.'
+        ],
+        es: [
+          'Anima a otros a aprovechar las oportunidades que surgen, fuera del desencadenante directo de una conversación (con el cliente).',
+          'Muestra aprecio por los colegas que aprovechan oportunidades en el mercado o el campo de especialización y toman riesgos (responsables) para lograr ventaja (financiera).',
+          'Ve oportunidades (de venta) en el mercado y las traduce en planes (de negocio) concretos.',
+          'Hace propuestas (incluyendo justificación financiera) que satisfacen las necesidades de los clientes (potenciales) o desarrollos en el mercado / campo de especialización.',
+          'Es capaz de crear apoyo rápido y adecuado para nuevos productos, servicios o mercados, interna o externamente.'
+        ]
+      }
+    },
+    {
+      id: 'ambition_c',
+      category: 'Entrepreneurial',
+      subcategory: 'Ambition',
+      title: {
+        en: 'Encourages others in the immediate working environment to take on new responsibilities and to develop furthermore, also by showing exemplary behavior.',
+        nl: 'Moedigt anderen in de directe werkomgeving aan om nieuwe verantwoordelijkheden op zich te nemen en zich verder te ontwikkelen, ook door voorbeeldgedrag te tonen.',
+        es: 'Anima a otros en el entorno de trabajo inmediato a asumir nuevas responsabilidades y a desarrollarse aún más, también mostrando un comportamiento ejemplar.'
+      },
+      indicators: {
+        en: [
+          'Stimulates others to take on new or more responsibilities.',
+          'Encourages others in the immediate working environment to attend specific training or to search for learning experiences.',
+          'Involves others in the immediate working environment in activities/projects that can offer them new learning experiences.',
+          'Visibly attracts more and more responsibilities toward his/herself.',
+          'Attends specific training or takes on new learning experiences that could be useful in future career steps.'
+        ],
+        nl: [
+          'Stimuleert anderen om nieuwe of meer verantwoordelijkheden op zich te nemen.',
+          'Moedigt anderen in de directe werkomgeving aan om specifieke trainingen te volgen of te zoeken naar leerervaringen.',
+          'Betrekt anderen in de directe werkomgeving bij activiteiten/projecten die hen nieuwe leerervaringen kunnen bieden.',
+          'Trekt zichtbaar steeds meer verantwoordelijkheden naar zich toe.',
+          'Volgt specifieke trainingen of neemt nieuwe leerervaringen aan die nuttig kunnen zijn in toekomstige carrièrestappen.'
+        ],
+        es: [
+          'Estimula a otros a asumir responsabilidades nuevas o adicionales.',
+          'Anima a otros en el entorno de trabajo inmediato a asistir a capacitaciones específicas o a buscar experiencias de aprendizaje.',
+          'Involucra a otros en el entorno de trabajo inmediato en actividades/proyectos que pueden ofrecerles nuevas experiencias de aprendizaje.',
+          'Atrae visiblemente cada vez más responsabilidades hacia sí mismo/a.',
+          'Asiste a capacitaciones específicas o asume nuevas experiencias de aprendizaje que podrían ser útiles en futuros pasos de carrera.'
+        ]
+      }
+    },
+    {
+      id: 'market_oriented_c',
+      category: 'Innovative',
+      subcategory: 'Market oriented',
+      title: {
+        en: 'Encourages others in the immediate working environment by having proactive knowledge about developments in the market, about trends and technology and by translating this knowledge into opportunities and concrete business solutions. Shows exemplary behavior by regularly communicating about market and technology developments.',
+        nl: 'Moedigt anderen in de directe werkomgeving aan door proactieve kennis te hebben over ontwikkelingen in de markt, over trends en technologie en door deze kennis te vertalen naar kansen en concrete bedrijfsoplossingen. Toont voorbeeldgedrag door regelmatig te communiceren over markt- en technologieontwikkelingen.',
+        es: 'Anima a otros en el entorno de trabajo inmediato teniendo conocimiento proactivo sobre desarrollos en el mercado, sobre tendencias y tecnología y traduciendo este conocimiento en oportunidades y soluciones empresariales concretas. Muestra un comportamiento ejemplar comunicando regularmente sobre desarrollos del mercado y tecnología.'
+      },
+      indicators: {
+        en: [
+          'Discusses possible effects of trends and developments in the market, the field of expertise and technology for the organization and the customer.',
+          'Encourages employees/colleagues to stay up-to-date with the future developments in the own field of expertise and to develop a view.',
+          'Is able to translate opportunities to proposals for concrete business solutions.',
+          'Acts as a specialist in a certain field of expertise and/or market.',
+          'Organizes knowledge networks concerning future developments in own market/field of expertise.',
+          'Shares knowledge about strengths and weaknesses of the relevant market parties.'
+        ],
+        nl: [
+          'Bespreekt mogelijke effecten van trends en ontwikkelingen in de markt, het vakgebied en technologie voor de organisatie en de klant.',
+          'Moedigt medewerkers/collega\'s aan om op de hoogte te blijven van toekomstige ontwikkelingen in het eigen vakgebied en een visie te ontwikkelen.',
+          'Is in staat om kansen te vertalen naar voorstellen voor concrete bedrijfsoplossingen.',
+          'Treedt op als specialist in een bepaald vakgebied en/of markt.',
+          'Organiseert kennisnetwerken met betrekking tot toekomstige ontwikkelingen in eigen markt/vakgebied.',
+          'Deelt kennis over sterke en zwakke punten van de relevante marktpartijen.'
+        ],
+        es: [
+          'Discute posibles efectos de tendencias y desarrollos en el mercado, el campo de especialización y tecnología para la organización y el cliente.',
+          'Anima a empleados/colegas a mantenerse actualizados con los desarrollos futuros en su propio campo de especialización y a desarrollar una visión.',
+          'Es capaz de traducir oportunidades en propuestas para soluciones empresariales concretas.',
+          'Actúa como especialista en un cierto campo de especialización y/o mercado.',
+          'Organiza redes de conocimiento sobre desarrollos futuros en su propio mercado/campo de especialización.',
+          'Comparte conocimiento sobre fortalezas y debilidades de las partes relevantes del mercado.'
+        ]
+      }
+    },
+    {
+      id: 'customer_focused_c',
+      category: 'Innovative',
+      subcategory: 'Customer focused',
+      title: {
+        en: 'Encourages others in his/her immediate working environment to optimize the services for the customers by having a critical attitude and by showing exemplary behavior.',
+        nl: 'Moedigt anderen in zijn/haar directe werkomgeving aan om de dienstverlening aan klanten te optimaliseren door een kritische houding te hebben en door voorbeeldgedrag te tonen.',
+        es: 'Anima a otros en su entorno de trabajo inmediato a optimizar los servicios para los clientes teniendo una actitud crítica y mostrando un comportamiento ejemplar.'
+      },
+      indicators: {
+        en: [
+          'Discusses with others what \'good services\' and \'customer focus\' means and encourages a proactive work attitude.',
+          'Encourages employees/colleagues to first identify the customer needs and objectives before they make a proposal.',
+          'Proposes actions and procedures to colleagues to create a better understanding of the customer needs.',
+          'Ensures that others are not hindered by internal organizational structures.',
+          'Takes additional steps to significantly increase customer satisfaction.'
+        ],
+        nl: [
+          'Bespreekt met anderen wat \'goede dienstverlening\' en \'klantgerichtheid\' betekent en moedigt een proactieve werkhouding aan.',
+          'Moedigt medewerkers/collega\'s aan om eerst de behoeften en doelstellingen van de klant te identificeren voordat zij een voorstel doen.',
+          'Stelt acties en procedures voor aan collega\'s om een beter begrip te creëren van de klantbehoeften.',
+          'Zorgt ervoor dat anderen niet worden gehinderd door interne organisatiestructuren.',
+          'Neemt extra stappen om de klanttevredenheid aanzienlijk te verhogen.'
+        ],
+        es: [
+          'Discute con otros qué significa \'buenos servicios\' y \'enfoque en el cliente\' y fomenta una actitud de trabajo proactiva.',
+          'Anima a empleados/colegas a identificar primero las necesidades y objetivos del cliente antes de hacer una propuesta.',
+          'Propone acciones y procedimientos a colegas para crear una mejor comprensión de las necesidades del cliente.',
+          'Asegura que otros no se vean obstaculizados por estructuras organizacionales internas.',
+          'Toma pasos adicionales para aumentar significativamente la satisfacción del cliente.'
+        ]
+      }
+    }
+  ],
+  D: [
+    {
+      id: 'result_driven_d',
+      category: 'Dedicated',
+      subcategory: 'Result driven',
+      title: {
+        en: 'Inspires and facilitates others also outside the immediate working environment to set and realize ambitious goals. Leads by example.',
+        nl: 'Inspireert en faciliteert anderen ook buiten de directe werkomgeving om ambitieuze doelen te stellen en te realiseren. Geeft het goede voorbeeld.',
+        es: 'Inspira y facilita a otros también fuera del entorno de trabajo inmediato para establecer y realizar objetivos ambiciosos. Lidera con el ejemplo.'
+      },
+      indicators: {
+        en: [
+          'Encourages in the organization the importance of setting ambitious objectives.',
+          'Defines clear structures, divides tasks and procedures that increases effectiveness.',
+          'Clarifies what measurable results he/she expects from the different BU\'s or teams.',
+          'Initiates changes that have a positive contribution to the results of the organization.',
+          'Adjusts objectives set beforehand by the BU or team. Revises the policy or intervenes otherwise in order to be able to achieve these objectives.'
+        ],
+        nl: [
+          'Benadrukt in de organisatie het belang van het stellen van ambitieuze doelstellingen.',
+          'Definieert duidelijke structuren, verdeelt taken en procedures die de effectiviteit verhogen.',
+          'Verduidelijkt welke meetbare resultaten hij/zij verwacht van de verschillende BU\'s of teams.',
+          'Initieert veranderingen die een positieve bijdrage leveren aan de resultaten van de organisatie.',
+          'Past vooraf gestelde doelstellingen door de BU of het team aan. Herziet het beleid of grijpt anderszins in om deze doelstellingen te kunnen bereiken.'
+        ],
+        es: [
+          'Fomenta en la organización la importancia de establecer objetivos ambiciosos.',
+          'Define estructuras claras, divide tareas y procedimientos que aumentan la efectividad.',
+          'Aclara qué resultados medibles espera de las diferentes Unidades de Negocio o equipos.',
+          'Inicia cambios que tienen una contribución positiva a los resultados de la organización.',
+          'Ajusta objetivos establecidos previamente por la Unidad de Negocio o equipo. Revisa la política o interviene de otra manera para poder lograr estos objetivos.'
+        ]
+      }
+    },
+    {
+      id: 'committed_d',
+      category: 'Dedicated',
+      subcategory: 'Committed',
+      title: {
+        en: 'Inspires others, also outside the immediate working environment, to bring their own behavior in line with the goals, priorities and culture of the organization. Leads by example.',
+        nl: 'Inspireert anderen, ook buiten de directe werkomgeving, om hun eigen gedrag in lijn te brengen met de doelen, prioriteiten en cultuur van de organisatie. Geeft het goede voorbeeld.',
+        es: 'Inspira a otros, también fuera del entorno de trabajo inmediato, a alinear su propio comportamiento con las metas, prioridades y cultura de la organización. Lidera con el ejemplo.'
+      },
+      indicators: {
+        en: [
+          'Enthuses others to pay attention to activities that perfectly fit in with the objectives of the organization.',
+          'Creates a \'we-feeling\' by his/her way of communicating with others within the organization.',
+          'Shows that he/she finds it important that others behave in line with the culture of the organization.',
+          'Initiates only activities or projects that perfectly align with the objectives of the organization.',
+          'Is loyal to the management decisions, even when he/she does not fully agree with them.'
+        ],
+        nl: [
+          'Enthousiasmeert anderen om aandacht te besteden aan activiteiten die perfect passen bij de doelstellingen van de organisatie.',
+          'Creëert een \'wij-gevoel\' door zijn/haar manier van communiceren met anderen binnen de organisatie.',
+          'Toont dat hij/zij het belangrijk vindt dat anderen zich gedragen in lijn met de cultuur van de organisatie.',
+          'Initieert alleen activiteiten of projecten die perfect aansluiten bij de doelstellingen van de organisatie.',
+          'Is loyaal aan de managementbeslissingen, zelfs wanneer hij/zij het er niet volledig mee eens is.'
+        ],
+        es: [
+          'Entusiasma a otros para prestar atención a actividades que encajan perfectamente con los objetivos de la organización.',
+          'Crea un \'sentimiento de nosotros\' por su forma de comunicarse con otros dentro de la organización.',
+          'Muestra que considera importante que otros se comporten en línea con la cultura de la organización.',
+          'Inicia solo actividades o proyectos que se alinean perfectamente con los objetivos de la organización.',
+          'Es leal a las decisiones de gestión, incluso cuando no está completamente de acuerdo con ellas.'
+        ]
+      }
+    },
+    {
+      id: 'entrepreneurial_d',
+      category: 'Entrepreneurial',
+      subcategory: 'Entrepreneurial',
+      title: {
+        en: 'Inspires and facilitates others, even outside the immediate working environment, to use opportunities for selling business solutions. Leads by example.',
+        nl: 'Inspireert en faciliteert anderen, ook buiten de directe werkomgeving, om kansen te benutten voor het verkopen van bedrijfsoplossingen. Geeft het goede voorbeeld.',
+        es: 'Inspira y facilita a otros, incluso fuera del entorno de trabajo inmediato, a usar oportunidades para vender soluciones empresariales. Lidera con el ejemplo.'
+      },
+      indicators: {
+        en: [
+          'Carries out that he/she thinks it is important that employees in the Organizational Unit approach client signals in a proactive manner.',
+          'Encourages others to show appreciation towards employees/colleagues who take responsible risks in order to obtain a financial advantage.',
+          'Invests in time and resources to optimally utilize (potential) opportunities in the market.',
+          'Searches for strategic positions in markets that would fit in the future business.',
+          'Aims at integrating separate business plans into one business plan for the entire organization.'
+        ],
+        nl: [
+          'Draagt uit dat hij/zij het belangrijk vindt dat medewerkers in de Organisatie-eenheid op een proactieve manier met klantsignalen omgaan.',
+          'Moedigt anderen aan om waardering te tonen naar medewerkers/collega\'s die verantwoorde risico\'s nemen om financieel voordeel te behalen.',
+          'Investeert in tijd en middelen om (potentiële) kansen in de markt optimaal te benutten.',
+          'Zoekt naar strategische posities in markten die passen bij de toekomstige business.',
+          'Streeft ernaar om afzonderlijke businessplannen te integreren in één businessplan voor de hele organisatie.'
+        ],
+        es: [
+          'Transmite que considera importante que los empleados en la Unidad Organizacional aborden las señales de los clientes de manera proactiva.',
+          'Anima a otros a mostrar aprecio hacia empleados/colegas que toman riesgos responsables para obtener una ventaja financiera.',
+          'Invierte en tiempo y recursos para utilizar óptimamente las oportunidades (potenciales) en el mercado.',
+          'Busca posiciones estratégicas en mercados que encajarían en el negocio futuro.',
+          'Tiene como objetivo integrar planes de negocio separados en un plan de negocio para toda la organización.'
+        ]
+      }
+    },
+    {
+      id: 'ambition_d',
+      category: 'Entrepreneurial',
+      subcategory: 'Ambition',
+      title: {
+        en: 'Inspires and facilitates others, also outside the immediate working environment, to take on new responsibilities and to develop further. Leads by example.',
+        nl: 'Inspireert en faciliteert anderen, ook buiten de directe werkomgeving, om nieuwe verantwoordelijkheden op zich te nemen en zich verder te ontwikkelen. Geeft het goede voorbeeld.',
+        es: 'Inspira y facilita a otros, también fuera del entorno de trabajo inmediato, a asumir nuevas responsabilidades y a desarrollarse más. Lidera con el ejemplo.'
+      },
+      indicators: {
+        en: [
+          'Creates preconditions within the organization to have regular discussions about the ambitions of the employees.',
+          'Communicates clearly about advancement and promotion possibilities inside the organization.',
+          'Encourages people within the BU to take on new responsibilities.',
+          'Attracts external responsibilities towards him/herself that could influence the name of the own BU or organization, for example management functions.',
+          'Takes a leading role in activities/projects that are important for the BU or the organization.'
+        ],
+        nl: [
+          'Creëert voorwaarden binnen de organisatie om regelmatig gesprekken te voeren over de ambities van de medewerkers.',
+          'Communiceert duidelijk over doorgroei- en promotiemogelijkheden binnen de organisatie.',
+          'Moedigt mensen binnen de BU aan om nieuwe verantwoordelijkheden op zich te nemen.',
+          'Trekt externe verantwoordelijkheden naar zich toe die de naam van de eigen BU of organisatie kunnen beïnvloeden, bijvoorbeeld managementfuncties.',
+          'Neemt een leidende rol in activiteiten/projecten die belangrijk zijn voor de BU of de organisatie.'
+        ],
+        es: [
+          'Crea precondiciones dentro de la organización para tener discusiones regulares sobre las ambiciones de los empleados.',
+          'Comunica claramente sobre las posibilidades de avance y promoción dentro de la organización.',
+          'Anima a las personas dentro de la Unidad de Negocio a asumir nuevas responsabilidades.',
+          'Atrae responsabilidades externas hacia sí mismo/a que podrían influir en el nombre de su propia Unidad de Negocio u organización, por ejemplo funciones de gestión.',
+          'Toma un papel de liderazgo en actividades/proyectos que son importantes para la Unidad de Negocio o la organización.'
+        ]
+      }
+    },
+    {
+      id: 'market_oriented_d',
+      category: 'Innovative',
+      subcategory: 'Market oriented',
+      title: {
+        en: 'Proactively and timely sees market developments, trends and new technologies, uses knowledge and translates to clear vision. Communicates and anticipates on future customer requirements and translates these to concrete solutions.',
+        nl: 'Ziet proactief en tijdig marktontwikkelingen, trends en nieuwe technologieën, gebruikt kennis en vertaalt naar een duidelijke visie. Communiceert en anticipeert op toekomstige klantvereisten en vertaalt deze naar concrete oplossingen.',
+        es: 'Ve proactiva y oportunamente desarrollos del mercado, tendencias y nuevas tecnologías, usa conocimiento y traduce a una visión clara. Comunica y anticipa requisitos futuros del cliente y los traduce a soluciones concretas.'
+      },
+      indicators: {
+        en: [
+          'Carries out that he/she thinks it is important to proactively follow the developments in the market and technology and translates them into concrete solution directions for the business unit or organization.',
+          'Invests (time and/or money) in the early acquisition of knowledge about developments in the market and new application possibilities.',
+          'Translates market developments to various relevant internal policy areas, external opportunities and business solutions.',
+          'Acts as a specialist in a certain field of expertise and/or market.',
+          'Explains market developments, discipline, trends and technology inside the own business unit and organization and translates them into opportunities for the organization and customer.'
+        ],
+        nl: [
+          'Draagt uit dat hij/zij het belangrijk vindt om de ontwikkelingen in de markt en technologie proactief te volgen en deze te vertalen naar concrete oplossingsrichtingen voor de business unit of organisatie.',
+          'Investeert (tijd en/of geld) in de vroegtijdige verwerving van kennis over ontwikkelingen in de markt en nieuwe toepassingsmogelijkheden.',
+          'Vertaalt marktontwikkelingen naar verschillende relevante interne beleidsgebieden, externe kansen en bedrijfsoplossingen.',
+          'Treedt op als specialist in een bepaald vakgebied en/of markt.',
+          'Legt marktontwikkelingen, discipline, trends en technologie uit binnen de eigen business unit en organisatie en vertaalt deze naar kansen voor de organisatie en klant.'
+        ],
+        es: [
+          'Transmite que considera importante seguir proactivamente los desarrollos en el mercado y la tecnología y traducirlos en direcciones de solución concretas para la unidad de negocio u organización.',
+          'Invierte (tiempo y/o dinero) en la adquisición temprana de conocimiento sobre desarrollos en el mercado y nuevas posibilidades de aplicación.',
+          'Traduce desarrollos del mercado a varias áreas de política interna relevantes, oportunidades externas y soluciones empresariales.',
+          'Actúa como especialista en un cierto campo de especialización y/o mercado.',
+          'Explica desarrollos del mercado, disciplina, tendencias y tecnología dentro de su propia unidad de negocio y organización y los traduce en oportunidades para la organización y el cliente.'
+        ]
+      }
+    },
+    {
+      id: 'customer_focused_d',
+      category: 'Innovative',
+      subcategory: 'Customer focused',
+      title: {
+        en: 'Inspires and facilitates others, also outside the immediate working environment to optimize Customer Service via a visionary mindset and through exemplary behaviour.',
+        nl: 'Inspireert en faciliteert anderen, ook buiten de directe werkomgeving, om de klantenservice te optimaliseren via een visionaire mindset en door voorbeeldgedrag.',
+        es: 'Inspira y facilita a otros, también fuera del entorno de trabajo inmediato, a optimizar el Servicio al Cliente a través de una mentalidad visionaria y un comportamiento ejemplar.'
+      },
+      indicators: {
+        en: [
+          'Carries out the view of \'state of the art\' services to the customers are important. Viewed from the total environmental context and the companies specific solutions.',
+          'Aims at researching (future) long-term customer wishes and needs.',
+          'Builds and maintains sustainable and/or regularly contact with (potential) customers that can be important to the business unit or organization.',
+          'Coordinates several departments and domain expertise from which services are offered to customers.',
+          'Continuously takes specific actions to increase customer satisfaction.'
+        ],
+        nl: [
+          'Draagt de visie uit dat \'state of the art\' dienstverlening aan klanten belangrijk is. Gezien vanuit de totale omgevingscontext en de bedrijfsspecifieke oplossingen.',
+          'Richt zich op het onderzoeken van (toekomstige) langetermijnwensen en -behoeften van klanten.',
+          'Bouwt en onderhoudt duurzaam en/of regelmatig contact met (potentiële) klanten die belangrijk kunnen zijn voor de business unit of organisatie.',
+          'Coördineert verschillende afdelingen en domeinexpertise vanwaaruit diensten aan klanten worden aangeboden.',
+          'Neemt voortdurend specifieke acties om de klanttevredenheid te verhogen.'
+        ],
+        es: [
+          'Transmite la visión de que los servicios de \'última generación\' a los clientes son importantes. Vistos desde el contexto ambiental total y las soluciones específicas de la empresa.',
+          'Tiene como objetivo investigar deseos y necesidades (futuras) a largo plazo del cliente.',
+          'Construye y mantiene contacto sostenible y/o regular con clientes (potenciales) que pueden ser importantes para la unidad de negocio u organización.',
+          'Coordina varios departamentos y experiencia de dominio desde los cuales se ofrecen servicios a los clientes.',
+          'Toma continuamente acciones específicas para aumentar la satisfacción del cliente.'
+        ]
+      }
+    }
+  ]
+};
+&nbsp;
+export const levelDescriptions = {
+  A: {
+    en: 'Entry level - Focuses on achieving agreed results and following organizational guidelines',
+    nl: 'Instapniveau - Richt zich op het behalen van afgesproken resultaten en het volgen van organisatierichtlijnen',
+    es: 'Nivel de entrada - Se enfoca en lograr resultados acordados y seguir las directrices organizacionales'
+  },
+  B: {
+    en: 'Professional level - Sets ambitious goals independently and proactively adds value',
+    nl: 'Professioneel niveau - Stelt zelfstandig ambitieuze doelen en voegt proactief waarde toe',
+    es: 'Nivel profesional - Establece objetivos ambiciosos de forma independiente y agrega valor proactivamente'
+  },
+  C: {
+    en: 'Senior level - Encourages others in the working environment and shows exemplary behavior',
+    nl: 'Senior niveau - Moedigt anderen in de werkomgeving aan en toont voorbeeldgedrag',
+    es: 'Nivel senior - Anima a otros en el entorno de trabajo y muestra un comportamiento ejemplar'
+  },
+  D: {
+    en: 'Leadership level - Inspires and facilitates others across the organization and leads by example',
+    nl: 'Leiderschapsniveau - Inspireert en faciliteert anderen in de hele organisatie en geeft het goede voorbeeld',
+    es: 'Nivel de liderazgo - Inspira y facilita a otros en toda la organización y lidera con el ejemplo'
+  }
+};
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2025-12-12T17:31:04.742Z
+            </div>
+        <script src="../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../sorter.js"></script>
+        <script src="../block-navigation.js"></script>
+    </body>
+</html>
+    

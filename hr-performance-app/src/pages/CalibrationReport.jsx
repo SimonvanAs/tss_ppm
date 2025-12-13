@@ -138,7 +138,7 @@ export function CalibrationReport() {
   if (!session) {
     return (
       <div className="calibration-report error">
-        <p>Session not found</p>
+        <p>{t('pages.calibration.sessionNotFound') || 'Session not found'}</p>
         <button onClick={() => navigate('/calibration')} className="btn btn-secondary">
           {t('common.goBack')}
         </button>
@@ -158,10 +158,10 @@ export function CalibrationReport() {
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
               <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z" />
             </svg>
-            Back to Session
+            {t('pages.calibration.backToSession') || 'Back to Session'}
           </button>
           <h1>{session.name}</h1>
-          <p className="report-subtitle">Calibration Report</p>
+          <p className="report-subtitle">{t('pages.calibration.reportTitle') || 'Calibration Report'}</p>
         </div>
         <div className="report-actions">
           <button
@@ -189,20 +189,20 @@ export function CalibrationReport() {
 
       {/* Session Summary */}
       <div className="report-section">
-        <h2>Session Summary</h2>
+        <h2>{t('pages.calibration.report.sessionSummary') || 'Session Summary'}</h2>
         <div className="summary-grid">
           <div className="summary-card">
-            <span className="summary-label">Status</span>
+            <span className="summary-label">{t('common.status')}</span>
             <span className={`summary-value status-badge ${session.status?.toLowerCase()}`}>
               {t(`pages.calibration.status.${session.status?.toLowerCase().replace(/_/g, '')}`) || session.status}
             </span>
           </div>
           <div className="summary-card">
-            <span className="summary-label">Year</span>
+            <span className="summary-label">{t('common.year')}</span>
             <span className="summary-value">{session.year}</span>
           </div>
           <div className="summary-card">
-            <span className="summary-label">Scope</span>
+            <span className="summary-label">{t('pages.calibration.scope.title')}</span>
             <span className="summary-value">
               {t(`pages.calibration.scope.${session.scope?.toLowerCase()}`) || session.scope}
             </span>
@@ -274,18 +274,18 @@ export function CalibrationReport() {
       {/* Adjustments Made */}
       {adjustedItems.length > 0 && (
         <div className="report-section">
-          <h2>Adjustments Made ({adjustedItems.length})</h2>
+          <h2>{t('pages.calibration.report.adjustmentsMade') || 'Adjustments Made'} ({adjustedItems.length})</h2>
           <div className="adjustments-table">
             <table>
               <thead>
                 <tr>
-                  <th>Employee</th>
-                  <th>Original Position</th>
-                  <th>Calibrated Position</th>
-                  <th>Change</th>
-                  <th>Notes</th>
-                  <th>Adjusted By</th>
-                  <th>Date</th>
+                  <th>{t('pages.calibration.employees.employee') || 'Employee'}</th>
+                  <th>{t('pages.calibration.report.originalPosition') || 'Original Position'}</th>
+                  <th>{t('pages.calibration.report.calibratedPosition') || 'Calibrated Position'}</th>
+                  <th>{t('pages.calibration.report.change') || 'Change'}</th>
+                  <th>{t('pages.calibration.adjustment.notes')}</th>
+                  <th>{t('pages.calibration.adjustment.adjustedBy')}</th>
+                  <th>{t('common.date')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -380,17 +380,17 @@ export function CalibrationReport() {
       {/* Adjustment Summary by User */}
       {Object.keys(adjustmentsByUser).length > 0 && (
         <div className="report-section">
-          <h2>Adjustments by Facilitator</h2>
+          <h2>{t('pages.calibration.report.adjustmentsByFacilitator') || 'Adjustments by Facilitator'}</h2>
           <div className="facilitator-summary">
             {Object.entries(adjustmentsByUser).map(([user, userItems]) => (
               <div key={user} className="facilitator-card">
                 <div className="facilitator-header">
                   <span className="facilitator-name">{user}</span>
-                  <span className="adjustment-count">{userItems.length} adjustments</span>
+                  <span className="adjustment-count">{userItems.length} {t('pages.calibration.report.adjustments') || 'adjustments'}</span>
                 </div>
                 <div className="facilitator-stats">
                   <div className="stat">
-                    <span className="stat-label">Avg WHAT Change</span>
+                    <span className="stat-label">{t('pages.calibration.report.avgWhatChange') || 'Avg WHAT Change'}</span>
                     <span className="stat-value">
                       {(userItems.reduce((sum, item) =>
                         sum + (item.calibratedWhatScore - item.originalWhatScore), 0
@@ -398,7 +398,7 @@ export function CalibrationReport() {
                     </span>
                   </div>
                   <div className="stat">
-                    <span className="stat-label">Avg HOW Change</span>
+                    <span className="stat-label">{t('pages.calibration.report.avgHowChange') || 'Avg HOW Change'}</span>
                     <span className="stat-value">
                       {(userItems.reduce((sum, item) =>
                         sum + (item.calibratedHowScore - item.originalHowScore), 0
@@ -415,7 +415,7 @@ export function CalibrationReport() {
       {/* Session Notes */}
       {session.notes && (
         <div className="report-section">
-          <h2>Session Notes</h2>
+          <h2>{t('pages.calibration.report.sessionNotes') || 'Session Notes'}</h2>
           <div className="session-notes">
             <p>{session.notes}</p>
           </div>
@@ -424,8 +424,8 @@ export function CalibrationReport() {
 
       {/* Print Footer */}
       <div className="report-footer print-only">
-        <p>Generated on {new Date().toLocaleDateString()}</p>
-        <p>TSS Performance Management System</p>
+        <p>{t('pages.calibration.report.generatedOn') || 'Generated on'} {new Date().toLocaleDateString()}</p>
+        <p>{t('pages.calibration.report.systemName') || 'TSS Performance Management System'}</p>
       </div>
     </div>
   );

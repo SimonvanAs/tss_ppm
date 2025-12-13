@@ -25,7 +25,19 @@
       "actions": "Actions",
       "view": "View",
       "continue": "Continue",
-      "loading": "Loading reviews..."
+      "loading": "Loading reviews...",
+      "errorLoading": "Error loading reviews"
+    },
+    "newReview": {
+      "title": "Create New Review",
+      "year": "Year",
+      "employee": "Employee",
+      "selectEmployee": "Select employee...",
+      "manager": "Manager",
+      "selectManager": "Select manager...",
+      "tovLevel": "TOV/IDE Level",
+      "selectTovLevel": "Select TOV level...",
+      "create": "Create Review"
     },
     "team": {
       "title": "Team Overview",
@@ -87,6 +99,7 @@
       "completedReviews": "Completed",
       "pendingApprovals": "Pending Approvals",
       "byStage": "Reviews by Stage",
+      "noRecentReviews": "No recent reviews",
       "byScore": "Score Distribution",
       "recentActivity": "Recent Activity"
     },
@@ -104,6 +117,7 @@
       "title": "Performance History",
       "subtitleOwn": "Track your performance scores and trends over time",
       "subtitleOther": "Performance history for {{name}}",
+      "noAccess": "You do not have permission to view this employee's performance history.",
       "totalReviews": "Total Reviews",
       "yearsSpan": "Years Span",
       "avgWhat": "Avg. WHAT",
@@ -138,6 +152,11 @@
       "viewHistory": "View History",
       "metric": "Metric",
       "status": "Status"
+    },
+    "accessDenied": {
+      "message": "You do not have permission to access this page.",
+      "currentRole": "Your current role",
+      "requiredRoles": "Required roles"
     },
     "analytics": {
       "title": "Performance Analytics",
@@ -296,12 +315,36 @@
         "createdBy": "Created by",
         "totalEmployees": "Total Employees",
         "adjustments": "Adjustments Made",
-        "flaggedReviews": "Flagged Reviews"
+        "flaggedReviews": "Flagged Reviews",
+        "editSession": "Edit Session",
+        "sessionName": "Session Name",
+        "sessionNotes": "Notes",
+        "notesPlaceholder": "Add session notes, observations, or decisions...",
+        "nameLockedHint": "Name cannot be changed for in-progress sessions"
       },
       "noSessions": "No calibration sessions",
       "noSessionsDesc": "Create your first calibration session to start reviewing and adjusting ratings across teams",
       "loading": "Loading calibration data...",
-      "error": "Failed to load calibration data"
+      "error": "Failed to load calibration data",
+      "readyToStart": "Ready to Start Calibration",
+      "readyToStartDesc": "Starting the calibration will snapshot all end-year review scores for the selected scope. You can then review and adjust ratings as needed.",
+      "sessionNotFound": "Session not found",
+      "backToSession": "Back to Session",
+      "reportTitle": "Calibration Report",
+      "report": {
+        "sessionSummary": "Session Summary",
+        "adjustmentsMade": "Adjustments Made",
+        "originalPosition": "Original Position",
+        "calibratedPosition": "Calibrated Position",
+        "change": "Change",
+        "adjustmentsByFacilitator": "Adjustments by Facilitator",
+        "adjustments": "adjustments",
+        "avgWhatChange": "Avg WHAT Change",
+        "avgHowChange": "Avg HOW Change",
+        "sessionNotes": "Session Notes",
+        "generatedOn": "Generated on",
+        "systemName": "TSS Performance Management System"
+      }
     }
   },
   "signature": {
@@ -334,6 +377,14 @@
   },
   "review": {
     "stages": {
+      "draft": "Draft",
+      "goalSetting": "Goal Setting",
+      "goalSettingComplete": "Goals Locked",
+      "midYear": "Mid-Year Review",
+      "midYearComplete": "Mid-Year Complete",
+      "endYear": "End-Year Review",
+      "pendingSignatures": "Pending Signatures",
+      "completed": "Completed",
       "DRAFT": "Draft",
       "GOAL_SETTING": "Goal Setting",
       "GOAL_SETTING_COMPLETE": "Goals Locked",
@@ -363,7 +414,21 @@
       "goalSetting": "Set and define performance goals for the review period",
       "midYear": "Mid-year progress review and scoring",
       "endYear": "Final year-end performance evaluation"
-    }
+    },
+    "saving": "Saving...",
+    "saved": "Saved",
+    "unsaved": "Unsaved changes",
+    "saveFailed": "Save failed",
+    "notFound": "Review Not Found",
+    "notFoundDesc": "The review you're looking for doesn't exist or you don't have access to it.",
+    "startGoalSetting": "Start Goal Setting",
+    "completeGoalSetting": "Complete Goal Setting",
+    "startMidYear": "Start Mid-Year Review",
+    "completeMidYear": "Complete Mid-Year",
+    "startEndYear": "Start End-Year Review",
+    "completeEndYear": "Complete End-Year",
+    "awaitingSignatures": "This review is awaiting signatures",
+    "reviewCompleted": "Review Completed"
   },
   "app": {
     "title": "Performance Review",
@@ -403,12 +468,19 @@
     "title": "Employee Information",
     "name": "Employee Name",
     "namePlaceholder": "Enter employee name",
-    "role": "Function Title / Role",
+    "role": "Function Title",
+    "functionTitle": "Function Title",
     "rolePlaceholder": "Enter function title",
+    "selectFunctionTitle": "Select function title...",
+    "loadError": "Failed to load function titles. You can still fill in the form manually.",
     "businessUnit": "Business Unit",
     "businessUnitPlaceholder": "Enter business unit",
     "tovLevel": "IDE-Level",
     "selectLevel": "Select level",
+    "selectFunctionTitleFirst": "Select function title first",
+    "autoApplied": "auto-applied",
+    "noTovLevelMapping": "This function title has no IDE-Level mapping",
+    "manualSelectionRequired": "Please contact HR to set your IDE-Level",
     "reviewDate": "Review Date",
     "managerName": "Manager Name",
     "managerPlaceholder": "Enter manager name"
@@ -467,7 +539,13 @@
     "whatScore": "WHAT Score",
     "howScore": "HOW Score",
     "position": "Your position",
-    "scfVeto": "SCF VETO"
+    "scfVeto": "SCF VETO",
+    "legend": {
+      "immediateAttention": "Immediate attention",
+      "developmentArea": "Development area",
+      "goodPerformance": "Good performance",
+      "exceptional": "Exceptional"
+    }
   },
   "selfAssessment": {
     "title": "Employee Self-Assessment",
@@ -479,11 +557,13 @@
   },
   "actions": {
     "preview": "Preview Report",
+    "save": "Save",
     "saveDraft": "Download Draft Report",
     "download": "Download Final Report",
     "clearSession": "Clear Session",
     "confirmClear": "Are you sure you want to clear this session? All data will be lost.",
-    "saved": "Saved"
+    "saved": "Saved",
+    "downloadError": "Error generating report. Please try again."
   },
   "validation": {
     "required": "This field is required",
@@ -524,7 +604,9 @@
     "loading": "Loading...",
     "save": "Save",
     "saving": "Saving...",
+    "uploading": "Uploading...",
     "cancel": "Cancel",
+    "close": "Close",
     "edit": "Edit",
     "delete": "Delete",
     "add": "Add",
@@ -540,10 +622,14 @@
     "date": "Date",
     "all": "All",
     "selectOption": "Select...",
-    "create": "Create"
+    "create": "Create",
+    "creating": "Creating...",
+    "logout": "Logout"
   },
   "admin": {
     "title": "Admin Portal",
+    "backToApp": "Back to App",
+    "toggleMenu": "Toggle menu",
     "sections": {
       "management": "Management",
       "configuration": "Configuration",
@@ -557,6 +643,9 @@
       "tovLevels": "TOV Levels",
       "competencies": "Competencies",
       "import": "Import Reviews",
+      "startNewYear": "Start New Year",
+      "settings": "Settings",
+      "branding": "Branding",
       "opcos": "OpCos",
       "global": "Global"
     },
@@ -646,7 +735,36 @@
       "addFirst": "Add First Function Title",
       "deleteTitle": "Delete Function Title",
       "deleteMessage": "Are you sure you want to delete \"{{name}}\"? This action cannot be undone.",
-      "error": "Failed to load function titles"
+      "error": "Failed to load function titles",
+      "assignedUsers": "Assigned Users",
+      "cannotDelete": "Cannot Delete Function Title",
+      "deleteBlocked": "{{count}} user(s) assigned",
+      "deleteBlockedMessage": "Cannot delete \"{{name}}\" because {{count}} user(s) are currently assigned to this function title.",
+      "assignedUsersTitle": "Users with this function title",
+      "andMoreUsers": "...and {{count}} more user(s)",
+      "reassignInstructions": "To delete this function title, please first reassign all users to a different function title in User Management.",
+      "export": {
+        "button": "Export to Excel",
+        "exporting": "Exporting..."
+      },
+      "import": {
+        "button": "Import from Excel",
+        "title": "Import Function Titles",
+        "instructions": "Excel file format requirements:",
+        "note": "Column names are flexible and will be automatically detected. The first row should contain headers.",
+        "selectFile": "Select File",
+        "noFileSelected": "Please select a file to upload.",
+        "invalidFileType": "Invalid file type. Please upload an Excel file (.xlsx, .xls).",
+        "fileTooLarge": "File size exceeds 10MB limit.",
+        "uploading": "Uploading...",
+        "upload": "Upload and Import",
+        "complete": "Import Complete!",
+        "totalRows": "Total Rows",
+        "created": "Created",
+        "updated": "Updated",
+        "skipped": "Skipped",
+        "errors": "Errors"
+      }
     },
     "tovLevels": {
       "title": "TOV/IDE Levels",
@@ -717,6 +835,36 @@
       "importAnother": "Import Another File",
       "remove": "Remove"
     },
+    "startNewYear": {
+      "title": "Start New Performance Year",
+      "subtitle": "Create review forms for all eligible employees in a single action",
+      "configureTitle": "Configure New Year",
+      "selectYear": "Select Performance Year",
+      "includeManagers": "Include users with Manager role",
+      "includeManagersHint": "By default, only employees receive review forms. Check this to include managers too.",
+      "preview": "Preview",
+      "previewTitle": "Preview - {{year}} Performance Year",
+      "willCreate": "Will Create",
+      "willSkip": "Will Skip",
+      "totalEmployees": "Total Employees",
+      "employee": "Employee",
+      "manager": "Manager",
+      "tovLevel": "TOV Level",
+      "notes": "Notes",
+      "createReviews": "Create {{count}} Review Forms",
+      "noEligibleEmployees": "No eligible employees found. All employees may already have review forms for this year.",
+      "creating": "Creating Review Forms...",
+      "pleaseWait": "Please wait while we create the review forms.",
+      "complete": "Review Forms Created Successfully!",
+      "created": "created",
+      "skipped": "skipped",
+      "failed": "failed",
+      "details": "Creation Details",
+      "startAnother": "Start Another Year",
+      "confirmTitle": "Confirm Creation",
+      "confirmMessage": "You are about to create {{count}} review forms for the {{year}} performance year. This action cannot be undone.",
+      "confirmCreate": "Create Reviews"
+    },
     "opcos": {
       "title": "OpCo Management",
       "subtitle": "Manage operating companies across the organization",
@@ -740,7 +888,15 @@
       "noItems": "No OpCos configured",
       "noItemsDesc": "Create your first operating company",
       "addFirst": "Add First OpCo",
-      "error": "Failed to load OpCos"
+      "error": "Failed to load OpCos",
+      "logo": "Logo",
+      "uploadLogo": "Upload Logo",
+      "removeLogo": "Remove logo",
+      "logoHint": "PNG, JPG or SVG (max 2MB). Recommended size: 200x80px",
+      "logoInvalidType": "Please select an image file (PNG, JPG, GIF, or SVG)",
+      "logoTooLarge": "Logo file is too large. Maximum size is 2MB",
+      "logoUploadFailed": "Failed to upload logo. Other changes were saved successfully.",
+      "uploadingLogo": "Uploading logo..."
     },
     "global": {
       "title": "Global Dashboard",
@@ -773,6 +929,70 @@
       "whisper": "Whisper Service",
       "available": "Available",
       "error": "Failed to load global dashboard"
+    },
+    "settings": {
+      "title": "Workflow Settings",
+      "subtitle": "Configure review cycles, approvals, and notifications",
+      "saved": "Settings saved successfully",
+      "error": "Failed to save settings",
+      "reviewCycle": {
+        "title": "Review Cycle Dates",
+        "description": "Set default dates for each review period",
+        "goalSetting": "Goal Setting Period",
+        "midYear": "Mid-Year Review Period",
+        "endYear": "End-Year Review Period",
+        "start": "Start Date",
+        "end": "End Date",
+        "dateError": "End date must be after start date",
+        "overlapError": "Review periods cannot overlap"
+      },
+      "approvals": {
+        "title": "Approval Requirements",
+        "description": "Configure which stages require approvals",
+        "stage": "Stage",
+        "managerApproval": "Manager Approval",
+        "hrApproval": "HR Approval"
+      },
+      "signatures": {
+        "title": "Signature Requirements",
+        "description": "Configure signature requirements for completed reviews",
+        "employee": "Require Employee Signature",
+        "manager": "Require Manager Signature"
+      },
+      "notifications": {
+        "title": "Notifications",
+        "comingSoon": "Email notifications will be available in a future update",
+        "enabled": "Enable Notifications",
+        "reminderDays": "Days before deadline",
+        "overdueInterval": "Overdue reminder interval (days)",
+        "onApprovals": "Notify on pending approvals"
+      }
+    },
+    "branding": {
+      "title": "Branding Settings",
+      "subtitle": "Customize appearance for each operating company",
+      "selectOpco": "Select OpCo",
+      "saved": "Branding saved successfully",
+      "error": "Failed to save branding",
+      "logo": {
+        "title": "Logo",
+        "noLogo": "No logo set",
+        "upload": "Upload Logo",
+        "uploadHint": "Recommended: PNG or SVG, max 2MB",
+        "url": "Or enter logo URL",
+        "remove": "Remove Logo"
+      },
+      "colors": {
+        "title": "Colors",
+        "primary": "Primary Color",
+        "accent": "Accent Color",
+        "preview": "Preview"
+      },
+      "css": {
+        "title": "Custom CSS",
+        "description": "Advanced: Add custom CSS overrides",
+        "warning": "Warning: Invalid CSS may break the application appearance"
+      }
     }
   }
 }

@@ -30,6 +30,11 @@ export function CalibrationSession() {
   const [isStarting, setIsStarting] = useState(false);
   const [isCompleting, setIsCompleting] = useState(false);
 
+  // Edit session modal state
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editForm, setEditForm] = useState({ name: '', notes: '', targetDistribution: {} });
+  const [isSaving, setIsSaving] = useState(false);
+
   useEffect(() => {
     loadSession();
   }, [id]);
@@ -127,6 +132,30 @@ export function CalibrationSession() {
     setActiveTab('list');
   };
 
+  const handleOpenEditModal = () => {
+    setEditForm({
+      name: session.name || '',
+      notes: session.notes || '',
+      targetDistribution: session.targetDistribution || { topTalent: 20, solid: 70, concern: 10 },
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditSession = async () => {
+    try {
+      setIsSaving(true);
+      setError(null);
+      await calibrationApi.updateSession(id, editForm);
+      await loadSession();
+      setIsEditModalOpen(false);
+    } catch (err) {
+      console.error('Failed to update session:', err);
+      setError(err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   const getStatusColor = (status) => {
     switch (status) {
       case 'DRAFT': return '#6c757d';
@@ -137,6 +166,19 @@ export function CalibrationSession() {
       case 'CANCELLED': return '#DC3545';
       default: return '#6c757d';
     }
+  };
+
+  // Convert API enum values to camelCase for translation keys
+  // e.g., "IN_PROGRESS" -> "inProgress", "BUSINESS_UNIT" -> "businessUnit"
+  const toCamelCase = (str) => {
+    if (!str) return '';
+    return str
+      .toLowerCase()
+      .split('_')
+      .map((word, index) => 
+        index === 0 ? word : word.charAt(0).toUpperCase() + word.slice(1)
+      )
+      .join('');
   };
 
   // Filter items by selected grid cell
@@ -153,7 +195,7 @@ export function CalibrationSession() {
       <div className="page">
         <div className="loading-state">
           <div className="loading-spinner-small"></div>
-          <p>{t('common.loading') || 'Loading...'}</p>
+          <p>{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -165,7 +207,7 @@ export function CalibrationSession() {
         <div className="error-state">
           <p>{t('pages.calibration.error')}</p>
           <Link to="/calibration" className="btn btn-primary">
-            {t('common.goBack') || 'Go Back'}
+            {t('common.goBack')}
           </Link>
         </div>
       </div>
@@ -189,7 +231,7 @@ export function CalibrationSession() {
           <div>
             <h1 className="page-title">{session.name}</h1>
             <p className="page-subtitle">
-              {session.year} • {session.businessUnit?.name || (t(`pages.calibration.scope.${session.scope.toLowerCase()}`) || session.scope)}
+              {session.year} • {session.businessUnit?.name || (t(`pages.calibration.scope.${toCamelCase(session.scope)}`) || session.scope)}
               {session.itemCount > 0 && ` • ${session.itemCount} ${t('pages.calibration.session.totalEmployees')}`}
             </p>
           </div>
@@ -203,8 +245,20 @@ export function CalibrationSession() {
               borderColor: getStatusColor(session.status),
             }}
           >
-            {t(`pages.calibration.status.${session.status.toLowerCase()}`) || session.status}
+            {t(`pages.calibration.status.${toCamelCase(session.status)}`) || session.status}
           </span>
+
+          {['DRAFT', 'SCHEDULED', 'IN_PROGRESS'].includes(session.status) && (
+            <button
+              className="btn btn-secondary"
+              onClick={handleOpenEditModal}
+            >
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" style={{ marginRight: 8 }}>
+                <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+              </svg>
+              {t('common.edit')}
+            </button>
+          )}
 
           {canStart && (
             <button
@@ -270,9 +324,9 @@ export function CalibrationSession() {
           <svg viewBox="0 0 24 24" width="64" height="64" fill="#004A91" style={{ marginBottom: 16 }}>
             <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z" />
           </svg>
-          <h2>Ready to Start Calibration</h2>
+          <h2>{t('pages.calibration.readyToStart') || 'Ready to Start Calibration'}</h2>
           <p style={{ color: '#666', maxWidth: 500, margin: '16px auto' }}>
-            Starting the calibration will snapshot all end-year review scores for the selected scope. You can then review and adjust ratings as needed.
+            {t('pages.calibration.readyToStartDesc') || 'Starting the calibration will snapshot all end-year review scores for the selected scope. You can then review and adjust ratings as needed.'}
           </p>
           <button
             className="btn btn-primary btn-large"
@@ -498,6 +552,139 @@ export function CalibrationSession() {
             </div>
           </div>
         </>
+      )}
+
+      {/* Edit Session Modal */}
+      {isEditModalOpen && (
+        <div className="modal-overlay" onClick={() => setIsEditModalOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 500 }}>
+            <div className="modal-header">
+              <h2>{t('pages.calibration.session.editSession') || 'Edit Session'}</h2>
+              <button
+                className="modal-close"
+                onClick={() => setIsEditModalOpen(false)}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              {/* Session Name - only editable for DRAFT/SCHEDULED */}
+              <div className="form-group">
+                <label htmlFor="sessionName">
+                  {t('pages.calibration.session.sessionName') || 'Session Name'}
+                </label>
+                <input
+                  id="sessionName"
+                  type="text"
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  disabled={session.status === 'IN_PROGRESS'}
+                  className="form-control"
+                />
+                {session.status === 'IN_PROGRESS' && (
+                  <small className="form-hint" style={{ color: '#666' }}>
+                    {t('pages.calibration.session.nameLockedHint') || 'Name cannot be changed for in-progress sessions'}
+                  </small>
+                )}
+              </div>
+
+              {/* Target Distribution - only editable for DRAFT/SCHEDULED */}
+              {session.status !== 'IN_PROGRESS' && (
+                <div className="form-group">
+                  <label>{t('pages.calibration.targetDistribution') || 'Target Distribution'}</label>
+                  <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
+                    <div style={{ flex: 1 }}>
+                      <label className="form-label-small">{t('pages.calibration.distribution.topTalent') || 'Top Talent %'}</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={editForm.targetDistribution?.topTalent || 0}
+                        onChange={(e) => setEditForm({
+                          ...editForm,
+                          targetDistribution: {
+                            ...editForm.targetDistribution,
+                            topTalent: parseInt(e.target.value) || 0
+                          }
+                        })}
+                        className="form-control"
+                      />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <label className="form-label-small">{t('pages.calibration.distribution.solid') || 'Solid %'}</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={editForm.targetDistribution?.solid || 0}
+                        onChange={(e) => setEditForm({
+                          ...editForm,
+                          targetDistribution: {
+                            ...editForm.targetDistribution,
+                            solid: parseInt(e.target.value) || 0
+                          }
+                        })}
+                        className="form-control"
+                      />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <label className="form-label-small">{t('pages.calibration.distribution.concern') || 'Concern %'}</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={editForm.targetDistribution?.concern || 0}
+                        onChange={(e) => setEditForm({
+                          ...editForm,
+                          targetDistribution: {
+                            ...editForm.targetDistribution,
+                            concern: parseInt(e.target.value) || 0
+                          }
+                        })}
+                        className="form-control"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Notes - always editable */}
+              <div className="form-group">
+                <label htmlFor="sessionNotes">
+                  {t('pages.calibration.session.sessionNotes') || 'Notes'}
+                </label>
+                <textarea
+                  id="sessionNotes"
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                  placeholder={t('pages.calibration.session.notesPlaceholder') || 'Add session notes, observations, or decisions...'}
+                  className="form-control"
+                  rows={4}
+                />
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn btn-secondary"
+                onClick={() => setIsEditModalOpen(false)}
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                className="btn btn-primary"
+                onClick={handleEditSession}
+                disabled={isSaving}
+              >
+                {isSaving ? (
+                  <span className="loading-spinner-small" />
+                ) : (
+                  t('common.save')
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

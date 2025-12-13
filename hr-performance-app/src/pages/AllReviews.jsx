@@ -33,7 +33,7 @@ export function AllReviews() {
         }),
       ]);
 
-      setUsers(usersData.users || []);
+      setUsers(usersData.data || []);
       setReviews(reviewsData.reviews || []);
     } catch (err) {
       console.error('Failed to load reviews:', err);
@@ -154,7 +154,7 @@ export function AllReviews() {
                 minWidth: 150,
               }}
             >
-              <option value="">All Statuses</option>
+              <option value="">{t('pages.team.filters.allStatuses')}</option>
               {statuses.map(status => (
                 <option key={status} value={status}>
                   {t(`review.stages.${status}`)}

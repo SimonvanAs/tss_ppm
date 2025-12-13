@@ -67,6 +67,18 @@ export function ReviewProvider({ children, reviewId }) {
     };
   }, [isDirty, review, goals, competencyScores]);
 
+  // Emit save status events for Header to consume
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent('review-save-status', {
+      detail: {
+        saving: isSaving,
+        saved: !isDirty && !isSaving && !isLoading && review !== null,
+        error: error,
+        dirty: isDirty,
+      }
+    }));
+  }, [isSaving, isDirty, isLoading, error, review]);
+
   const loadReview = async () => {
     try {
       setIsLoading(true);

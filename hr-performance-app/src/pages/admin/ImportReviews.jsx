@@ -199,7 +199,6 @@ export function ImportReviews() {
                 onClick={handleUpload}
                 disabled={!file || isUploading}
                 className="admin-btn admin-btn-primary"
-                style={{ width: '100%' }}
               >
                 {isUploading ? (
                   <>
@@ -276,7 +275,6 @@ export function ImportReviews() {
               <button
                 onClick={handleReset}
                 className="admin-btn admin-btn-secondary"
-                style={{ width: '100%' }}
               >
                 {t('admin.import.importAnother') || 'Import Another File'}
               </button>

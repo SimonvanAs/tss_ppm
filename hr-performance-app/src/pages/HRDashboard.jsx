@@ -32,7 +32,7 @@ export function HRDashboard() {
         reviewsApi.list({ year: new Date().getFullYear() }),
       ]);
 
-      const users = usersData.users || [];
+      const users = usersData.data || [];
       const reviews = reviewsData.reviews || [];
 
       // Calculate stats
@@ -177,7 +177,7 @@ export function HRDashboard() {
 
         {recentReviews.length === 0 ? (
           <div className="empty-state">
-            <p>No recent reviews</p>
+            <p>{t('pages.hrDashboard.noRecentReviews') || 'No recent reviews'}</p>
           </div>
         ) : (
           <table className="data-table">

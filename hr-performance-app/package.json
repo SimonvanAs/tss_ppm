@@ -21,9 +21,9 @@
     "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "jspdf": "^3.0.4",
-    "keycloak-js": "^26.0.0",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "keycloak-js": "^26.2.2",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
     "react-router-dom": "^7.1.1",
     "recharts": "^3.5.1",
     "uuid": "^13.0.0"

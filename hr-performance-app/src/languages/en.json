@@ -830,7 +830,10 @@
       "skipped": "skipped",
       "failed": "failed",
       "details": "Creation Details",
-      "startAnother": "Start Another Year"
+      "startAnother": "Start Another Year",
+      "confirmTitle": "Confirm Creation",
+      "confirmMessage": "You are about to create {{count}} review forms for the {{year}} performance year. This action cannot be undone.",
+      "confirmCreate": "Create Reviews"
     },
     "opcos": {
       "title": "OpCo Management",

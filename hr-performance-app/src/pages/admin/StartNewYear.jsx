@@ -1,40 +1,65 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { useAuth } from '../../contexts/AuthContext';
 import { adminApi } from '../../services/api';
 import './AdminLayout.css';
 
-// Status indicator component
+// Status indicator component with accessibility
 function StatusBadge({ status }) {
   const colors = {
-    will_create: { bg: '#d4edda', color: '#155724', label: 'Ready' },
-    created: { bg: '#d4edda', color: '#155724', label: 'Created' },
-    will_skip: { bg: '#fff3cd', color: '#856404', label: 'Will Skip' },
-    skipped: { bg: '#fff3cd', color: '#856404', label: 'Skipped' },
-    failed: { bg: '#f8d7da', color: '#721c24', label: 'Failed' },
+    will_create: { className: 'status-badge-success', label: 'Ready' },
+    created: { className: 'status-badge-success', label: 'Created' },
+    will_skip: { className: 'status-badge-warning', label: 'Will Skip' },
+    skipped: { className: 'status-badge-warning', label: 'Skipped' },
+    failed: { className: 'status-badge-error', label: 'Failed' },
   };
   const style = colors[status] || colors.skipped;
 
   return (
-    <span
-      style={{
-        display: 'inline-block',
-        padding: '2px 8px',
-        borderRadius: '12px',
-        fontSize: '0.75rem',
-        fontWeight: 500,
-        backgroundColor: style.bg,
-        color: style.color,
-      }}
-    >
+    <span className={`status-badge ${style.className}`} role="status">
       {style.label}
     </span>
   );
 }
 
+// Confirmation dialog component
+function ConfirmDialog({ isOpen, onConfirm, onCancel, title, message, confirmText, cancelText, loading }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div className="modal-content" style={{ maxWidth: '400px' }}>
+        <h3 id="confirm-title" style={{ marginBottom: '16px' }}>{title}</h3>
+        <p style={{ marginBottom: '24px', color: 'var(--text-secondary)' }}>{message}</p>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+          <button
+            onClick={onCancel}
+            className="admin-btn admin-btn-secondary"
+            disabled={loading}
+          >
+            {cancelText}
+          </button>
+          <button
+            onClick={onConfirm}
+            className="admin-btn admin-btn-primary"
+            disabled={loading}
+          >
+            {loading ? (
+              <>
+                <span className="admin-loading-spinner" style={{ marginRight: '8px' }} aria-hidden="true" />
+                {confirmText}
+              </>
+            ) : (
+              confirmText
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function StartNewYear() {
   const { t } = useLanguage();
-  const { hasRole } = useAuth();
 
   const currentYear = new Date().getFullYear();
   const [year, setYear] = useState(currentYear + 1);
@@ -44,8 +69,7 @@ export function StartNewYear() {
   const [createResult, setCreateResult] = useState(null);
   const [error, setError] = useState(null);
   const [step, setStep] = useState('configure'); // configure, preview, creating, complete
-
-  const isSuperAdmin = hasRole('TSS_SUPER_ADMIN');
+  const [showConfirm, setShowConfirm] = useState(false);
 
   // Generate year options (last year to 2 years ahead)
   const yearOptions = [];
@@ -73,7 +97,12 @@ export function StartNewYear() {
     }
   };
 
-  const handleCreate = async () => {
+  const handleCreateClick = () => {
+    setShowConfirm(true);
+  };
+
+  const handleConfirmCreate = async () => {
+    setShowConfirm(false);
     setLoading(true);
     setError(null);
     setStep('creating');
@@ -117,19 +146,22 @@ export function StartNewYear() {
       </div>
 
       {error && (
-        <div
-          style={{
-            padding: '12px 16px',
-            backgroundColor: 'rgba(220, 53, 69, 0.1)',
-            border: '1px solid #DC3545',
-            borderRadius: '8px',
-            color: '#DC3545',
-            marginBottom: '24px',
-          }}
-        >
+        <div className="alert alert-error" role="alert">
           {error}
         </div>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showConfirm}
+        onConfirm={handleConfirmCreate}
+        onCancel={() => setShowConfirm(false)}
+        title={t('admin.startNewYear.confirmTitle')}
+        message={t('admin.startNewYear.confirmMessage', { count: previewData?.created || 0, year })}
+        confirmText={t('admin.startNewYear.confirmCreate')}
+        cancelText={t('common.cancel')}
+        loading={loading}
+      />
 
       {/* Step 1: Configure */}
       {step === 'configure' && (
@@ -204,35 +236,28 @@ export function StartNewYear() {
       {step === 'preview' && previewData && (
         <>
           {/* Summary Cards */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-              gap: '16px',
-              marginBottom: '24px',
-            }}
-          >
-            <div className="admin-card" style={{ padding: '16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 700, color: '#28a745' }}>
+          <div className="summary-cards-grid">
+            <div className="admin-card summary-card">
+              <div className="summary-value text-success">
                 {previewData.created}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#666' }}>
+              <div className="summary-label">
                 {t('admin.startNewYear.willCreate')}
               </div>
             </div>
-            <div className="admin-card" style={{ padding: '16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 700, color: '#ffc107' }}>
+            <div className="admin-card summary-card">
+              <div className="summary-value text-warning">
                 {previewData.skipped}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#666' }}>
+              <div className="summary-label">
                 {t('admin.startNewYear.willSkip')}
               </div>
             </div>
-            <div className="admin-card" style={{ padding: '16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '2rem', fontWeight: 700, color: '#004A91' }}>
+            <div className="admin-card summary-card">
+              <div className="summary-value text-primary">
                 {previewData.details.length}
               </div>
-              <div style={{ fontSize: '0.875rem', color: '#666' }}>
+              <div className="summary-label">
                 {t('admin.startNewYear.totalEmployees')}
               </div>
             </div>
@@ -245,27 +270,27 @@ export function StartNewYear() {
                 {t('admin.startNewYear.previewTitle', { year })}
               </h3>
             </div>
-            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-              <table className="admin-table">
+            <div className="table-scroll-container">
+              <table className="admin-table" role="table" aria-label={t('admin.startNewYear.previewTitle', { year })}>
                 <thead>
                   <tr>
-                    <th>{t('admin.startNewYear.employee')}</th>
-                    <th>{t('admin.startNewYear.manager')}</th>
-                    <th>{t('admin.startNewYear.tovLevel')}</th>
-                    <th>{t('common.status')}</th>
-                    <th>{t('admin.startNewYear.notes')}</th>
+                    <th scope="col">{t('admin.startNewYear.employee')}</th>
+                    <th scope="col">{t('admin.startNewYear.manager')}</th>
+                    <th scope="col">{t('admin.startNewYear.tovLevel')}</th>
+                    <th scope="col">{t('common.status')}</th>
+                    <th scope="col">{t('admin.startNewYear.notes')}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {previewData.details.map((item) => (
                     <tr key={item.userId}>
                       <td>{item.employeeName}</td>
-                      <td>{item.managerName || <span style={{ color: '#dc3545' }}>-</span>}</td>
-                      <td>{item.tovLevelCode || <span style={{ color: '#dc3545' }}>-</span>}</td>
+                      <td>{item.managerName || <span className="text-error">-</span>}</td>
+                      <td>{item.tovLevelCode || <span className="text-error">-</span>}</td>
                       <td>
                         <StatusBadge status={item.status} />
                       </td>
-                      <td style={{ fontSize: '0.875rem', color: '#666' }}>
+                      <td className="text-secondary text-sm">
                         {item.reason || (item.warnings?.join(', '))}
                       </td>
                     </tr>
@@ -276,12 +301,12 @@ export function StartNewYear() {
           </div>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div className="button-group">
             <button onClick={handleReset} className="admin-btn admin-btn-secondary">
               {t('common.back')}
             </button>
             <button
-              onClick={handleCreate}
+              onClick={handleCreateClick}
               disabled={loading || previewData.created === 0}
               className="admin-btn admin-btn-primary"
             >
@@ -290,7 +315,7 @@ export function StartNewYear() {
           </div>
 
           {previewData.created === 0 && (
-            <p style={{ marginTop: '16px', color: '#666' }}>
+            <p className="text-secondary" style={{ marginTop: '16px' }}>
               {t('admin.startNewYear.noEligibleEmployees')}
             </p>
           )}
@@ -299,10 +324,10 @@ export function StartNewYear() {
 
       {/* Step 3: Creating */}
       {step === 'creating' && (
-        <div className="admin-card" style={{ padding: '48px', textAlign: 'center' }}>
-          <div className="admin-loading-spinner" style={{ width: '48px', height: '48px', margin: '0 auto 24px' }} />
+        <div className="admin-card loading-card" role="status" aria-busy="true" aria-label={t('admin.startNewYear.creating')}>
+          <div className="admin-loading-spinner loading-spinner-lg" aria-hidden="true" />
           <h3>{t('admin.startNewYear.creating')}</h3>
-          <p style={{ color: '#666' }}>{t('admin.startNewYear.pleaseWait')}</p>
+          <p className="text-secondary">{t('admin.startNewYear.pleaseWait')}</p>
         </div>
       )}
 
@@ -310,36 +335,22 @@ export function StartNewYear() {
       {step === 'complete' && createResult && (
         <>
           {/* Success Summary */}
-          <div
-            className="admin-card"
-            style={{
-              padding: '24px',
-              marginBottom: '24px',
-              backgroundColor: '#d4edda',
-              border: '1px solid #c3e6cb',
-            }}
-          >
-            <h3 style={{ color: '#155724', marginBottom: '16px' }}>
+          <div className="admin-card alert-success" role="status" aria-live="polite">
+            <h3 className="text-success-dark">
               {t('admin.startNewYear.complete')}
             </h3>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                gap: '16px',
-              }}
-            >
+            <div className="result-summary-grid">
               <div>
-                <strong style={{ color: '#28a745' }}>{createResult.created}</strong>{' '}
+                <strong className="text-success">{createResult.created}</strong>{' '}
                 {t('admin.startNewYear.created')}
               </div>
               <div>
-                <strong style={{ color: '#856404' }}>{createResult.skipped}</strong>{' '}
+                <strong className="text-warning-dark">{createResult.skipped}</strong>{' '}
                 {t('admin.startNewYear.skipped')}
               </div>
               {createResult.failed > 0 && (
                 <div>
-                  <strong style={{ color: '#dc3545' }}>{createResult.failed}</strong>{' '}
+                  <strong className="text-error">{createResult.failed}</strong>{' '}
                   {t('admin.startNewYear.failed')}
                 </div>
               )}
@@ -351,15 +362,15 @@ export function StartNewYear() {
             <div className="admin-card-header">
               <h3 className="admin-card-title">{t('admin.startNewYear.details')}</h3>
             </div>
-            <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-              <table className="admin-table">
+            <div className="table-scroll-container">
+              <table className="admin-table" role="table" aria-label={t('admin.startNewYear.details')}>
                 <thead>
                   <tr>
-                    <th>{t('admin.startNewYear.employee')}</th>
-                    <th>{t('admin.startNewYear.manager')}</th>
-                    <th>{t('admin.startNewYear.tovLevel')}</th>
-                    <th>{t('common.status')}</th>
-                    <th>{t('admin.startNewYear.notes')}</th>
+                    <th scope="col">{t('admin.startNewYear.employee')}</th>
+                    <th scope="col">{t('admin.startNewYear.manager')}</th>
+                    <th scope="col">{t('admin.startNewYear.tovLevel')}</th>
+                    <th scope="col">{t('common.status')}</th>
+                    <th scope="col">{t('admin.startNewYear.notes')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -371,7 +382,7 @@ export function StartNewYear() {
                       <td>
                         <StatusBadge status={item.status} />
                       </td>
-                      <td style={{ fontSize: '0.875rem', color: '#666' }}>
+                      <td className="text-secondary text-sm">
                         {item.reason || (item.warnings?.join(', '))}
                       </td>
                     </tr>
@@ -382,7 +393,7 @@ export function StartNewYear() {
           </div>
 
           {/* Action Buttons */}
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div className="button-group">
             <button onClick={handleReset} className="admin-btn admin-btn-primary">
               {t('admin.startNewYear.startAnother')}
             </button>

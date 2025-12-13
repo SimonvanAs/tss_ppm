@@ -1395,27 +1395,55 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       existingReviewEmployeeIds = new Set(existingReviews.map(r => r.employeeId));
     }
 
+    // Pre-fetch all competency levels grouped by TOV level (fixes N+1 query)
+    const allCompetencyLevels = await fastify.prisma.competencyLevel.findMany({
+      where: {
+        opcoId,
+        isActive: true,
+      },
+      orderBy: { sortOrder: 'asc' },
+    });
+    const competencyLevelsByTovLevel = new Map<string, typeof allCompetencyLevels>();
+    for (const cl of allCompetencyLevels) {
+      const existing = competencyLevelsByTovLevel.get(cl.tovLevelId) || [];
+      existing.push(cl);
+      competencyLevelsByTovLevel.set(cl.tovLevelId, existing);
+    }
+
     // Process each employee
+    type DetailItem = {
+      userId: string;
+      employeeName: string;
+      managerName: string | null;
+      tovLevelCode: string | null;
+      status: 'created' | 'skipped' | 'failed' | 'will_create' | 'will_skip';
+      reason?: string;
+      reviewCycleId?: string;
+      warnings?: string[];
+    };
+
     const results: {
       created: number;
       skipped: number;
       failed: number;
-      details: Array<{
-        userId: string;
-        employeeName: string;
-        managerName: string | null;
-        tovLevelCode: string | null;
-        status: 'created' | 'skipped' | 'failed' | 'will_create' | 'will_skip';
-        reason?: string;
-        reviewCycleId?: string;
-        warnings?: string[];
-      }>;
+      details: DetailItem[];
     } = {
       created: 0,
       skipped: 0,
       failed: 0,
       details: [],
     };
+
+    // Prepare employees for creation (validation pass)
+    type EligibleEmployee = {
+      employee: typeof employees[0];
+      employeeName: string;
+      managerName: string | null;
+      tovLevelId: string;
+      tovLevelCode: string | null;
+      warnings: string[];
+    };
+    const eligibleEmployees: EligibleEmployee[] = [];
 
     for (const employee of employees) {
       const employeeName = `${employee.firstName} ${employee.lastName}`;
@@ -1494,62 +1522,74 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
         continue;
       }
 
-      // Create the review cycle
+      // Add to eligible list for transactional creation
+      eligibleEmployees.push({
+        employee,
+        employeeName,
+        managerName,
+        tovLevelId,
+        tovLevelCode,
+        warnings,
+      });
+    }
+
+    // Create all reviews in a transaction (all succeed or all fail)
+    if (!isDryRun && eligibleEmployees.length > 0) {
       try {
-        // Get competency levels for the TOV level
-        const competencyLevels = await fastify.prisma.competencyLevel.findMany({
-          where: {
-            tovLevelId,
-            opcoId,
-            isActive: true,
-          },
-          orderBy: { sortOrder: 'asc' },
-        });
+        await fastify.prisma.$transaction(async (tx) => {
+          for (const { employee, employeeName, managerName, tovLevelId, tovLevelCode, warnings } of eligibleEmployees) {
+            const competencyLevels = competencyLevelsByTovLevel.get(tovLevelId) || [];
 
-        const review = await fastify.prisma.reviewCycle.create({
-          data: {
-            opcoId,
-            employeeId: employee.id,
-            managerId: employee.managerId,
-            year: body.year,
-            tovLevelId,
-            status: 'DRAFT',
-            stages: {
-              create: [
-                { stageType: 'GOAL_SETTING', status: 'PENDING' },
-                { stageType: 'MID_YEAR_REVIEW', status: 'PENDING' },
-                { stageType: 'END_YEAR_REVIEW', status: 'PENDING' },
-              ],
-            },
-            competencyScores: {
-              create: competencyLevels.map(cl => ({
-                competencyLevelId: cl.id,
-              })),
-            },
-          },
-        });
+            const review = await tx.reviewCycle.create({
+              data: {
+                opcoId,
+                employeeId: employee.id,
+                managerId: employee.managerId!,
+                year: body.year,
+                tovLevelId,
+                status: 'DRAFT',
+                stages: {
+                  create: [
+                    { stageType: 'GOAL_SETTING', status: 'PENDING' },
+                    { stageType: 'MID_YEAR_REVIEW', status: 'PENDING' },
+                    { stageType: 'END_YEAR_REVIEW', status: 'PENDING' },
+                  ],
+                },
+                competencyScores: {
+                  create: competencyLevels.map(cl => ({
+                    competencyLevelId: cl.id,
+                  })),
+                },
+              },
+            });
 
-        results.created++;
-        results.details.push({
-          userId: employee.id,
-          employeeName,
-          managerName,
-          tovLevelCode,
-          status: 'created',
-          reviewCycleId: review.id,
-          warnings: warnings.length > 0 ? warnings : undefined,
+            results.created++;
+            results.details.push({
+              userId: employee.id,
+              employeeName,
+              managerName,
+              tovLevelCode,
+              status: 'created',
+              reviewCycleId: review.id,
+              warnings: warnings.length > 0 ? warnings : undefined,
+            });
+          }
         });
       } catch (err: any) {
-        results.failed++;
-        results.details.push({
-          userId: employee.id,
-          employeeName,
-          managerName,
-          tovLevelCode,
-          status: 'failed',
-          reason: err.message || 'Unknown error',
-          warnings: warnings.length > 0 ? warnings : undefined,
-        });
+        // Transaction failed - mark all eligible employees as failed
+        results.created = 0;
+        for (const { employee, employeeName, managerName, tovLevelCode, warnings } of eligibleEmployees) {
+          results.failed++;
+          results.details.push({
+            userId: employee.id,
+            employeeName,
+            managerName,
+            tovLevelCode,
+            status: 'failed',
+            reason: err.message || 'Transaction failed',
+            warnings: warnings.length > 0 ? warnings : undefined,
+          });
+        }
       }
     }
 

@@ -830,7 +830,10 @@
       "skipped": "overgeslagen",
       "failed": "mislukt",
       "details": "Aanmaakdetails",
-      "startAnother": "Nog een Jaar Starten"
+      "startAnother": "Nog een Jaar Starten",
+      "confirmTitle": "Aanmaken Bevestigen",
+      "confirmMessage": "U staat op het punt {{count}} beoordelingsformulieren aan te maken voor het prestatiejaar {{year}}. Deze actie kan niet ongedaan worden gemaakt.",
+      "confirmCreate": "Aanmaken"
     },
     "opcos": {
       "title": "OpCo Beheer",

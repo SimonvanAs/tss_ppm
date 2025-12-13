@@ -830,7 +830,10 @@
       "skipped": "omitidos",
       "failed": "fallidos",
       "details": "Detalles de Creación",
-      "startAnother": "Iniciar Otro Año"
+      "startAnother": "Iniciar Otro Año",
+      "confirmTitle": "Confirmar Creación",
+      "confirmMessage": "Está a punto de crear {{count}} formularios de evaluación para el año de desempeño {{year}}. Esta acción no se puede deshacer.",
+      "confirmCreate": "Crear Evaluaciones"
     },
     "opcos": {
       "title": "Gestión de OpCo",

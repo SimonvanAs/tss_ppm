@@ -59,6 +59,12 @@ const ImportIcon = () => (
   </svg>
 );
 
+const ImportEmployeesIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+  </svg>
+);
+
 const NewYearIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor">
     <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM9 10H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/>
@@ -106,6 +112,7 @@ export function AdminLayout() {
     if (path.includes('/function-titles')) return t('admin.nav.functionTitles');
     if (path.includes('/tov-levels')) return t('admin.nav.tovLevels');
     if (path.includes('/competencies')) return t('admin.nav.competencies');
+    if (path.includes('/import-employees')) return t('admin.nav.importEmployees');
     if (path.includes('/import')) return t('admin.nav.import');
     if (path.includes('/start-new-year')) return t('admin.nav.startNewYear');
     if (path.includes('/settings')) return t('admin.nav.settings');
@@ -212,6 +219,15 @@ export function AdminLayout() {
             >
               <span className="admin-nav-icon"><ImportIcon /></span>
               {t('admin.nav.import')}
+            </NavLink>
+
+            <NavLink
+              to="/admin/import-employees"
+              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+              onClick={closeSidebar}
+            >
+              <span className="admin-nav-icon"><ImportEmployeesIcon /></span>
+              {t('admin.nav.importEmployees')}
             </NavLink>
 
             <NavLink

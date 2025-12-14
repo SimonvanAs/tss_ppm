@@ -1652,6 +1652,646 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
   });
 
   // ============================================
+  // EMPLOYEE BULK IMPORT (with User Creation and Historic Scores)
+  // ============================================
+
+  fastify.post('/employees/import', {
+    schema: {
+      description: 'Bulk import employees with user creation and historic performance scores',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      consumes: ['multipart/form-data'],
+    },
+    preHandler: [fastify.authorize(UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    try {
+      const data = await request.file();
+      if (!data) {
+        return reply.status(400).send({
+          error: { message: 'No file provided', statusCode: 400 },
+        });
+      }
+
+      const bufferData = await data.toBuffer();
+      const filename = data.filename || 'import.xlsx';
+
+      // File upload constants
+      const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
+      const MAX_ROW_COUNT = 1000;
+
+      // Validate MIME type
+      const allowedMimeTypes = [
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // .xlsx
+        'application/vnd.ms-excel', // .xls
+        'text/csv', // .csv
+      ];
+
+      if (!data.mimetype || !allowedMimeTypes.includes(data.mimetype)) {
+        return reply.status(400).send({
+          error: { message: 'Invalid file type. Only Excel and CSV files are allowed.', statusCode: 400 },
+        });
+      }
+
+      // Check file size
+      if (bufferData.length > MAX_FILE_SIZE_BYTES) {
+        return reply.status(400).send({
+          error: { message: 'File size exceeds 10MB limit', statusCode: 400 },
+        });
+      }
+
+      // Get dryRun from form fields
+      const fields = data.fields as Record<string, any>;
+      const dryRunField = fields.dryRun;
+      const dryRun = dryRunField?.value === 'true' || dryRunField === 'true';
+
+      // Parse Excel/CSV file
+      const { default: ExcelJS } = await import('exceljs');
+      const workbook = new ExcelJS.Workbook();
+
+      // Determine file type and load
+      const isCSV = filename.toLowerCase().endsWith('.csv');
+      if (isCSV) {
+        // For CSV, use csv.load
+        const csvString = bufferData.toString('utf-8');
+        const worksheet = workbook.addWorksheet('Import');
+        const lines = csvString.split(/\r?\n/).filter(line => line.trim());
+        lines.forEach((line, index) => {
+          const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+          worksheet.addRow(values);
+        });
+      } else {
+        // @ts-ignore - Buffer type compatibility
+        await workbook.xlsx.load(bufferData);
+      }
+
+      const worksheet = workbook.getWorksheet(1);
+      if (!worksheet) {
+        return reply.status(400).send({
+          error: { message: 'Excel file is empty or invalid', statusCode: 400 },
+        });
+      }
+
+      // Check row limit (max MAX_ROW_COUNT rows)
+      if (worksheet.rowCount > MAX_ROW_COUNT + 1) { // +1 for header row
+        return reply.status(400).send({
+          error: { message: `File exceeds maximum of ${MAX_ROW_COUNT} rows`, statusCode: 400 },
+        });
+      }
+
+      // Parse header row
+      const headerRow = worksheet.getRow(1);
+      const headers: string[] = [];
+      headerRow.eachCell((cell, colNumber) => {
+        headers[colNumber - 1] = cell.value?.toString() || '';
+      });
+
+      // Flexible column mapping
+      const columnMap: Record<string, string> = {};
+      headers.forEach((header) => {
+        const normalized = header.toLowerCase().trim();
+        if (normalized.includes('email') && !normalized.includes('manager')) {
+          columnMap.email = header;
+        } else if (normalized.includes('name') && !normalized.includes('manager') && !normalized.includes('function')) {
+          columnMap.name = header;
+        } else if (normalized.includes('first') && normalized.includes('name')) {
+          columnMap.firstName = header;
+        } else if (normalized.includes('last') && normalized.includes('name')) {
+          columnMap.lastName = header;
+        } else if (normalized.includes('role') && !normalized.includes('title')) {
+          columnMap.role = header;
+        } else if (normalized.includes('manager') && normalized.includes('email')) {
+          columnMap.managerEmail = header;
+        } else if (normalized.includes('function') || (normalized.includes('job') && normalized.includes('title'))) {
+          columnMap.functionTitle = header;
+        } else if (normalized.includes('tov') || (normalized.includes('ide') && normalized.includes('level'))) {
+          columnMap.tovLevel = header;
+        } else if (normalized.includes('business') && normalized.includes('unit')) {
+          columnMap.businessUnit = header;
+        } else if (normalized === 'year' || (normalized.includes('year') && !normalized.includes('score'))) {
+          columnMap.year = header;
+        } else if (normalized.includes('what') && normalized.includes('score')) {
+          columnMap.whatScore = header;
+        } else if (normalized.includes('how') && normalized.includes('score')) {
+          columnMap.howScore = header;
+        }
+      });
+
+      // Validate required columns
+      if (!columnMap.email) {
+        return reply.status(400).send({
+          error: {
+            message: 'Excel file must contain an Email column',
+            statusCode: 400,
+          },
+        });
+      }
+
+      // Get lookup data for validation
+      const [existingUsers, functionTitles, tovLevels, businessUnits] = await Promise.all([
+        fastify.prisma.user.findMany({
+          where: withTenantFilter(request),
+          select: { id: true, email: true, keycloakId: true },
+        }),
+        fastify.prisma.functionTitle.findMany({
+          where: { ...withTenantFilter(request), isActive: true },
+          include: { tovLevel: true },
+        }),
+        fastify.prisma.tovLevel.findMany({
+          where: { ...withTenantFilter(request), isActive: true },
+        }),
+        fastify.prisma.businessUnit.findMany({
+          where: { ...withTenantFilter(request), isActive: true },
+        }),
+      ]);
+
+      const usersByEmail = new Map(existingUsers.map(u => [u.email.toLowerCase(), u]));
+      const functionTitlesByName = new Map(functionTitles.map(ft => [ft.name.toLowerCase(), ft]));
+      const tovLevelsByCode = new Map(tovLevels.map(tl => [tl.code.toLowerCase(), tl]));
+      const businessUnitsByCode = new Map(businessUnits.map(bu => [bu.code.toLowerCase(), bu]));
+      const businessUnitsByName = new Map(businessUnits.map(bu => [bu.name.toLowerCase(), bu]));
+
+      // Results tracking
+      const results = {
+        total: 0,
+        usersCreated: 0,
+        usersUpdated: 0,
+        reviewsCreated: 0,
+        reviewsUpdated: 0,
+        skipped: 0,
+        errors: [] as Array<{ row: number; message: string }>,
+      };
+
+      // Collect valid rows for processing
+      type ValidRow = {
+        rowNum: number;
+        email: string;
+        firstName: string;
+        lastName: string;
+        role?: string;
+        managerEmail?: string;
+        functionTitleId?: string;
+        tovLevelId?: string;
+        businessUnitId?: string;
+        year?: number;
+        whatScore?: number;
+        howScore?: number;
+        existingUserId?: string;
+        isNewUser: boolean;
+      };
+      const validRows: ValidRow[] = [];
+
+      // First pass: validate all rows
+      for (let rowNum = 2; rowNum <= worksheet.rowCount; rowNum++) {
+        const row = worksheet.getRow(rowNum);
+        if (!row || row.cellCount === 0) continue;
+
+        // Check if row is completely empty
+        let hasContent = false;
+        row.eachCell({ includeEmpty: false }, () => { hasContent = true; });
+        if (!hasContent) continue;
+
+        results.total++;
+
+        try {
+          const getCellValue = (colName: string): string | null => {
+            const headerIndex = headers.indexOf(columnMap[colName]);
+            if (headerIndex === -1) return null;
+            const cell = row.getCell(headerIndex + 1);
+            const value = cell.value;
+            if (value === null || value === undefined) return null;
+            if (typeof value === 'object' && 'text' in value) {
+              return (value as any).text?.toString()?.trim() || null;
+            }
+            return value.toString()?.trim() || null;
+          };
+
+          // Required fields
+          const email = getCellValue('email');
+          if (!email) {
+            results.skipped++;
+            results.errors.push({ row: rowNum, message: 'Missing email' });
+            continue;
+          }
+
+          // Validate email format
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (!emailRegex.test(email)) {
+            results.skipped++;
+            results.errors.push({ row: rowNum, message: `Invalid email format: ${email}` });
+            continue;
+          }
+
+          // Get name (either from Name column or First/Last name columns)
+          let firstName = getCellValue('firstName');
+          let lastName = getCellValue('lastName');
+          const fullName = getCellValue('name');
+
+          if (!firstName && !lastName && fullName) {
+            const nameParts = fullName.split(/\s+/);
+            firstName = nameParts[0] || '';
+            lastName = nameParts.slice(1).join(' ') || '';
+          }
+
+          if (!firstName && !lastName) {
+            // Try to derive from email
+            const emailPart = email.split('@')[0];
+            const nameParts = emailPart.split(/[._-]/);
+            // Sanitize derived names: remove digits and special characters, capitalize first letter
+            const sanitizeName = (name: string): string => {
+              const cleaned = name
+                .replace(/[^a-zA-Z\s]/g, '') // Remove non-letter characters
+                .trim();
+              if (!cleaned) return '';
+              return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
+            };
+            firstName = sanitizeName(nameParts[0]) || 'Unknown';
+            lastName = nameParts.slice(1).map(sanitizeName).filter(Boolean).join(' ') || '';
+          }
+
+          // Check for existing user
+          const existingUser = usersByEmail.get(email.toLowerCase());
+
+          // Get optional fields
+          const roleStr = getCellValue('role');
+          const managerEmail = getCellValue('managerEmail');
+          const functionTitleName = getCellValue('functionTitle');
+          const tovLevelCode = getCellValue('tovLevel');
+          const businessUnitCodeOrName = getCellValue('businessUnit');
+          const yearStr = getCellValue('year');
+          const whatScoreStr = getCellValue('whatScore');
+          const howScoreStr = getCellValue('howScore');
+
+          // Validate and resolve references
+          let functionTitleId: string | undefined;
+          let tovLevelId: string | undefined;
+          let businessUnitId: string | undefined;
+
+          if (functionTitleName) {
+            const ft = functionTitlesByName.get(functionTitleName.toLowerCase());
+            if (ft) {
+              functionTitleId = ft.id;
+              // Auto-apply TOV level from function title if not explicitly set
+              if (!tovLevelCode && ft.tovLevelId) {
+                tovLevelId = ft.tovLevelId;
+              }
+            }
+          }
+
+          if (tovLevelCode) {
+            const tl = tovLevelsByCode.get(tovLevelCode.toLowerCase());
+            if (tl) {
+              tovLevelId = tl.id;
+            } else {
+              results.skipped++;
+              results.errors.push({
+                row: rowNum,
+                message: `Invalid TOV level: ${tovLevelCode}. Valid values: ${tovLevels.map(t => t.code).join(', ')}`,
+              });
+              continue;
+            }
+          }
+
+          if (businessUnitCodeOrName) {
+            const bu = businessUnitsByCode.get(businessUnitCodeOrName.toLowerCase()) ||
+                       businessUnitsByName.get(businessUnitCodeOrName.toLowerCase());
+            if (bu) {
+              businessUnitId = bu.id;
+            }
+          }
+
+          // Parse year and scores
+          let year: number | undefined;
+          let whatScore: number | undefined;
+          let howScore: number | undefined;
+
+          if (yearStr) {
+            year = parseInt(yearStr, 10);
+            if (isNaN(year) || year < 2000 || year > 2100) {
+              results.skipped++;
+              results.errors.push({ row: rowNum, message: `Invalid year: ${yearStr}` });
+              continue;
+            }
+          }
+
+          if (whatScoreStr) {
+            whatScore = parseFloat(whatScoreStr);
+            if (isNaN(whatScore) || whatScore < 1 || whatScore > 3) {
+              results.skipped++;
+              results.errors.push({ row: rowNum, message: `Invalid WHAT score: ${whatScoreStr}. Must be between 1 and 3.` });
+              continue;
+            }
+          }
+
+          if (howScoreStr) {
+            howScore = parseFloat(howScoreStr);
+            if (isNaN(howScore) || howScore < 1 || howScore > 3) {
+              results.skipped++;
+              results.errors.push({ row: rowNum, message: `Invalid HOW score: ${howScoreStr}. Must be between 1 and 3.` });
+              continue;
+            }
+          }
+
+          // Add to valid rows
+          validRows.push({
+            rowNum,
+            email: email.toLowerCase(),
+            firstName: firstName || '',
+            lastName: lastName || '',
+            role: roleStr?.toUpperCase(),
+            managerEmail: managerEmail?.toLowerCase(),
+            functionTitleId,
+            tovLevelId,
+            businessUnitId,
+            year,
+            whatScore,
+            howScore,
+            existingUserId: existingUser?.id,
+            isNewUser: !existingUser,
+          });
+        } catch (err: any) {
+          results.skipped++;
+          results.errors.push({
+            row: rowNum,
+            message: err.message || 'Unknown error parsing row',
+          });
+        }
+      }
+
+      // If dry run, just return what would happen
+      if (dryRun) {
+        // Batch fetch existing reviews to avoid N+1 query pattern
+        const rowsWithScores = validRows.filter(vr =>
+          vr.year && (vr.whatScore !== undefined || vr.howScore !== undefined) && vr.existingUserId
+        );
+        const existingReviews = rowsWithScores.length > 0
+          ? await fastify.prisma.reviewCycle.findMany({
+              where: {
+                employeeId: { in: rowsWithScores.map(vr => vr.existingUserId!) },
+                year: { in: [...new Set(rowsWithScores.map(vr => vr.year!))] },
+                ...withTenantFilter(request),
+              },
+            })
+          : [];
+        const reviewMap = new Map(
+          existingReviews.map(r => [`${r.employeeId}-${r.year}`, r])
+        );
+
+        for (const vr of validRows) {
+          if (vr.isNewUser) {
+            results.usersCreated++;
+          } else {
+            // Check if there are updates to apply
+            if (vr.functionTitleId || vr.tovLevelId || vr.businessUnitId || vr.managerEmail) {
+              results.usersUpdated++;
+            }
+          }
+          if (vr.year && (vr.whatScore !== undefined || vr.howScore !== undefined)) {
+            // Check if review exists using pre-fetched map
+            const existingReview = vr.existingUserId
+              ? reviewMap.get(`${vr.existingUserId}-${vr.year}`)
+              : null;
+            if (existingReview) {
+              results.reviewsUpdated++;
+            } else {
+              results.reviewsCreated++;
+            }
+          }
+        }
+
+        return reply.status(200).send({
+          success: true,
+          dryRun: true,
+          filename,
+          results,
+          preview: validRows.slice(0, 10).map(vr => ({
+            row: vr.rowNum,
+            email: vr.email,
+            name: `${vr.firstName} ${vr.lastName}`.trim(),
+            action: vr.isNewUser ? 'CREATE_USER' : 'UPDATE_USER',
+            hasScores: !!(vr.year && (vr.whatScore !== undefined || vr.howScore !== undefined)),
+          })),
+        });
+      }
+
+      // Execute import in transaction
+      if (validRows.length > 0) {
+        try {
+          await fastify.prisma.$transaction(async (tx) => {
+            // Build a map of emails to user IDs (including newly created users)
+            const userIdByEmail = new Map(existingUsers.map(u => [u.email.toLowerCase(), u.id]));
+
+            // First pass: Create new users
+            for (const vr of validRows) {
+              if (vr.isNewUser) {
+                /**
+                 * SECURITY NOTE: Placeholder Keycloak ID
+                 *
+                 * This generates a temporary placeholder ID for users created via bulk import.
+                 * The user cannot authenticate with this placeholder ID.
+                 *
+                 * Expected flow:
+                 * 1. Admin creates user via bulk import (placeholder keycloakId assigned)
+                 * 2. User is invited/registered in Keycloak (via admin portal or self-registration)
+                 * 3. On first login, the authentication middleware matches the user by email
+                 *    and updates the keycloakId to the real Keycloak subject ID
+                 *
+                 * The placeholder prefix 'placeholder-' is checked by the auth middleware
+                 * to identify users needing keycloakId synchronization.
+                 *
+                 * Users with placeholder IDs:
+                 * - Cannot log in until registered in Keycloak
+                 * - Are visible in the admin portal for invitation
+                 * - Can have reviews and relationships assigned before they authenticate
+                 */
+                const keycloakId = `placeholder-${Date.now()}-${Math.random().toString(36).substring(7)}`;
+
+                const newUser = await tx.user.create({
+                  data: {
+                    opcoId: request.tenant.opcoId,
+                    keycloakId,
+                    email: vr.email,
+                    firstName: vr.firstName,
+                    lastName: vr.lastName,
+                    displayName: `${vr.firstName} ${vr.lastName}`.trim() || null,
+                    role: (vr.role && Object.values(UserRole).includes(vr.role as UserRole))
+                      ? vr.role as UserRole
+                      : UserRole.EMPLOYEE,
+                    functionTitleId: vr.functionTitleId || null,
+                    tovLevelId: vr.tovLevelId || null,
+                    businessUnitId: vr.businessUnitId || null,
+                    isActive: true,
+                  },
+                });
+
+                vr.existingUserId = newUser.id;
+                userIdByEmail.set(vr.email, newUser.id);
+                results.usersCreated++;
+              }
+            }
+
+            // Second pass: Update existing users and resolve manager relationships
+            for (const vr of validRows) {
+              if (!vr.isNewUser && vr.existingUserId) {
+                const updateData: any = {};
+
+                if (vr.functionTitleId) updateData.functionTitleId = vr.functionTitleId;
+                if (vr.tovLevelId) updateData.tovLevelId = vr.tovLevelId;
+                if (vr.businessUnitId) updateData.businessUnitId = vr.businessUnitId;
+
+                if (Object.keys(updateData).length > 0) {
+                  await tx.user.update({
+                    where: { id: vr.existingUserId },
+                    data: updateData,
+                  });
+                  results.usersUpdated++;
+                }
+              }
+
+              // Resolve manager relationship
+              if (vr.managerEmail && vr.existingUserId) {
+                const managerId = userIdByEmail.get(vr.managerEmail);
+                if (managerId && managerId !== vr.existingUserId) {
+                  await tx.user.update({
+                    where: { id: vr.existingUserId },
+                    data: { managerId },
+                  });
+                }
+              }
+            }
+
+            // Third pass: Create/update review cycles
+            for (const vr of validRows) {
+              if (!vr.year || (vr.whatScore === undefined && vr.howScore === undefined)) {
+                continue;
+              }
+
+              if (!vr.existingUserId) continue;
+
+              // Get user's manager and TOV level for the review
+              const user = await tx.user.findUnique({
+                where: { id: vr.existingUserId },
+                select: { managerId: true, tovLevelId: true },
+              });
+
+              if (!user) continue;
+
+              // Get TOV level (from row, user, or default)
+              let reviewTovLevelId = vr.tovLevelId || user.tovLevelId;
+              if (!reviewTovLevelId) {
+                const defaultTov = tovLevels[0];
+                if (defaultTov) reviewTovLevelId = defaultTov.id;
+              }
+
+              if (!reviewTovLevelId) {
+                results.errors.push({
+                  row: vr.rowNum,
+                  message: 'Cannot create review without TOV level',
+                });
+                continue;
+              }
+
+              // Check for existing review
+              const existingReview = await tx.reviewCycle.findFirst({
+                where: {
+                  employeeId: vr.existingUserId,
+                  year: vr.year,
+                  ...withTenantFilter(request),
+                },
+              });
+
+              if (existingReview) {
+                // Update existing review
+                await tx.reviewCycle.update({
+                  where: { id: existingReview.id },
+                  data: {
+                    whatScoreEndYear: vr.whatScore ?? existingReview.whatScoreEndYear,
+                    howScoreEndYear: vr.howScore ?? existingReview.howScoreEndYear,
+                    status: CycleStatus.COMPLETED,
+                    tovLevelId: vr.tovLevelId || existingReview.tovLevelId,
+                  },
+                });
+                results.reviewsUpdated++;
+              } else {
+                // Get competency levels for the TOV level
+                const competencyLevels = await tx.competencyLevel.findMany({
+                  where: {
+                    tovLevelId: reviewTovLevelId,
+                    ...withTenantFilter(request),
+                    isActive: true,
+                  },
+                  orderBy: { sortOrder: 'asc' },
+                });
+
+                // Create new review
+                await tx.reviewCycle.create({
+                  data: {
+                    opcoId: request.tenant.opcoId,
+                    employeeId: vr.existingUserId,
+                    managerId: user.managerId || vr.existingUserId, // Self if no manager
+                    year: vr.year,
+                    tovLevelId: reviewTovLevelId,
+                    status: CycleStatus.COMPLETED,
+                    whatScoreEndYear: vr.whatScore ?? null,
+                    howScoreEndYear: vr.howScore ?? null,
+                    stages: {
+                      create: [
+                        { stageType: 'GOAL_SETTING', status: 'COMPLETED' },
+                        { stageType: 'MID_YEAR_REVIEW', status: 'COMPLETED' },
+                        { stageType: 'END_YEAR_REVIEW', status: 'COMPLETED' },
+                      ],
+                    },
+                    competencyScores: {
+                      create: competencyLevels.map(cl => ({
+                        competencyLevelId: cl.id,
+                        scoreEndYear: vr.howScore ? Math.round(vr.howScore) : null,
+                      })),
+                    },
+                  },
+                });
+                results.reviewsCreated++;
+              }
+            }
+          }, { timeout: 30000 }); // 30 second timeout
+
+          // Audit log
+          await fastify.audit.logFromRequest(request, {
+            entityType: 'User',
+            entityId: 'bulk-import',
+            action: 'IMPORT',
+            metadata: {
+              filename,
+              ...results,
+            },
+          });
+        } catch (err: any) {
+          fastify.log.error(err);
+          return reply.status(500).send({
+            error: {
+              message: `Import failed: ${err.message}. No changes were made.`,
+              statusCode: 500,
+            },
+          });
+        }
+      }
+
+      return reply.status(200).send({
+        success: true,
+        dryRun: false,
+        filename,
+        results,
+      });
+    } catch (err: any) {
+      fastify.log.error(err);
+      return reply.status(500).send({
+        error: {
+          message: err.message || 'Failed to import employees',
+          statusCode: 500,
+        },
+      });
+    }
+  });
+
+  // ============================================
   // BULK REVIEW CYCLE CREATION
   // ============================================
 

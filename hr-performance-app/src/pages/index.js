@@ -25,6 +25,7 @@ export {
   OpCoManagement,
   GlobalDashboard,
   ImportReviews,
+  ImportEmployees,
   StartNewYear,
   WorkflowSettings,
   BrandingSettings,

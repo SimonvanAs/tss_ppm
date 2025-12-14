@@ -652,6 +652,130 @@ describe('API Endpoint Objects', () => {
         expect.any(Object)
       );
     });
+
+    describe('importEmployees', () => {
+      it('should upload file with dryRun=true by default', async () => {
+        const mockFile = new File(['test content'], 'employees.xlsx', {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+
+        global.fetch.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({
+            results: {
+              total: 10,
+              usersCreated: 5,
+              usersUpdated: 3,
+              reviewsCreated: 2,
+              reviewsUpdated: 0,
+              skipped: 0,
+              errors: [],
+            },
+            preview: [],
+          }),
+        });
+
+        const result = await adminApi.importEmployees(mockFile);
+
+        expect(fetch).toHaveBeenCalledWith(
+          expect.stringContaining('/admin/employees/import'),
+          expect.objectContaining({
+            method: 'POST',
+          })
+        );
+
+        // Verify FormData was sent
+        const fetchCall = fetch.mock.calls[0];
+        expect(fetchCall[1].body).toBeInstanceOf(FormData);
+
+        expect(result.results.usersCreated).toBe(5);
+      });
+
+      it('should upload file with dryRun=false when specified', async () => {
+        const mockFile = new File(['test content'], 'employees.csv', {
+          type: 'text/csv',
+        });
+
+        global.fetch.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({
+            results: {
+              total: 5,
+              usersCreated: 5,
+              usersUpdated: 0,
+              reviewsCreated: 0,
+              reviewsUpdated: 0,
+              skipped: 0,
+              errors: [],
+            },
+          }),
+        });
+
+        await adminApi.importEmployees(mockFile, false);
+
+        const fetchCall = fetch.mock.calls[0];
+        const formData = fetchCall[1].body;
+        expect(formData).toBeInstanceOf(FormData);
+        expect(formData.get('dryRun')).toBe('false');
+      });
+
+      it('should include Authorization header when token is set', async () => {
+        apiClient.setAccessToken('test-import-token');
+
+        const mockFile = new File(['test'], 'test.xlsx', {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+
+        global.fetch.mockResolvedValue({
+          ok: true,
+          status: 200,
+          json: () => Promise.resolve({ results: {} }),
+        });
+
+        await adminApi.importEmployees(mockFile);
+
+        expect(fetch).toHaveBeenCalledWith(
+          expect.any(String),
+          expect.objectContaining({
+            headers: expect.objectContaining({
+              Authorization: 'Bearer test-import-token',
+            }),
+          })
+        );
+      });
+
+      it('should throw error on failed import', async () => {
+        const mockFile = new File(['test'], 'test.xlsx', {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+
+        global.fetch.mockResolvedValue({
+          ok: false,
+          status: 400,
+          json: () => Promise.resolve({
+            error: { message: 'Invalid file format' },
+          }),
+        });
+
+        await expect(adminApi.importEmployees(mockFile)).rejects.toThrow('Invalid file format');
+      });
+
+      it('should throw generic error when no message provided', async () => {
+        const mockFile = new File(['test'], 'test.xlsx', {
+          type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+
+        global.fetch.mockResolvedValue({
+          ok: false,
+          status: 500,
+          json: () => Promise.resolve({}),
+        });
+
+        await expect(adminApi.importEmployees(mockFile)).rejects.toThrow('Failed to import employees');
+      });
+    });
   });
 
   describe('analyticsApi', () => {

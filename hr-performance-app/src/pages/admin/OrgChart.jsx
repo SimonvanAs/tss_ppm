@@ -187,12 +187,19 @@ function EditManagerModal({ user, managers, onSave, onClose, t }) {
       className="admin-modal-overlay"
       onClick={onClose}
       onKeyDown={(e) => e.key === 'Escape' && onClose()}
-      role="dialog"
-      aria-modal="true"
+      role="button"
+      tabIndex={-1}
+      aria-label="Close modal"
     >
-      <div className="admin-modal" onClick={e => e.stopPropagation()} role="document">
+      <div
+        className="admin-modal"
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-manager-title"
+      >
         <div className="admin-modal-header">
-          <h3 className="admin-modal-title">
+          <h3 id="edit-manager-title" className="admin-modal-title">
             {t('admin.orgChart.editManager')}: {user?.firstName} {user?.lastName}
           </h3>
           <button className="admin-modal-close" onClick={onClose}>&times;</button>

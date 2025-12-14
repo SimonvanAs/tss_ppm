@@ -176,8 +176,22 @@ function ConfirmDialog({ title, message, onConfirm, onCancel, t }) {
 
 function AssignedUsersWarningDialog({ functionTitle, userCount, users, onClose, t }) {
   return (
-    <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="warning-dialog-title" onClick={onClose}>
-      <div className="admin-modal" style={{ maxWidth: '600px' }} onClick={e => e.stopPropagation()}>
+    <div
+      className="admin-modal-overlay"
+      onClick={onClose}
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      role="button"
+      tabIndex={-1}
+      aria-label="Close warning"
+    >
+      <div
+        className="admin-modal"
+        style={{ maxWidth: '600px' }}
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="warning-dialog-title"
+      >
         <div className="admin-modal-header">
           <h3 id="warning-dialog-title" className="admin-modal-title">{t('admin.functionTitles.cannotDelete')}</h3>
           <button className="admin-modal-close" onClick={onClose} aria-label={t('common.close')}>&times;</button>

@@ -135,9 +135,14 @@ body {
 .form-group input:focus,
 .form-group textarea:focus,
 .form-group select:focus {
-  outline: none;
   border-color: #CC0E70;
   box-shadow: 0 0 0 3px rgba(204, 14, 112, 0.1);
+}
+
+.form-group input:focus:not(:focus-visible),
+.form-group textarea:focus:not(:focus-visible),
+.form-group select:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .form-group.has-error input,

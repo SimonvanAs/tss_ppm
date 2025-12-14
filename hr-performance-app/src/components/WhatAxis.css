@@ -72,6 +72,9 @@
 
 .goal-type-select:focus {
   border-color: #004A91;
+}
+
+.goal-type-select:focus:not(:focus-visible) {
   outline: none;
 }
 

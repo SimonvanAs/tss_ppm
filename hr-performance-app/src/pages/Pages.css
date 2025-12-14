@@ -535,9 +535,12 @@
 }
 
 .filter-select:focus {
-  outline: none;
   border-color: #CC0E70;
   box-shadow: 0 0 0 3px rgba(204, 14, 112, 0.1);
+}
+
+.filter-select:focus:not(:focus-visible) {
+  outline: none;
 }
 
 /* Sort Indicator */

@@ -14,7 +14,7 @@ export function Navigation() {
   }
 
   return (
-    <nav className="main-nav">
+    <nav className="main-nav" aria-label="Main navigation">
       <div className="nav-content">
         <div className="nav-links">
           {/* Employee: My Reviews - all authenticated users */}

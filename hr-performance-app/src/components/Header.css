@@ -366,8 +366,11 @@
 }
 
 .modal-input:focus {
-  outline: none;
   border-color: #004A91;
+}
+
+.modal-input:focus:not(:focus-visible) {
+  outline: none;
 }
 
 .error-message {

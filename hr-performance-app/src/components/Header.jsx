@@ -34,7 +34,7 @@ export function Header() {
   };
 
   return (
-    <header className="header">
+    <header className="header" role="banner">
       <div className="header-content">
         <div className="header-left">
           <img src="/TSS_logo.png" alt="Total Specific Solutions" className="header-logo" />

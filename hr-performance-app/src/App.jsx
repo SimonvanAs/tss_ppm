@@ -31,11 +31,13 @@ import {
   OpCoManagement,
   GlobalDashboard,
   ImportReviews,
+  ImportEmployees,
   StartNewYear,
   WorkflowSettings,
   BrandingSettings,
 } from './pages';
 import './App.css';
+import './styles/accessibility.css';
 
 function LoadingScreen() {
   return (
@@ -70,12 +72,15 @@ function PageWrapper({ children, showNav = true }) {
 
   return (
     <div className="app">
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
       <Header />
       {showNav && <Navigation />}
-      <main className="main-content">
+      <main id="main-content" className="main-content">
         {children}
       </main>
-      <footer className="app-footer">
+      <footer className="app-footer" role="contentinfo">
         <span className="app-footer-ai">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" aria-hidden="true">
             <path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73c-.6-.34-1-.99-1-1.73a2 2 0 0 1 2-2M7.5 13A2.5 2.5 0 0 0 5 15.5 2.5 2.5 0 0 0 7.5 18a2.5 2.5 0 0 0 2.5-2.5A2.5 2.5 0 0 0 7.5 13m9 0a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5z"/>
@@ -97,6 +102,7 @@ function PageWrapper({ children, showNav = true }) {
             className="app-footer-link"
           >
             View source code on GitHub
+            <span className="sr-only"> (opens in new tab)</span>
           </a>
         </div>
       </footer>
@@ -363,6 +369,7 @@ function AppRouter() {
         <Route path="tov-levels" element={<TovLevels />} />
         <Route path="competencies" element={<Competencies />} />
         <Route path="import" element={<ImportReviews />} />
+        <Route path="import-employees" element={<ImportEmployees />} />
         <Route path="start-new-year" element={<StartNewYear />} />
         <Route path="settings" element={<WorkflowSettings />} />
         <Route

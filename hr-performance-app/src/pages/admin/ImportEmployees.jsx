@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { apiClient } from '../../services/api';
+import { adminApi } from '../../services/api';
 import './AdminLayout.css';
 
 export function ImportEmployees() {
@@ -56,40 +56,11 @@ export function ImportEmployees() {
     setPreview(null);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('dryRun', dryRun.toString());
-
-      // Use fetch directly since apiClient doesn't support FormData yet
-      const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
-
-      // Get token from apiClient
-      const token = apiClient.accessToken;
-      const headers = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const response = await fetch(`${API_BASE_URL}/admin/employees/import`, {
-        method: 'POST',
-        headers,
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to import employees');
-      }
+      const data = await adminApi.importEmployees(file, dryRun);
 
       setResults(data.results);
       if (data.preview) {
         setPreview(data.preview);
-      }
-
-      // If dry run was successful and user wants to proceed, reset dryRun to false
-      if (dryRun && data.results.usersCreated + data.results.usersUpdated + data.results.reviewsCreated > 0) {
-        // Keep the file for actual import
       }
     } catch (err) {
       console.error('Import error:', err);
@@ -107,28 +78,7 @@ export function ImportEmployees() {
     setError(null);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('dryRun', 'false');
-
-      const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
-      const token = apiClient.accessToken;
-      const headers = {};
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-
-      const response = await fetch(`${API_BASE_URL}/admin/employees/import`, {
-        method: 'POST',
-        headers,
-        body: formData,
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error?.message || 'Failed to import employees');
-      }
+      const data = await adminApi.importEmployees(file, false);
 
       setResults(data.results);
       setPreview(null);

@@ -867,4 +867,222 @@ describe('ImportEmployees', () => {
       });
     });
   });
+
+  describe('Download Error Report', () => {
+    it('should show download error report button when there are errors in preview', async () => {
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 5,
+          usersCreated: 2,
+          usersUpdated: 0,
+          reviewsCreated: 1,
+          reviewsUpdated: 0,
+          skipped: 3,
+          errors: [
+            { row: 2, message: 'Invalid email format' },
+            { row: 4, message: 'Invalid TOV level: X' }
+          ]
+        },
+        preview: []
+      });
+
+      renderWithProviders();
+      const input = document.querySelector('input[type="file"]');
+
+      const file = new File(['test content'], 'employees.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      fireEvent.change(input, { target: { files: [file] } });
+
+      await waitFor(() => {
+        const uploadBtn = screen.getByRole('button', { name: /Preview Import/i });
+        fireEvent.click(uploadBtn);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Download Error Report/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should show download error report button when there are errors after import', async () => {
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 5,
+          usersCreated: 2,
+          usersUpdated: 0,
+          reviewsCreated: 1,
+          reviewsUpdated: 0,
+          skipped: 3,
+          errors: [
+            { row: 2, message: 'Invalid email format' },
+            { row: 4, message: 'Invalid TOV level: X' }
+          ]
+        }
+      });
+
+      renderWithProviders();
+
+      // Disable preview mode
+      const checkbox = screen.getByRole('checkbox');
+      fireEvent.click(checkbox);
+
+      const input = document.querySelector('input[type="file"]');
+
+      const file = new File(['test content'], 'employees.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      fireEvent.change(input, { target: { files: [file] } });
+
+      await waitFor(() => {
+        const uploadBtn = screen.getByRole('button', { name: /Upload and Import/i });
+        fireEvent.click(uploadBtn);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Download Error Report/i })).toBeInTheDocument();
+      });
+    });
+
+    it('should not show download error report button when there are no errors', async () => {
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 5,
+          usersCreated: 5,
+          usersUpdated: 0,
+          reviewsCreated: 2,
+          reviewsUpdated: 0,
+          skipped: 0,
+          errors: []
+        },
+        preview: []
+      });
+
+      renderWithProviders();
+      const input = document.querySelector('input[type="file"]');
+
+      const file = new File(['test content'], 'employees.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      fireEvent.change(input, { target: { files: [file] } });
+
+      await waitFor(() => {
+        const uploadBtn = screen.getByRole('button', { name: /Preview Import/i });
+        fireEvent.click(uploadBtn);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText(/Preview Results/i)).toBeInTheDocument();
+      });
+
+      // The download button should not be present
+      expect(screen.queryByRole('button', { name: /Download Error Report/i })).not.toBeInTheDocument();
+    });
+
+    it('should trigger download when download error report button is clicked', async () => {
+      // Mock URL.createObjectURL and URL.revokeObjectURL
+      const mockCreateObjectURL = vi.fn(() => 'blob:test-url');
+      const mockRevokeObjectURL = vi.fn();
+      global.URL.createObjectURL = mockCreateObjectURL;
+      global.URL.revokeObjectURL = mockRevokeObjectURL;
+
+      // Mock anchor element click
+      const mockClick = vi.fn();
+      const originalCreateElement = document.createElement.bind(document);
+      vi.spyOn(document, 'createElement').mockImplementation((tag) => {
+        const element = originalCreateElement(tag);
+        if (tag === 'a') {
+          element.click = mockClick;
+        }
+        return element;
+      });
+
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 5,
+          usersCreated: 2,
+          usersUpdated: 0,
+          reviewsCreated: 1,
+          reviewsUpdated: 0,
+          skipped: 3,
+          errors: [
+            { row: 2, message: 'Invalid email format' },
+            { row: 4, message: 'Invalid TOV level: X' }
+          ]
+        },
+        preview: []
+      });
+
+      renderWithProviders();
+      const input = document.querySelector('input[type="file"]');
+
+      const file = new File(['test content'], 'employees.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      fireEvent.change(input, { target: { files: [file] } });
+
+      await waitFor(() => {
+        const uploadBtn = screen.getByRole('button', { name: /Preview Import/i });
+        fireEvent.click(uploadBtn);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Download Error Report/i })).toBeInTheDocument();
+      });
+
+      const downloadBtn = screen.getByRole('button', { name: /Download Error Report/i });
+      fireEvent.click(downloadBtn);
+
+      // Verify blob was created and download was triggered
+      expect(mockCreateObjectURL).toHaveBeenCalled();
+      expect(mockClick).toHaveBeenCalled();
+      expect(mockRevokeObjectURL).toHaveBeenCalled();
+
+      // Cleanup
+      vi.restoreAllMocks();
+    });
+
+    it('should display errors in error table with row numbers', async () => {
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 5,
+          usersCreated: 2,
+          usersUpdated: 0,
+          reviewsCreated: 1,
+          reviewsUpdated: 0,
+          skipped: 3,
+          errors: [
+            { row: 2, message: 'Invalid email format' },
+            { row: 4, message: 'Missing required field: Email' },
+            { row: 7, message: 'Invalid TOV level: Z' }
+          ]
+        },
+        preview: []
+      });
+
+      renderWithProviders();
+      const input = document.querySelector('input[type="file"]');
+
+      const file = new File(['test content'], 'employees.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      fireEvent.change(input, { target: { files: [file] } });
+
+      await waitFor(() => {
+        const uploadBtn = screen.getByRole('button', { name: /Preview Import/i });
+        fireEvent.click(uploadBtn);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText('Errors (3)')).toBeInTheDocument();
+        expect(screen.getByText('Invalid email format')).toBeInTheDocument();
+        expect(screen.getByText('Missing required field: Email')).toBeInTheDocument();
+        expect(screen.getByText('Invalid TOV level: Z')).toBeInTheDocument();
+      });
+    });
+  });
 });

@@ -1285,8 +1285,17 @@
   margin-bottom: 16px;
 }
 
-.import-errors-section h4 {
+.import-errors-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 8px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.import-errors-section h4 {
+  margin: 0;
   color: #DC3545;
 }
 

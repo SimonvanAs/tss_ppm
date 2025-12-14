@@ -871,7 +871,13 @@
       "reviewsToUpdate": "Reviews bij te werken",
       "skipped": "Overgeslagen",
       "errors": "Fouten",
-      "importAnother": "Nog een Bestand Importeren"
+      "importAnother": "Nog een Bestand Importeren",
+      "downloadErrorReport": "Foutenrapport Downloaden",
+      "errorReport": {
+        "row": "Rij",
+        "errorMessage": "Foutmelding",
+        "originalData": "Originele Gegevens"
+      }
     },
     "startNewYear": {
       "title": "Nieuw Prestatiejaar Starten",

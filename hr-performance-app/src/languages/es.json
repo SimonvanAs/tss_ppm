@@ -871,7 +871,13 @@
       "reviewsToUpdate": "Revisiones a actualizar",
       "skipped": "Omitidos",
       "errors": "Errores",
-      "importAnother": "Importar Otro Archivo"
+      "importAnother": "Importar Otro Archivo",
+      "downloadErrorReport": "Descargar Informe de Errores",
+      "errorReport": {
+        "row": "Fila",
+        "errorMessage": "Mensaje de Error",
+        "originalData": "Datos Originales"
+      }
     },
     "startNewYear": {
       "title": "Iniciar Nuevo Año de Desempeño",

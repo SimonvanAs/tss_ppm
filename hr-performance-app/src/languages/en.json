@@ -871,7 +871,13 @@
       "reviewsToUpdate": "Reviews to Update",
       "skipped": "Skipped",
       "errors": "Errors",
-      "importAnother": "Import Another File"
+      "importAnother": "Import Another File",
+      "downloadErrorReport": "Download Error Report",
+      "errorReport": {
+        "row": "Row",
+        "errorMessage": "Error Message",
+        "originalData": "Original Data"
+      }
     },
     "startNewYear": {
       "title": "Start New Performance Year",

@@ -1,7 +1,22 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { adminApi } from '../../services/api';
 import './AdminLayout.css';
+
+/**
+ * Escapes a CSV field value by wrapping in quotes if it contains special characters
+ */
+function escapeCsvField(value) {
+  if (value === null || value === undefined) {
+    return '';
+  }
+  const stringValue = String(value);
+  // If the value contains commas, quotes, or newlines, wrap it in quotes and escape any internal quotes
+  if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n') || stringValue.includes('\r')) {
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  }
+  return stringValue;
+}
 
 export function ImportEmployees() {
   const { t } = useLanguage();
@@ -101,6 +116,50 @@ export function ImportEmployees() {
       fileInputRef.current.value = '';
     }
   };
+
+  /**
+   * Downloads a CSV error report containing all import errors
+   */
+  const handleDownloadErrorReport = useCallback(() => {
+    if (!results?.errors || results.errors.length === 0) {
+      return;
+    }
+
+    // Build CSV content
+    const headers = [
+      t('admin.importEmployees.errorReport.row') || 'Row',
+      t('admin.importEmployees.errorReport.errorMessage') || 'Error Message',
+      t('admin.importEmployees.errorReport.originalData') || 'Original Data'
+    ];
+
+    const csvRows = [
+      headers.map(escapeCsvField).join(','),
+      ...results.errors.map(err => {
+        const row = err.row || '';
+        const message = err.message || '';
+        // Include original data if available (some errors may include the original row data)
+        const originalData = err.data ? JSON.stringify(err.data) : '';
+        return [row, message, originalData].map(escapeCsvField).join(',');
+      })
+    ];
+
+    const csvContent = csvRows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    // Generate filename with timestamp
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+    const filename = `import-errors-${timestamp}.csv`;
+
+    // Create download link and trigger download
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }, [results, t]);
 
   return (
     <div>
@@ -309,9 +368,18 @@ export function ImportEmployees() {
               {/* Errors */}
               {results.errors && results.errors.length > 0 && (
                 <div className="import-errors-section">
-                  <h4>
-                    {t('admin.importEmployees.errors') || 'Errors'} ({results.errors.length})
-                  </h4>
+                  <div className="import-errors-header">
+                    <h4>
+                      {t('admin.importEmployees.errors') || 'Errors'} ({results.errors.length})
+                    </h4>
+                    <button
+                      onClick={handleDownloadErrorReport}
+                      className="admin-btn admin-btn-sm admin-btn-secondary"
+                      type="button"
+                    >
+                      {t('admin.importEmployees.downloadErrorReport') || 'Download Error Report'}
+                    </button>
+                  </div>
                   <div className="import-errors-scroll">
                     <table className="import-errors-table">
                       <thead>
@@ -390,9 +458,18 @@ export function ImportEmployees() {
 
               {results.errors && results.errors.length > 0 && (
                 <div className="import-errors-section">
-                  <h4>
-                    {t('admin.importEmployees.errors') || 'Errors'} ({results.errors.length})
-                  </h4>
+                  <div className="import-errors-header">
+                    <h4>
+                      {t('admin.importEmployees.errors') || 'Errors'} ({results.errors.length})
+                    </h4>
+                    <button
+                      onClick={handleDownloadErrorReport}
+                      className="admin-btn admin-btn-sm admin-btn-secondary"
+                      type="button"
+                    >
+                      {t('admin.importEmployees.downloadErrorReport') || 'Download Error Report'}
+                    </button>
+                  </div>
                   <div className="import-table-scroll">
                     <table className="import-table">
                       <thead>

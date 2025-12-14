@@ -19,7 +19,8 @@ export type AuditAction =
   | 'MANAGER_SIGN'
   | 'LOGIN'
   | 'LOGOUT'
-  | 'EXPORT';
+  | 'EXPORT'
+  | 'IMPORT';
 
 // Audit log entry
 export interface AuditEntry {

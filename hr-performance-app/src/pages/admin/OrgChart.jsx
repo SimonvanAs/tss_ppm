@@ -191,9 +191,11 @@ function EditManagerModal({ user, managers, onSave, onClose, t }) {
       tabIndex={-1}
       aria-label="Close modal"
     >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         className="admin-modal"
         onClick={e => e.stopPropagation()}
+        onKeyDown={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="edit-manager-title"

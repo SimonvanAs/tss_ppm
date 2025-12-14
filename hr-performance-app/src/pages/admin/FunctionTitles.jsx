@@ -46,9 +46,11 @@ function FunctionTitleModal({ functionTitle, tovLevels, onSave, onClose, t }) {
       tabIndex={-1}
       aria-label="Close modal"
     >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         className="admin-modal"
         onClick={e => e.stopPropagation()}
+        onKeyDown={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="function-title-modal-title"
@@ -76,7 +78,6 @@ function FunctionTitleModal({ functionTitle, tovLevels, onSave, onClose, t }) {
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
                 placeholder={t('admin.functionTitles.namePlaceholder')}
-                autoFocus
               />
             </div>
 
@@ -146,10 +147,12 @@ function ConfirmDialog({ title, message, onConfirm, onCancel, t }) {
       tabIndex={-1}
       aria-label="Close dialog"
     >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         className="admin-modal"
         style={{ maxWidth: '400px' }}
         onClick={e => e.stopPropagation()}
+        onKeyDown={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="confirm-dialog-title"
@@ -184,10 +187,12 @@ function AssignedUsersWarningDialog({ functionTitle, userCount, users, onClose, 
       tabIndex={-1}
       aria-label="Close warning"
     >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         className="admin-modal"
         style={{ maxWidth: '600px' }}
         onClick={e => e.stopPropagation()}
+        onKeyDown={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="warning-dialog-title"
@@ -330,8 +335,24 @@ function ImportModal({ tovLevels, onClose, onImportComplete, t }) {
   };
 
   return (
-    <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="import-modal-title" onClick={handleClose}>
-      <div className="admin-modal" style={{ maxWidth: '700px' }} onClick={e => e.stopPropagation()}>
+    <div
+      className="admin-modal-overlay"
+      onClick={handleClose}
+      onKeyDown={(e) => e.key === 'Escape' && handleClose()}
+      role="button"
+      tabIndex={-1}
+      aria-label="Close import modal"
+    >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+      <div
+        className="admin-modal"
+        style={{ maxWidth: '700px' }}
+        onClick={e => e.stopPropagation()}
+        onKeyDown={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="import-modal-title"
+      >
         <div className="admin-modal-header">
           <h3 id="import-modal-title" className="admin-modal-title">{t('admin.functionTitles.import.title')}</h3>
           <button className="admin-modal-close" onClick={handleClose} aria-label={t('common.close')}>&times;</button>

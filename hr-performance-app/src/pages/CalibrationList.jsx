@@ -326,11 +326,27 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
   }
 
   return (
-    <div className="modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal-content" style={{ maxWidth: 500 }}>
+    <div
+      className="modal-overlay"
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      role="button"
+      tabIndex={-1}
+      aria-label="Close modal"
+    >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+      <div
+        className="modal-content"
+        style={{ maxWidth: 500 }}
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="create-session-title"
+      >
         <div className="modal-header">
-          <h2>{t('pages.calibration.createSession')}</h2>
-          <button className="modal-close" onClick={onClose}>×</button>
+          <h2 id="create-session-title">{t('pages.calibration.createSession')}</h2>
+          <button className="modal-close" onClick={onClose}>x</button>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -349,7 +365,6 @@ function CreateSessionModal({ businessUnits, onClose, onCreated, t }) {
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder={t('pages.calibration.sessionNamePlaceholder')}
                 className="form-input"
-                autoFocus
               />
             </div>
 

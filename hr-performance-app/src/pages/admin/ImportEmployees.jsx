@@ -193,6 +193,7 @@ export function ImportEmployees() {
 
               {/* Preview Mode Checkbox */}
               <div className="import-checkbox-wrapper">
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                 <label className="import-checkbox-label">
                   <input
                     type="checkbox"

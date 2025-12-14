@@ -1,15 +1,16 @@
 import { test, expect } from '@playwright/test';
-import path from 'path';
 
 test.describe('Import Employees', () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate to admin import page
-    await page.goto('/admin/import');
+    // Navigate to admin import employees page (not /admin/import which is Import Reviews)
+    await page.goto('/admin/import-employees');
+    // Wait for page to fully load
+    await page.waitForSelector('.admin-page-title');
   });
 
   test('HR can access import employees page', async ({ page }) => {
     // Verify page loads correctly
-    await expect(page).toHaveURL(/\/admin\/import/);
+    await expect(page).toHaveURL(/\/admin\/import-employees/);
 
     // Verify page title is visible
     await expect(page.locator('.admin-page-title')).toBeVisible();
@@ -21,12 +22,13 @@ test.describe('Import Employees', () => {
     const instructionsCard = page.locator('.admin-card').first();
     await expect(instructionsCard).toBeVisible();
 
-    // Verify required columns are documented
-    await expect(page.locator('.import-column-list')).toBeVisible();
+    // Verify required columns are documented - using ul element which contains column list
+    const columnList = page.locator('ul.import-column-list');
+    await expect(columnList).toBeVisible();
 
-    // Check that Email is listed as required
-    await expect(page.getByText('Email')).toBeVisible();
-    await expect(page.getByText('required')).toBeVisible();
+    // Check that Email is listed as required (using exact match to avoid ambiguity)
+    await expect(page.getByText('Email', { exact: true })).toBeVisible();
+    await expect(page.getByText('required', { exact: false }).first()).toBeVisible();
 
     // Verify import behavior info box is present
     await expect(page.locator('.import-info-box')).toBeVisible();
@@ -37,11 +39,11 @@ test.describe('Import Employees', () => {
     const uploadCard = page.locator('.admin-card').nth(1);
     await expect(uploadCard).toBeVisible();
 
-    // Verify file input label is visible
-    await expect(page.locator('.file-upload-label')).toBeVisible();
+    // Verify file input label is visible (styled as button)
+    await expect(page.locator('label.file-upload-label')).toBeVisible();
 
-    // Verify preview checkbox is present and checked by default
-    const previewCheckbox = page.locator('input[type="checkbox"]');
+    // Verify preview checkbox is present - select the specific checkbox in the import section
+    const previewCheckbox = page.locator('.import-checkbox-wrapper input[type="checkbox"]');
     await expect(previewCheckbox).toBeVisible();
     await expect(previewCheckbox).toBeChecked();
   });
@@ -54,7 +56,7 @@ test.describe('Import Employees', () => {
     const fileChooserPromise = page.waitForEvent('filechooser');
 
     // Click the file upload label to trigger file input
-    await page.click('.file-upload-label');
+    await page.click('label.file-upload-label');
 
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
@@ -76,7 +78,7 @@ test.describe('Import Employees', () => {
     const fileChooserPromise = page.waitForEvent('filechooser');
 
     // Click the file upload label
-    await page.click('.file-upload-label');
+    await page.click('label.file-upload-label');
 
     const fileChooser = await fileChooserPromise;
 
@@ -93,7 +95,8 @@ test.describe('Import Employees', () => {
   });
 
   test('should toggle preview mode checkbox', async ({ page }) => {
-    const previewCheckbox = page.locator('input[type="checkbox"]');
+    // Select the specific preview checkbox in import section
+    const previewCheckbox = page.locator('.import-checkbox-wrapper input[type="checkbox"]');
 
     // Should be checked by default
     await expect(previewCheckbox).toBeChecked();
@@ -108,8 +111,8 @@ test.describe('Import Employees', () => {
   });
 
   test('should disable upload button when no file is selected', async ({ page }) => {
-    // Find the upload/preview button
-    const uploadButton = page.locator('.admin-btn-primary');
+    // Find the upload/preview button in the import section
+    const uploadButton = page.locator('.admin-card-content .admin-btn-primary');
 
     // Button should be disabled when no file is selected
     await expect(uploadButton).toBeDisabled();
@@ -120,7 +123,7 @@ test.describe('Import Employees', () => {
 
     // Set up file chooser
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.click('.file-upload-label');
+    await page.click('label.file-upload-label');
 
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
@@ -130,7 +133,7 @@ test.describe('Import Employees', () => {
     });
 
     // Find the upload/preview button
-    const uploadButton = page.locator('.admin-btn-primary');
+    const uploadButton = page.locator('.admin-card-content .admin-btn-primary');
 
     // Button should be enabled after file selection
     await expect(uploadButton).toBeEnabled();
@@ -142,7 +145,7 @@ test.describe('Import Employees', () => {
 
     // Set up file chooser and select a file
     const fileChooserPromise = page.waitForEvent('filechooser');
-    await page.click('.file-upload-label');
+    await page.click('label.file-upload-label');
 
     const fileChooser = await fileChooserPromise;
     await fileChooser.setFiles({
@@ -154,25 +157,23 @@ test.describe('Import Employees', () => {
     // Verify file is shown
     await expect(page.locator('.import-file-info')).toBeVisible();
 
-    // Click remove button
-    await page.click('.admin-btn-secondary:has-text("Remove"), .admin-btn-secondary:has-text("Eliminar"), .admin-btn-secondary:has-text("Verwijderen")');
+    // Click remove button using role selector
+    await page.getByRole('button', { name: /Remove|Eliminar|Verwijderen/ }).click();
 
     // Verify file info is gone
     await expect(page.locator('.import-file-info')).not.toBeVisible();
   });
 
-  test('admin sidebar should have import link active', async ({ page }) => {
-    // Verify the import link in sidebar is active
-    const importLink = page.locator('.admin-sidebar a[href="/admin/import"]');
+  test('admin sidebar should have import employees link', async ({ page }) => {
+    // Verify the import employees link in sidebar is visible
+    const importLink = page.locator('.admin-sidebar a[href="/admin/import-employees"]');
     await expect(importLink).toBeVisible();
 
-    // The link or its parent should have an active class
-    const activeLink = page.locator('.admin-nav-item.active, .admin-nav-link.active');
-    // At least one active nav item should exist
+    // Verify the sidebar is rendered
     await expect(page.locator('.admin-sidebar')).toBeVisible();
   });
 
-  test('should navigate back to admin from import page', async ({ page }) => {
+  test('should navigate back to app from import page', async ({ page }) => {
     // Click the back to app link
     await page.click('.admin-back-link');
 
@@ -182,20 +183,22 @@ test.describe('Import Employees', () => {
 });
 
 test.describe('Import Employees - Admin Navigation', () => {
-  test('should access import page from admin sidebar', async ({ page }) => {
+  test('should access import employees page from admin sidebar', async ({ page }) => {
     // Start from admin root
     await page.goto('/admin');
+    await page.waitForSelector('.admin-sidebar');
 
-    // Click import link in sidebar
-    await page.click('a[href="/admin/import"]');
+    // Click import employees link in sidebar
+    await page.click('a[href="/admin/import-employees"]');
 
     // Verify navigation
-    await expect(page).toHaveURL(/\/admin\/import/);
+    await expect(page).toHaveURL(/\/admin\/import-employees/);
     await expect(page.locator('.admin-page-title')).toContainText(/Import|Importar|Importeren/);
   });
 
-  test('should show breadcrumb on import page', async ({ page }) => {
-    await page.goto('/admin/import');
+  test('should show breadcrumb on import employees page', async ({ page }) => {
+    await page.goto('/admin/import-employees');
+    await page.waitForSelector('.admin-page-title');
 
     // Verify breadcrumb is visible
     const breadcrumb = page.locator('.admin-breadcrumb');

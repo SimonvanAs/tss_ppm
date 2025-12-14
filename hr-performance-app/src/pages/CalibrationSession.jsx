@@ -564,9 +564,11 @@ export function CalibrationSession() {
           tabIndex={-1}
           aria-label="Close modal"
         >
+          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
           <div
             className="modal"
             onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-labelledby="edit-session-title"

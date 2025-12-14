@@ -4,14 +4,13 @@ import { ImportEmployees } from './ImportEmployees';
 import { LanguageProvider } from '../../contexts/LanguageContext';
 import { BrowserRouter } from 'react-router-dom';
 
-// Mock fetch
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
+// Mock the importEmployees function
+const mockImportEmployees = vi.fn();
 
 // Mock import.meta.env
 vi.mock('../../services/api', () => ({
-  apiClient: {
-    accessToken: 'mock-token'
+  adminApi: {
+    importEmployees: (...args) => mockImportEmployees(...args)
   }
 }));
 
@@ -28,6 +27,7 @@ const renderWithProviders = () => {
 describe('ImportEmployees', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockImportEmployees.mockReset();
   });
 
   afterEach(() => {
@@ -246,24 +246,20 @@ describe('ImportEmployees', () => {
 
   describe('Preview Results', () => {
     it('should display preview results after dry run', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          dryRun: true,
-          results: {
-            total: 10,
-            usersCreated: 5,
-            usersUpdated: 2,
-            reviewsCreated: 3,
-            reviewsUpdated: 1,
-            skipped: 2,
-            errors: []
-          },
-          preview: [
-            { row: 2, email: 'john@example.com', name: 'John Doe', action: 'CREATE_USER', hasScores: true },
-            { row: 3, email: 'jane@example.com', name: 'Jane Smith', action: 'UPDATE_USER', hasScores: false },
-          ]
-        })
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 10,
+          usersCreated: 5,
+          usersUpdated: 2,
+          reviewsCreated: 3,
+          reviewsUpdated: 1,
+          skipped: 2,
+          errors: []
+        },
+        preview: [
+          { row: 2, email: 'john@example.com', name: 'John Doe', action: 'CREATE_USER', hasScores: true },
+          { row: 3, email: 'jane@example.com', name: 'Jane Smith', action: 'UPDATE_USER', hasScores: false },
+        ]
       });
 
       renderWithProviders();
@@ -294,24 +290,20 @@ describe('ImportEmployees', () => {
     });
 
     it('should show preview table with sample rows', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          dryRun: true,
-          results: {
-            total: 2,
-            usersCreated: 1,
-            usersUpdated: 1,
-            reviewsCreated: 1,
-            reviewsUpdated: 0,
-            skipped: 0,
-            errors: []
-          },
-          preview: [
-            { row: 2, email: 'john@example.com', name: 'John Doe', action: 'CREATE_USER', hasScores: true },
-            { row: 3, email: 'jane@example.com', name: 'Jane Smith', action: 'UPDATE_USER', hasScores: false },
-          ]
-        })
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 2,
+          usersCreated: 1,
+          usersUpdated: 1,
+          reviewsCreated: 1,
+          reviewsUpdated: 0,
+          skipped: 0,
+          errors: []
+        },
+        preview: [
+          { row: 2, email: 'john@example.com', name: 'John Doe', action: 'CREATE_USER', hasScores: true },
+          { row: 3, email: 'jane@example.com', name: 'Jane Smith', action: 'UPDATE_USER', hasScores: false },
+        ]
       });
 
       renderWithProviders();
@@ -335,21 +327,17 @@ describe('ImportEmployees', () => {
     });
 
     it('should show "Proceed with Import" button after preview', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          dryRun: true,
-          results: {
-            total: 2,
-            usersCreated: 1,
-            usersUpdated: 0,
-            reviewsCreated: 0,
-            reviewsUpdated: 0,
-            skipped: 0,
-            errors: []
-          },
-          preview: []
-        })
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 2,
+          usersCreated: 1,
+          usersUpdated: 0,
+          reviewsCreated: 0,
+          reviewsUpdated: 0,
+          skipped: 0,
+          errors: []
+        },
+        preview: []
       });
 
       renderWithProviders();
@@ -374,8 +362,8 @@ describe('ImportEmployees', () => {
 
   describe('Import Process', () => {
     it('should show loading state during upload', async () => {
-      // Mock fetch to never resolve
-      mockFetch.mockImplementation(() => new Promise(() => {}));
+      // Mock importEmployees to never resolve
+      mockImportEmployees.mockImplementation(() => new Promise(() => {}));
 
       renderWithProviders();
 
@@ -402,20 +390,16 @@ describe('ImportEmployees', () => {
     });
 
     it('should display success results after import', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          dryRun: false,
-          results: {
-            total: 10,
-            usersCreated: 8,
-            usersUpdated: 2,
-            reviewsCreated: 5,
-            reviewsUpdated: 3,
-            skipped: 0,
-            errors: []
-          }
-        })
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 10,
+          usersCreated: 8,
+          usersUpdated: 2,
+          reviewsCreated: 5,
+          reviewsUpdated: 3,
+          skipped: 0,
+          errors: []
+        }
       });
 
       renderWithProviders();
@@ -448,23 +432,19 @@ describe('ImportEmployees', () => {
     });
 
     it('should display errors from failed import', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          dryRun: false,
-          results: {
-            total: 10,
-            usersCreated: 5,
-            usersUpdated: 0,
-            reviewsCreated: 2,
-            reviewsUpdated: 0,
-            skipped: 5,
-            errors: [
-              { row: 3, message: 'Invalid email format' },
-              { row: 7, message: 'Invalid TOV level: X' }
-            ]
-          }
-        })
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 10,
+          usersCreated: 5,
+          usersUpdated: 0,
+          reviewsCreated: 2,
+          reviewsUpdated: 0,
+          skipped: 5,
+          errors: [
+            { row: 3, message: 'Invalid email format' },
+            { row: 7, message: 'Invalid TOV level: X' }
+          ]
+        }
       });
 
       renderWithProviders();
@@ -492,12 +472,7 @@ describe('ImportEmployees', () => {
     });
 
     it('should handle API errors', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: () => Promise.resolve({
-          error: { message: 'File exceeds maximum of 1000 rows' }
-        })
-      });
+      mockImportEmployees.mockRejectedValueOnce(new Error('File exceeds maximum of 1000 rows'));
 
       renderWithProviders();
 
@@ -523,20 +498,16 @@ describe('ImportEmployees', () => {
     });
 
     it('should show Import Another File button after success', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          dryRun: false,
-          results: {
-            total: 10,
-            usersCreated: 10,
-            usersUpdated: 0,
-            reviewsCreated: 5,
-            reviewsUpdated: 0,
-            skipped: 0,
-            errors: []
-          }
-        })
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 10,
+          usersCreated: 10,
+          usersUpdated: 0,
+          reviewsCreated: 5,
+          reviewsUpdated: 0,
+          skipped: 0,
+          errors: []
+        }
       });
 
       renderWithProviders();
@@ -564,14 +535,10 @@ describe('ImportEmployees', () => {
   });
 
   describe('API Integration', () => {
-    it('should call API with FormData containing file and dryRun flag', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          dryRun: true,
-          results: { total: 1, usersCreated: 1, usersUpdated: 0, reviewsCreated: 0, reviewsUpdated: 0, skipped: 0, errors: [] },
-          preview: []
-        })
+    it('should call adminApi.importEmployees with file and dryRun flag', async () => {
+      mockImportEmployees.mockResolvedValueOnce({
+        results: { total: 1, usersCreated: 1, usersUpdated: 0, reviewsCreated: 0, reviewsUpdated: 0, skipped: 0, errors: [] },
+        preview: []
       });
 
       renderWithProviders();
@@ -589,53 +556,17 @@ describe('ImportEmployees', () => {
       });
 
       await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalled();
-        const callArgs = mockFetch.mock.calls[0];
-        expect(callArgs[0]).toContain('/admin/employees/import');
-        expect(callArgs[1].method).toBe('POST');
-        expect(callArgs[1].body).toBeInstanceOf(FormData);
-      });
-    });
-
-    it('should include authorization header', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          dryRun: true,
-          results: { total: 1, usersCreated: 1, usersUpdated: 0, reviewsCreated: 0, reviewsUpdated: 0, skipped: 0, errors: [] },
-          preview: []
-        })
-      });
-
-      renderWithProviders();
-      const input = document.querySelector('input[type="file"]');
-
-      const file = new File(['test content'], 'employees.xlsx', {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      });
-
-      fireEvent.change(input, { target: { files: [file] } });
-
-      await waitFor(() => {
-        const uploadBtn = screen.getByRole('button', { name: /Preview Import/i });
-        fireEvent.click(uploadBtn);
-      });
-
-      await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalled();
-        const callArgs = mockFetch.mock.calls[0];
-        expect(callArgs[1].headers['Authorization']).toBe('Bearer mock-token');
+        expect(mockImportEmployees).toHaveBeenCalled();
+        const callArgs = mockImportEmployees.mock.calls[0];
+        expect(callArgs[0]).toBeInstanceOf(File);
+        expect(callArgs[0].name).toBe('employees.xlsx');
       });
     });
 
     it('should send dryRun=true for preview', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          dryRun: true,
-          results: { total: 1, usersCreated: 1, usersUpdated: 0, reviewsCreated: 0, reviewsUpdated: 0, skipped: 0, errors: [] },
-          preview: []
-        })
+      mockImportEmployees.mockResolvedValueOnce({
+        results: { total: 1, usersCreated: 1, usersUpdated: 0, reviewsCreated: 0, reviewsUpdated: 0, skipped: 0, errors: [] },
+        preview: []
       });
 
       renderWithProviders();
@@ -653,18 +584,13 @@ describe('ImportEmployees', () => {
       });
 
       await waitFor(() => {
-        const formData = mockFetch.mock.calls[0][1].body;
-        expect(formData.get('dryRun')).toBe('true');
+        expect(mockImportEmployees).toHaveBeenCalledWith(expect.any(File), true);
       });
     });
 
     it('should send dryRun=false for actual import', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({
-          dryRun: false,
-          results: { total: 1, usersCreated: 1, usersUpdated: 0, reviewsCreated: 0, reviewsUpdated: 0, skipped: 0, errors: [] }
-        })
+      mockImportEmployees.mockResolvedValueOnce({
+        results: { total: 1, usersCreated: 1, usersUpdated: 0, reviewsCreated: 0, reviewsUpdated: 0, skipped: 0, errors: [] }
       });
 
       renderWithProviders();
@@ -687,15 +613,14 @@ describe('ImportEmployees', () => {
       });
 
       await waitFor(() => {
-        const formData = mockFetch.mock.calls[0][1].body;
-        expect(formData.get('dryRun')).toBe('false');
+        expect(mockImportEmployees).toHaveBeenCalledWith(expect.any(File), false);
       });
     });
   });
 
   describe('Network and Error Handling', () => {
     it('should handle network timeout errors', async () => {
-      mockFetch.mockRejectedValueOnce(new Error('Network timeout'));
+      mockImportEmployees.mockRejectedValueOnce(new Error('Network timeout'));
 
       renderWithProviders();
       const input = document.querySelector('input[type="file"]');
@@ -717,7 +642,7 @@ describe('ImportEmployees', () => {
     });
 
     it('should handle network fetch failures', async () => {
-      mockFetch.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+      mockImportEmployees.mockRejectedValueOnce(new TypeError('Failed to fetch'));
 
       renderWithProviders();
       const input = document.querySelector('input[type="file"]');
@@ -741,8 +666,8 @@ describe('ImportEmployees', () => {
 
   describe('Double-Submission Prevention', () => {
     it('should disable upload button during upload', async () => {
-      // Mock fetch to never resolve to keep isUploading=true
-      mockFetch.mockImplementation(() => new Promise(() => {}));
+      // Mock importEmployees to never resolve to keep isUploading=true
+      mockImportEmployees.mockImplementation(() => new Promise(() => {}));
 
       renderWithProviders();
       const input = document.querySelector('input[type="file"]');
@@ -770,7 +695,7 @@ describe('ImportEmployees', () => {
     });
 
     it('should disable file input during upload', async () => {
-      mockFetch.mockImplementation(() => new Promise(() => {}));
+      mockImportEmployees.mockImplementation(() => new Promise(() => {}));
 
       renderWithProviders();
       const input = document.querySelector('input[type="file"]');
@@ -793,7 +718,7 @@ describe('ImportEmployees', () => {
     });
 
     it('should disable remove button during upload', async () => {
-      mockFetch.mockImplementation(() => new Promise(() => {}));
+      mockImportEmployees.mockImplementation(() => new Promise(() => {}));
 
       renderWithProviders();
       const input = document.querySelector('input[type="file"]');
@@ -818,7 +743,7 @@ describe('ImportEmployees', () => {
     });
 
     it('should disable checkbox during upload', async () => {
-      mockFetch.mockImplementation(() => new Promise(() => {}));
+      mockImportEmployees.mockImplementation(() => new Promise(() => {}));
 
       renderWithProviders();
       const input = document.querySelector('input[type="file"]');
@@ -920,12 +845,7 @@ describe('ImportEmployees', () => {
     });
 
     it('should display server-side file type validation error', async () => {
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: () => Promise.resolve({
-          error: { message: 'Invalid file type. Only Excel and CSV files are allowed.' }
-        })
-      });
+      mockImportEmployees.mockRejectedValueOnce(new Error('Invalid file type. Only Excel and CSV files are allowed.'));
 
       renderWithProviders();
       const input = document.querySelector('input[type="file"]');

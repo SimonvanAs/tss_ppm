@@ -83,10 +83,25 @@ function OpCoModal({ opco, onSave, onClose, onLogoUploaded, t }) {
   };
 
   return (
-    <div className="admin-modal-overlay" onClick={onClose}>
-      <div className="admin-modal" onClick={e => e.stopPropagation()}>
+    <div
+      className="admin-modal-overlay"
+      onClick={onClose}
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      role="button"
+      tabIndex={-1}
+      aria-label="Close modal"
+    >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+      <div
+        className="admin-modal"
+        onClick={e => e.stopPropagation()}
+        onKeyDown={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="opco-modal-title"
+      >
         <div className="admin-modal-header">
-          <h3 className="admin-modal-title">
+          <h3 id="opco-modal-title" className="admin-modal-title">
             {opco ? t('admin.opcos.edit') : t('admin.opcos.create')}
           </h3>
           <button className="admin-modal-close" onClick={onClose}>&times;</button>

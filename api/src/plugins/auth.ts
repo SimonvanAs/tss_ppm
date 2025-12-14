@@ -191,19 +191,29 @@ const authPluginCallback: FastifyPluginAsync = async (fastify: FastifyInstance) 
       });
 
       // If not found by keycloakId and we have email, try finding by email
+      // This handles the bulk import case where users are created with placeholder keycloakIds
+      // (e.g., 'placeholder-xxx'). When the user first authenticates via Keycloak, we:
+      // 1. Don't find them by keycloakId (placeholder doesn't match real Keycloak sub)
+      // 2. Find them by email instead
+      // 3. Update the keycloakId to the real Keycloak subject ID
+      // See: admin.routes.ts POST /admin/employees/import for bulk user creation
       if (!dbUser && decoded.email) {
         const userByEmail = await fastify.prisma.user.findFirst({
           where: { email: decoded.email },
           select: { id: true, opcoId: true, role: true, keycloakId: true },
         });
         if (userByEmail) {
-          // Update user with keycloakId for future lookups
+          // Update user with real keycloakId for future lookups
+          // This replaces any placeholder ID with the actual Keycloak subject ID
           dbUser = await fastify.prisma.user.update({
             where: { id: userByEmail.id },
             data: { keycloakId },
             select: { id: true, opcoId: true, role: true, keycloakId: true },
           });
-          fastify.log.info({ userId: dbUser.id, keycloakId }, 'Linked user to Keycloak ID');
+          fastify.log.info(
+            { userId: dbUser.id, keycloakId, previousId: userByEmail.keycloakId },
+            'Linked user to Keycloak ID (may replace placeholder from bulk import)'
+          );
         }
       }
 

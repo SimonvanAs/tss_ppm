@@ -75,10 +75,12 @@ function CompetencyModal({ competency, tovLevels, onSave, onClose, t, language }
       tabIndex={-1}
       aria-label="Close modal"
     >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         className="admin-modal"
         style={{ maxWidth: '700px' }}
         onClick={e => e.stopPropagation()}
+        onKeyDown={e => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="competency-modal-title"

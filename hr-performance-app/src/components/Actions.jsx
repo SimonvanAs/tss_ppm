@@ -154,9 +154,11 @@ function PreviewModal({ formData, sessionCode, onClose }) {
       tabIndex={-1}
       aria-label="Close preview"
     >
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
       <div
         className="preview-modal"
         onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="preview-title"

@@ -1706,18 +1706,32 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
 
       // Parse Excel/CSV file
       const { default: ExcelJS } = await import('exceljs');
+      const Papa = await import('papaparse');
       const workbook = new ExcelJS.Workbook();
 
       // Determine file type and load
       const isCSV = filename.toLowerCase().endsWith('.csv');
       if (isCSV) {
-        // For CSV, use csv.load
+        // Use papaparse for robust CSV handling (handles quoted values, commas in values, etc.)
         const csvString = bufferData.toString('utf-8');
         const worksheet = workbook.addWorksheet('Import');
-        const lines = csvString.split(/\r?\n/).filter(line => line.trim());
-        lines.forEach((line, index) => {
-          const values = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
-          worksheet.addRow(values);
+        const parseResult = Papa.parse(csvString, {
+          skipEmptyLines: true,
+          // Don't use header mode - we handle headers ourselves for flexible column mapping
+        });
+
+        if (parseResult.errors && parseResult.errors.length > 0) {
+          const firstError = parseResult.errors[0];
+          return reply.status(400).send({
+            error: {
+              message: `CSV parsing error at row ${firstError.row || 1}: ${firstError.message}`,
+              statusCode: 400,
+            },
+          });
+        }
+
+        parseResult.data.forEach((row: string[]) => {
+          worksheet.addRow(row);
         });
       } else {
         // @ts-ignore - Buffer type compatibility
@@ -2075,6 +2089,21 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
 
       // Execute import in transaction
       if (validRows.length > 0) {
+        // Pre-fetch competency levels grouped by TOV level to avoid N+1 queries
+        const allCompetencyLevels = await fastify.prisma.competencyLevel.findMany({
+          where: {
+            ...withTenantFilter(request),
+            isActive: true,
+          },
+          orderBy: { sortOrder: 'asc' },
+        });
+        const competencyLevelsByTovId = new Map<string, typeof allCompetencyLevels>();
+        for (const cl of allCompetencyLevels) {
+          const existing = competencyLevelsByTovId.get(cl.tovLevelId) || [];
+          existing.push(cl);
+          competencyLevelsByTovId.set(cl.tovLevelId, existing);
+        }
+
         try {
           await fastify.prisma.$transaction(async (tx) => {
             // Build a map of emails to user IDs (including newly created users)
@@ -2092,11 +2121,14 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
                  * Expected flow:
                  * 1. Admin creates user via bulk import (placeholder keycloakId assigned)
                  * 2. User is invited/registered in Keycloak (via admin portal or self-registration)
-                 * 3. On first login, the authentication middleware matches the user by email
-                 *    and updates the keycloakId to the real Keycloak subject ID
+                 * 3. On first login, the auth middleware (src/plugins/auth.ts):
+                 *    - Doesn't find user by keycloakId (placeholder doesn't match Keycloak sub)
+                 *    - Finds user by email instead
+                 *    - Updates keycloakId to the real Keycloak subject ID
                  *
-                 * The placeholder prefix 'placeholder-' is checked by the auth middleware
-                 * to identify users needing keycloakId synchronization.
+                 * The placeholder prefix ensures uniqueness and makes it obvious in the database
+                 * which users haven't authenticated yet. The auth middleware handles the
+                 * keycloakId synchronization automatically via email matching.
                  *
                  * Users with placeholder IDs:
                  * - Cannot log in until registered in Keycloak
@@ -2160,6 +2192,33 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
             }
 
             // Third pass: Create/update review cycles
+            // Batch-fetch user data (managerId, tovLevelId) to avoid N+1 queries
+            const rowsWithScores = validRows.filter(vr =>
+              vr.year && (vr.whatScore !== undefined || vr.howScore !== undefined) && vr.existingUserId
+            );
+            const userIdsForReviews = [...new Set(rowsWithScores.map(vr => vr.existingUserId!))];
+            const usersForReviews = userIdsForReviews.length > 0
+              ? await tx.user.findMany({
+                  where: { id: { in: userIdsForReviews } },
+                  select: { id: true, managerId: true, tovLevelId: true },
+                })
+              : [];
+            const userDataMap = new Map(usersForReviews.map(u => [u.id, u]));
+
+            // Batch-fetch existing reviews to avoid N+1 queries
+            const existingReviews = rowsWithScores.length > 0
+              ? await tx.reviewCycle.findMany({
+                  where: {
+                    employeeId: { in: userIdsForReviews },
+                    year: { in: [...new Set(rowsWithScores.map(vr => vr.year!))] },
+                    ...withTenantFilter(request),
+                  },
+                })
+              : [];
+            const reviewMap = new Map(
+              existingReviews.map(r => [`${r.employeeId}-${r.year}`, r])
+            );
+
             for (const vr of validRows) {
               if (!vr.year || (vr.whatScore === undefined && vr.howScore === undefined)) {
                 continue;
@@ -2167,12 +2226,8 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
 
               if (!vr.existingUserId) continue;
 
-              // Get user's manager and TOV level for the review
-              const user = await tx.user.findUnique({
-                where: { id: vr.existingUserId },
-                select: { managerId: true, tovLevelId: true },
-              });
-
+              // Get user's manager and TOV level from pre-fetched map
+              const user = userDataMap.get(vr.existingUserId);
               if (!user) continue;
 
               // Get TOV level (from row, user, or default)
@@ -2190,14 +2245,8 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
                 continue;
               }
 
-              // Check for existing review
-              const existingReview = await tx.reviewCycle.findFirst({
-                where: {
-                  employeeId: vr.existingUserId,
-                  year: vr.year,
-                  ...withTenantFilter(request),
-                },
-              });
+              // Check for existing review using pre-fetched map
+              const existingReview = reviewMap.get(`${vr.existingUserId}-${vr.year}`);
 
               if (existingReview) {
                 // Update existing review
@@ -2212,15 +2261,8 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
                 });
                 results.reviewsUpdated++;
               } else {
-                // Get competency levels for the TOV level
-                const competencyLevels = await tx.competencyLevel.findMany({
-                  where: {
-                    tovLevelId: reviewTovLevelId,
-                    ...withTenantFilter(request),
-                    isActive: true,
-                  },
-                  orderBy: { sortOrder: 'asc' },
-                });
+                // Get competency levels from pre-fetched map
+                const competencyLevels = competencyLevelsByTovId.get(reviewTovLevelId) || [];
 
                 // Create new review
                 await tx.reviewCycle.create({

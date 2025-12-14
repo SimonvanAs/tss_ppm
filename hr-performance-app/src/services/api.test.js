@@ -407,6 +407,58 @@ describe('ApiError', () => {
     const error = new ApiError('Test error', 400);
     expect(error.details).toBe(null);
   });
+
+  it('should spread extra fields onto the error instance', () => {
+    const error = new ApiError('Cannot delete', 400, null, {
+      userCount: 5,
+      users: [{ id: '1', name: 'John' }],
+    });
+
+    expect(error.userCount).toBe(5);
+    expect(error.users).toEqual([{ id: '1', name: 'John' }]);
+  });
+
+  it('should handle empty extra object', () => {
+    const error = new ApiError('Test error', 400, null, {});
+
+    expect(error.message).toBe('Test error');
+    expect(error.status).toBe(400);
+  });
+
+  it('should default extra to empty object', () => {
+    const error = new ApiError('Test error', 400, null);
+
+    expect(error.message).toBe('Test error');
+    // Should not throw when extra is undefined
+  });
+
+  it('should filter out dangerous keys to prevent prototype pollution', () => {
+    const error = new ApiError('Test error', 400, null, {
+      __proto__: { malicious: true },
+      constructor: 'bad',
+      prototype: {},
+      userCount: 3,
+    });
+
+    expect(error.userCount).toBe(3);
+    expect(error.malicious).toBeUndefined();
+    expect(error.name).toBe('ApiError'); // Not overwritten
+  });
+
+  it('should not allow overwriting core Error properties', () => {
+    const error = new ApiError('Original message', 400, { original: true }, {
+      message: 'Overwritten message',
+      status: 999,
+      details: { overwritten: true },
+      name: 'HackedError',
+      stack: 'fake stack',
+    });
+
+    expect(error.message).toBe('Original message');
+    expect(error.status).toBe(400);
+    expect(error.details).toEqual({ original: true });
+    expect(error.name).toBe('ApiError');
+  });
 });
 
 describe('API Endpoint Objects', () => {

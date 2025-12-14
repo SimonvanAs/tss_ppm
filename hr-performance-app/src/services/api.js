@@ -229,10 +229,13 @@ class ApiClient {
     const data = await response.json();
 
     if (!response.ok) {
+      // Extract extra fields (userCount, users, etc.) from error response
+      const { message, details, ...extra } = data.error || {};
       throw new ApiError(
-        data.error?.message || 'An error occurred',
+        message || 'An error occurred',
         response.status,
-        data.error?.details
+        details,
+        extra
       );
     }
 
@@ -391,11 +394,19 @@ class ApiClient {
  * Custom API Error class
  */
 export class ApiError extends Error {
-  constructor(message, status, details = null) {
+  constructor(message, status, details = null, extra = {}) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.details = details;
+    // Spread additional fields from error response (e.g., userCount, users)
+    // Filter out dangerous keys to prevent prototype pollution and property overwrites
+    const BLOCKED_KEYS = ['__proto__', 'constructor', 'prototype', 'name', 'message', 'status', 'details', 'stack'];
+    for (const [key, value] of Object.entries(extra)) {
+      if (!BLOCKED_KEYS.includes(key)) {
+        this[key] = value;
+      }
+    }
   }
 }
 

@@ -1,5 +1,9 @@
 import '@testing-library/jest-dom';
-import { vi } from 'vitest';
+import { vi, expect } from 'vitest';
+import * as axeMatchers from 'vitest-axe/matchers';
+
+// Extend expect with axe accessibility matchers
+expect.extend(axeMatchers);
 
 // Mock localStorage
 const localStorageMock = {

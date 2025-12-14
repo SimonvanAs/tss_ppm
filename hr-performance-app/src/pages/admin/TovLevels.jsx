@@ -48,12 +48,20 @@ function TovLevelModal({ tovLevel, onSave, onClose, t, language }) {
       className="admin-modal-overlay"
       onClick={onClose}
       onKeyDown={(e) => e.key === 'Escape' && onClose()}
-      role="dialog"
-      aria-modal="true"
+      role="button"
+      tabIndex={-1}
+      aria-label="Close modal"
     >
-      <div className="admin-modal" style={{ maxWidth: '600px' }} onClick={e => e.stopPropagation()} role="document">
+      <div
+        className="admin-modal"
+        style={{ maxWidth: '600px' }}
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tov-level-modal-title"
+      >
         <div className="admin-modal-header">
-          <h3 className="admin-modal-title">
+          <h3 id="tov-level-modal-title" className="admin-modal-title">
             {tovLevel ? t('admin.tovLevels.edit') : t('admin.tovLevels.create')}
           </h3>
           <button className="admin-modal-close" onClick={onClose}>&times;</button>

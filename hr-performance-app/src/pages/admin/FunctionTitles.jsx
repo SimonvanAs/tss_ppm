@@ -38,8 +38,21 @@ function FunctionTitleModal({ functionTitle, tovLevels, onSave, onClose, t }) {
   };
 
   return (
-    <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="function-title-modal-title" onClick={onClose}>
-      <div className="admin-modal" onClick={e => e.stopPropagation()}>
+    <div
+      className="admin-modal-overlay"
+      onClick={onClose}
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      role="button"
+      tabIndex={-1}
+      aria-label="Close modal"
+    >
+      <div
+        className="admin-modal"
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="function-title-modal-title"
+      >
         <div className="admin-modal-header">
           <h3 id="function-title-modal-title" className="admin-modal-title">
             {functionTitle ? t('admin.functionTitles.edit') : t('admin.functionTitles.create')}
@@ -125,8 +138,22 @@ function FunctionTitleModal({ functionTitle, tovLevels, onSave, onClose, t }) {
 
 function ConfirmDialog({ title, message, onConfirm, onCancel, t }) {
   return (
-    <div className="admin-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="confirm-dialog-title" onClick={onCancel}>
-      <div className="admin-modal" style={{ maxWidth: '400px' }} onClick={e => e.stopPropagation()}>
+    <div
+      className="admin-modal-overlay"
+      onClick={onCancel}
+      onKeyDown={(e) => e.key === 'Escape' && onCancel()}
+      role="button"
+      tabIndex={-1}
+      aria-label="Close dialog"
+    >
+      <div
+        className="admin-modal"
+        style={{ maxWidth: '400px' }}
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="confirm-dialog-title"
+      >
         <div className="admin-modal-header">
           <h3 id="confirm-dialog-title" className="admin-modal-title">{title}</h3>
           <button className="admin-modal-close" onClick={onCancel} aria-label={t('common.close')}>&times;</button>

@@ -1039,7 +1039,89 @@ describe('ImportEmployees', () => {
       // Verify blob was created and download was triggered
       expect(mockCreateObjectURL).toHaveBeenCalled();
       expect(mockClick).toHaveBeenCalled();
-      expect(mockRevokeObjectURL).toHaveBeenCalled();
+      // revokeObjectURL is called via setTimeout to allow async download to start
+      await waitFor(() => {
+        expect(mockRevokeObjectURL).toHaveBeenCalled();
+      });
+
+      // Cleanup
+      vi.restoreAllMocks();
+    });
+
+    it('should include err.data in CSV download when present', async () => {
+      // Mock URL.createObjectURL to capture the blob for verification
+      let capturedBlob = null;
+      const mockCreateObjectURL = vi.fn((blob) => {
+        capturedBlob = blob;
+        return 'blob:test-url';
+      });
+      const mockRevokeObjectURL = vi.fn();
+      global.URL.createObjectURL = mockCreateObjectURL;
+      global.URL.revokeObjectURL = mockRevokeObjectURL;
+
+      // Mock anchor element click
+      const mockClick = vi.fn();
+      const originalCreateElement = document.createElement.bind(document);
+      vi.spyOn(document, 'createElement').mockImplementation((tag) => {
+        const element = originalCreateElement(tag);
+        if (tag === 'a') {
+          element.click = mockClick;
+        }
+        return element;
+      });
+
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 3,
+          usersCreated: 1,
+          usersUpdated: 0,
+          reviewsCreated: 0,
+          reviewsUpdated: 0,
+          skipped: 2,
+          errors: [
+            { row: 2, message: 'Invalid email format', data: { email: 'not-an-email', name: 'Test User' } },
+            { row: 3, message: 'Missing required field', data: null }
+          ]
+        },
+        preview: []
+      });
+
+      renderWithProviders();
+      const input = document.querySelector('input[type="file"]');
+
+      const file = new File(['test content'], 'employees.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      fireEvent.change(input, { target: { files: [file] } });
+
+      await waitFor(() => {
+        const uploadBtn = screen.getByRole('button', { name: /Preview Import/i });
+        fireEvent.click(uploadBtn);
+      });
+
+      await waitFor(() => {
+        expect(screen.getByRole('button', { name: /Download Error Report/i })).toBeInTheDocument();
+      });
+
+      const downloadBtn = screen.getByRole('button', { name: /Download Error Report/i });
+      fireEvent.click(downloadBtn);
+
+      // Verify blob was created
+      expect(mockCreateObjectURL).toHaveBeenCalled();
+      expect(capturedBlob).toBeInstanceOf(Blob);
+      expect(capturedBlob.type).toBe('text/csv;charset=utf-8;');
+
+      // Read the blob content using FileReader
+      const blobText = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.readAsText(capturedBlob);
+      });
+
+      // Verify the blob content includes the error data (JSON-stringified)
+      expect(blobText).toContain('not-an-email'); // Data from first error
+      expect(blobText).toContain('Test User'); // Data from first error
 
       // Cleanup
       vi.restoreAllMocks();

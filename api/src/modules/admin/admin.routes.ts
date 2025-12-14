@@ -10,6 +10,9 @@ import {
   type OpCoSettings,
 } from '../../utils/settingsDefaults.js';
 
+// Timeout for bulk import transaction (in ms)
+const IMPORT_TRANSACTION_TIMEOUT_MS = 30000;
+
 export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) => {
   // ============================================
   // FUNCTION TITLES
@@ -82,9 +85,23 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       security: [{ bearerAuth: [] }],
     },
     preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
-  }, async (request) => {
+  }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const body = request.body as Partial<{ name: string; description: string; tovLevelId: string | null; sortOrder: number; isActive: boolean }>;
+
+    // Verify function title belongs to current tenant
+    const existing = await fastify.prisma.functionTitle.findFirst({
+      where: {
+        id,
+        ...withTenantFilter(request),
+      },
+    });
+
+    if (!existing) {
+      return reply.status(404).send({
+        error: { message: 'Function title not found', statusCode: 404 },
+      });
+    }
 
     const functionTitle = await fastify.prisma.functionTitle.update({
       where: { id },
@@ -857,7 +874,7 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       security: [{ bearerAuth: [] }],
     },
     preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
-  }, async (request) => {
+  }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const body = request.body as Partial<{
       category: string;
@@ -867,6 +884,20 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       sortOrder: number;
       isActive: boolean;
     }>;
+
+    // Verify competency belongs to current tenant
+    const existing = await fastify.prisma.competencyLevel.findFirst({
+      where: {
+        id,
+        ...withTenantFilter(request),
+      },
+    });
+
+    if (!existing) {
+      return reply.status(404).send({
+        error: { message: 'Competency not found', statusCode: 404 },
+      });
+    }
 
     const competency = await fastify.prisma.competencyLevel.update({
       where: { id },
@@ -885,6 +916,20 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
     preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
   }, async (request, reply) => {
     const { id } = request.params as { id: string };
+
+    // Verify competency belongs to current tenant
+    const existing = await fastify.prisma.competencyLevel.findFirst({
+      where: {
+        id,
+        ...withTenantFilter(request),
+      },
+    });
+
+    if (!existing) {
+      return reply.status(404).send({
+        error: { message: 'Competency not found', statusCode: 404 },
+      });
+    }
 
     // Soft delete
     await fastify.prisma.competencyLevel.update({
@@ -2137,6 +2182,18 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
                  */
                 const keycloakId = `placeholder-${Date.now()}-${Math.random().toString(36).substring(7)}`;
 
+                // Build displayName, ensuring empty string becomes null
+                const trimmedDisplayName = `${vr.firstName} ${vr.lastName}`.trim();
+
+                // Validate role and warn if invalid
+                const isValidRole = vr.role && Object.values(UserRole).includes(vr.role as UserRole);
+                if (vr.role && !isValidRole) {
+                  results.errors.push({
+                    row: vr.rowNum,
+                    message: `Invalid role '${vr.role}' - defaulting to EMPLOYEE. Valid roles: ${Object.values(UserRole).join(', ')}`,
+                  });
+                }
+
                 const newUser = await tx.user.create({
                   data: {
                     opcoId: request.tenant.opcoId,
@@ -2144,10 +2201,8 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
                     email: vr.email,
                     firstName: vr.firstName,
                     lastName: vr.lastName,
-                    displayName: `${vr.firstName} ${vr.lastName}`.trim() || null,
-                    role: (vr.role && Object.values(UserRole).includes(vr.role as UserRole))
-                      ? vr.role as UserRole
-                      : UserRole.EMPLOYEE,
+                    displayName: trimmedDisplayName.length > 0 ? trimmedDisplayName : null,
+                    role: isValidRole ? vr.role as UserRole : UserRole.EMPLOYEE,
                     functionTitleId: vr.functionTitleId || null,
                     tovLevelId: vr.tovLevelId || null,
                     businessUnitId: vr.businessUnitId || null,
@@ -2186,6 +2241,12 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
                   await tx.user.update({
                     where: { id: vr.existingUserId },
                     data: { managerId },
+                  });
+                } else if (!managerId) {
+                  // Warn when manager email can't be resolved
+                  results.errors.push({
+                    row: vr.rowNum,
+                    message: `Manager email '${vr.managerEmail}' not found - manager relationship not set`,
                   });
                 }
               }
@@ -2282,10 +2343,13 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
                         { stageType: 'END_YEAR_REVIEW', status: 'COMPLETED' },
                       ],
                     },
+                    // Note: For historical imports, we leave individual competency scores as null
+                    // because the HOW score is an aggregate - we don't have actual per-competency data.
+                    // The howScoreEndYear field stores the aggregate score for display purposes.
                     competencyScores: {
                       create: competencyLevels.map(cl => ({
                         competencyLevelId: cl.id,
-                        scoreEndYear: vr.howScore ? Math.round(vr.howScore) : null,
+                        scoreEndYear: null, // No individual scores for historical imports
                       })),
                     },
                   },
@@ -2293,7 +2357,7 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
                 results.reviewsCreated++;
               }
             }
-          }, { timeout: 30000 }); // 30 second timeout
+          }, { timeout: IMPORT_TRANSACTION_TIMEOUT_MS });
 
           // Audit log
           await fastify.audit.logFromRequest(request, {

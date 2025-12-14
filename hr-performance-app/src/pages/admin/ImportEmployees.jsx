@@ -143,7 +143,9 @@ export function ImportEmployees() {
       })
     ];
 
-    const csvContent = csvRows.join('\n');
+    // Add UTF-8 BOM for proper Excel character encoding
+    const BOM = '\uFEFF';
+    const csvContent = BOM + csvRows.join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
 
     // Generate filename with timestamp
@@ -158,7 +160,9 @@ export function ImportEmployees() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    // Delay revoking the object URL to ensure the download has started
+    // click() may be asynchronous in some browsers
+    setTimeout(() => URL.revokeObjectURL(url), 100);
   }, [results, t]);
 
   return (

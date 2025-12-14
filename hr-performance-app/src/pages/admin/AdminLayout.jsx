@@ -130,6 +130,11 @@ export function AdminLayout() {
       <div
         className={`admin-sidebar-overlay ${sidebarOpen ? 'visible' : ''}`}
         onClick={closeSidebar}
+        onKeyDown={(e) => e.key === 'Escape' && closeSidebar()}
+        role="button"
+        tabIndex={sidebarOpen ? 0 : -1}
+        aria-label="Close sidebar"
+        aria-hidden={!sidebarOpen}
       />
 
       {/* Sidebar */}

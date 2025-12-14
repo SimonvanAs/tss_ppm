@@ -61,12 +61,19 @@ function UserModal({ user, managers, functionTitles, tovLevels, onSave, onClose,
       className="admin-modal-overlay"
       onClick={onClose}
       onKeyDown={(e) => e.key === 'Escape' && onClose()}
-      role="dialog"
-      aria-modal="true"
+      role="button"
+      tabIndex={-1}
+      aria-label="Close modal"
     >
-      <div className="admin-modal" onClick={e => e.stopPropagation()} role="document">
+      <div
+        className="admin-modal"
+        onClick={e => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="edit-user-title"
+      >
         <div className="admin-modal-header">
-          <h3 className="admin-modal-title">
+          <h3 id="edit-user-title" className="admin-modal-title">
             {t('admin.users.editUser')}: {user?.firstName} {user?.lastName}
           </h3>
           <button className="admin-modal-close" onClick={onClose}>&times;</button>

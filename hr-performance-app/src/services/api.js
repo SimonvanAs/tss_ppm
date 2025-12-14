@@ -572,6 +572,34 @@ export const adminApi = {
 
   // Bulk review cycle creation (Start New Performance Year)
   bulkCreateReviewCycles: (data) => apiClient.post('/admin/review-cycles/bulk', data),
+
+  // Bulk employee import
+  importEmployees: async (file, dryRun = false) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('dryRun', dryRun.toString());
+
+    const API_BASE_URL = import.meta.env.VITE_API_URL || '/api/v1';
+    const token = apiClient.accessToken;
+    const headers = {};
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`${API_BASE_URL}/admin/employees/import`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error?.message || 'Failed to import employees');
+    }
+
+    return data;
+  },
 };
 
 // Analytics

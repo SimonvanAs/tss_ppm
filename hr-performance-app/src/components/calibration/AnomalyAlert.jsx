@@ -29,6 +29,9 @@ export function AnomalyAlertItem({ anomaly, onClick }) {
     <div
       className={`anomaly-alert-item ${anomaly.severity}`}
       onClick={() => onClick?.(anomaly)}
+      onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onClick?.(anomaly)}
+      role="button"
+      tabIndex={0}
     >
       <div className="anomaly-icon">
         {ANOMALY_ICONS[anomaly.type] || ANOMALY_ICONS.DEVIATION}
@@ -83,7 +86,14 @@ export function AnomalyAlertPanel({
 
   return (
     <div className={`anomaly-panel ${collapsed ? 'collapsed' : ''}`}>
-      <div className="anomaly-panel-header" onClick={onToggleCollapse}>
+      <div
+        className="anomaly-panel-header"
+        onClick={onToggleCollapse}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onToggleCollapse?.()}
+        role="button"
+        tabIndex={0}
+        aria-expanded={!collapsed}
+      >
         <div className="anomaly-title">
           <svg viewBox="0 0 24 24" width="24" height="24" fill="#FFA500">
             <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z" />

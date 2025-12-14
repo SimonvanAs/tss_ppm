@@ -91,6 +91,10 @@ export function Interactive9Grid({
             <div
               key={cell.key}
               onClick={() => handleCellClick(cell)}
+              onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleCellClick(cell)}
+              role="button"
+              tabIndex={isClickable ? 0 : -1}
+              aria-label={`${cell.label}: ${cell.count} employees, ${cell.percentage}%, ${cell.performanceLevel}`}
               title={`${cell.label}: ${cell.count} (${cell.percentage}%)\n${cell.performanceLevel}`}
               style={{
                 width: sizeConfig.cellSize,

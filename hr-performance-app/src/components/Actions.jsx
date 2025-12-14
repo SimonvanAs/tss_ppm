@@ -146,8 +146,14 @@ function PreviewModal({ formData, sessionCode, onClose }) {
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="preview-modal" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="modal-overlay"
+      onClick={onClose}
+      onKeyDown={(e) => e.key === 'Escape' && onClose()}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div className="preview-modal" onClick={(e) => e.stopPropagation()} role="document">
         <div className="preview-header">
           <h2>{t('actions.preview')}</h2>
           <button className="close-button" onClick={onClose}>×</button>

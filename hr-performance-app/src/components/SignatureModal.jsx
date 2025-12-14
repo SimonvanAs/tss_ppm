@@ -69,7 +69,13 @@ export function SignatureModal({
   };
 
   return (
-    <div className="signature-modal-overlay" onClick={handleOverlayClick}>
+    <div
+      className="signature-modal-overlay"
+      onClick={handleOverlayClick}
+      onKeyDown={(e) => e.key === 'Escape' && !isSubmitting && onClose()}
+      role="dialog"
+      aria-modal="true"
+    >
       <div className="signature-modal">
         <div className="signature-modal-header">
           <h2>{title}</h2>

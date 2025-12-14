@@ -126,6 +126,10 @@ export function CalibrationGrid({
                   backgroundColor: `${getGridColor(pos.key)}${count > 0 ? '30' : '10'}`,
                 }}
                 onClick={() => handleCellClick(pos.key)}
+                onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && handleCellClick(pos.key)}
+                role="button"
+                tabIndex={0}
+                aria-label={`${pos.label}: ${count} employees${adjusted > 0 ? `, ${adjusted} adjusted` : ''}`}
                 title={`${pos.label}: ${count} employees${adjusted > 0 ? ` (${adjusted} adjusted)` : ''}`}
               >
                 <div className="cell-label">{pos.label}</div>

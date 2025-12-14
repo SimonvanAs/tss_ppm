@@ -74,7 +74,14 @@ export function CalibrationEmployeeCard({
   return (
     <div className={`calibration-employee-card ${item.isAdjusted ? 'adjusted' : ''} ${item.flaggedForReview ? 'flagged' : ''}`}>
       {/* Header */}
-      <div className="card-header" onClick={() => onExpandToggle?.(item.id)}>
+      <div
+        className="card-header"
+        onClick={() => onExpandToggle?.(item.id)}
+        onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && onExpandToggle?.(item.id)}
+        role="button"
+        tabIndex={0}
+        aria-expanded={expanded}
+      >
         <div className="employee-info">
           <div className="employee-avatar">
             {item.employee.name.charAt(0)}

@@ -556,8 +556,14 @@ export function CalibrationSession() {
 
       {/* Edit Session Modal */}
       {isEditModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsEditModalOpen(false)}>
-          <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 500 }}>
+        <div
+          className="modal-overlay"
+          onClick={() => setIsEditModalOpen(false)}
+          onKeyDown={(e) => e.key === 'Escape' && setIsEditModalOpen(false)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div className="modal" onClick={(e) => e.stopPropagation()} role="document" style={{ maxWidth: 500 }}>
             <div className="modal-header">
               <h2>{t('pages.calibration.session.editSession') || 'Edit Session'}</h2>
               <button

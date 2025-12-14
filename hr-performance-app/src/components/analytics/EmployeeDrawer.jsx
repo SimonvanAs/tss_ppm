@@ -87,6 +87,10 @@ export function EmployeeDrawer({
       {/* Backdrop */}
       <div
         onClick={onClose}
+        onKeyDown={(e) => e.key === 'Escape' && onClose()}
+        role="button"
+        tabIndex={0}
+        aria-label="Close drawer"
         style={{
           position: 'fixed',
           inset: 0,

@@ -44,3 +44,12 @@ npm-debug.log*
 
 # Security/Scanning reports
 .securevibes/
+
+# Test artifacts
+playwright-report/
+test-results/
+hr-performance-app/playwright-report/
+hr-performance-app/test-results/
+
+# Claude Code local settings
+.claude/

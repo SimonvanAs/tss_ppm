@@ -383,11 +383,19 @@ export function TeamOverview() {
     return GRID_LABELS[`${whatPos}-${howPos}`] || '-';
   };
 
-  const handleStartReview = async (employeeId) => {
+  const handleStartReview = async (member) => {
     try {
+      // Validate that employee has a TOV level assigned
+      if (!member.tovLevelId) {
+        setError(t('pages.team.errors.noTovLevel') || 'Employee does not have a TOV level assigned. Please configure their profile first.');
+        return;
+      }
+
       await reviewsApi.create({
-        employeeId,
+        employeeId: member.id,
+        managerId: user.id,
         year: yearFilter,
+        tovLevelId: member.tovLevelId,
       });
       loadTeam();
     } catch (err) {
@@ -629,7 +637,7 @@ export function TeamOverview() {
                             ) : (
                               <button
                                 className="btn btn-sm btn-secondary"
-                                onClick={() => handleStartReview(member.id)}
+                                onClick={() => handleStartReview(member)}
                               >
                                 {t('pages.team.startReview')}
                               </button>

@@ -127,12 +127,7 @@ export function AllReviews() {
             <select
               value={filters.year}
               onChange={(e) => setFilters(f => ({ ...f, year: parseInt(e.target.value) }))}
-              style={{
-                padding: '8px 12px',
-                borderRadius: 4,
-                border: '1px solid #ddd',
-                minWidth: 100,
-              }}
+              className="filter-select"
             >
               {years.map(year => (
                 <option key={year} value={year}>{year}</option>
@@ -147,12 +142,7 @@ export function AllReviews() {
             <select
               value={filters.status}
               onChange={(e) => setFilters(f => ({ ...f, status: e.target.value }))}
-              style={{
-                padding: '8px 12px',
-                borderRadius: 4,
-                border: '1px solid #ddd',
-                minWidth: 150,
-              }}
+              className="filter-select"
             >
               <option value="">{t('pages.team.filters.allStatuses')}</option>
               {statuses.map(status => (

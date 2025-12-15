@@ -166,12 +166,7 @@ export function AnalyticsDashboard() {
             <select
               value={year}
               onChange={e => setYear(parseInt(e.target.value, 10))}
-              style={{
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid #ddd',
-                fontSize: '14px',
-              }}
+              className="filter-select"
             >
               {availableYears.map(y => (
                 <option key={y} value={y}>
@@ -183,12 +178,7 @@ export function AnalyticsDashboard() {
             <select
               value={stage}
               onChange={e => setStage(e.target.value)}
-              style={{
-                padding: '8px 12px',
-                borderRadius: '6px',
-                border: '1px solid #ddd',
-                fontSize: '14px',
-              }}
+              className="filter-select"
             >
               <option value="endYear">{t('pages.analytics.endYear') || 'End Year'}</option>
               <option value="midYear">{t('pages.analytics.midYear') || 'Mid Year'}</option>

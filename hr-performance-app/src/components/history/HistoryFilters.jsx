@@ -1,4 +1,5 @@
 import { useLanguage } from '../../contexts/LanguageContext';
+import '../../pages/Pages.css';
 
 /**
  * Filter controls for history dashboard
@@ -35,12 +36,7 @@ export function HistoryFilters({
         <select
           value={fromYear || ''}
           onChange={(e) => onFromYearChange(e.target.value ? Number(e.target.value) : null)}
-          style={{
-            padding: '6px 12px',
-            borderRadius: '4px',
-            border: '1px solid #ddd',
-            fontSize: '13px',
-          }}
+          className="filter-select"
         >
           <option value="">{t('pages.history.allYears')}</option>
           {years.map(year => (
@@ -51,12 +47,7 @@ export function HistoryFilters({
         <select
           value={toYear || ''}
           onChange={(e) => onToYearChange(e.target.value ? Number(e.target.value) : null)}
-          style={{
-            padding: '6px 12px',
-            borderRadius: '4px',
-            border: '1px solid #ddd',
-            fontSize: '13px',
-          }}
+          className="filter-select"
         >
           <option value="">{t('pages.history.allYears')}</option>
           {years.map(year => (

@@ -1,4 +1,5 @@
 import { useLanguage } from '../../contexts/LanguageContext';
+import '../../pages/Pages.css';
 
 /**
  * Tab-style selector for analytics level (Manager, BU, Company)
@@ -76,14 +77,7 @@ export function LevelSelector({
             value={selectedBusinessUnitId || ''}
             onChange={e => onBusinessUnitChange(e.target.value)}
             disabled={disabled}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              borderRadius: '6px',
-              border: '1px solid #ddd',
-              fontSize: '14px',
-              background: 'white',
-            }}
+            className="filter-select"
           >
             <option value="">{t('pages.analytics.selectBUPlaceholder') || '-- Select --'}</option>
             {businessUnits.map(bu => (
@@ -113,14 +107,7 @@ export function LevelSelector({
             value={selectedManagerId || ''}
             onChange={e => onManagerChange(e.target.value)}
             disabled={disabled}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              borderRadius: '6px',
-              border: '1px solid #ddd',
-              fontSize: '14px',
-              background: 'white',
-            }}
+            className="filter-select"
           >
             <option value="">{t('pages.analytics.myTeam') || 'My Team'}</option>
             {managers.map(m => (

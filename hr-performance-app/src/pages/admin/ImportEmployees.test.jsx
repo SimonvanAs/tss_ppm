@@ -431,6 +431,48 @@ describe('ImportEmployees', () => {
       expect(screen.getByText('5')).toBeInTheDocument(); // Reviews Created
     });
 
+    it('should display duplicate email errors from import', async () => {
+      mockImportEmployees.mockResolvedValueOnce({
+        results: {
+          total: 5,
+          usersCreated: 2,
+          usersUpdated: 0,
+          reviewsCreated: 1,
+          reviewsUpdated: 0,
+          skipped: 3,
+          errors: [
+            { row: 3, message: "Duplicate email 'john@example.com' in file (first seen at row 2)" },
+            { row: 5, message: "Duplicate email 'john@example.com' in file (first seen at row 2)" }
+          ]
+        }
+      });
+
+      renderWithProviders();
+
+      const checkbox = screen.getByRole('checkbox');
+      fireEvent.click(checkbox);
+
+      const input = document.querySelector('input[type="file"]');
+
+      const file = new File(['test content'], 'employees.xlsx', {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      });
+
+      fireEvent.change(input, { target: { files: [file] } });
+
+      await waitFor(() => {
+        const uploadBtn = screen.getByRole('button', { name: /Upload and Import/i });
+        fireEvent.click(uploadBtn);
+      });
+
+      await waitFor(() => {
+        // Verify the duplicate email error messages are displayed in the errors table
+        // There are 2 duplicate entries, so use getAllByText
+        const duplicateErrors = screen.getAllByText("Duplicate email 'john@example.com' in file (first seen at row 2)");
+        expect(duplicateErrors).toHaveLength(2);
+      });
+    });
+
     it('should display errors from failed import', async () => {
       mockImportEmployees.mockResolvedValueOnce({
         results: {

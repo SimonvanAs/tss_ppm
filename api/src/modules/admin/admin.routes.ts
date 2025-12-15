@@ -1898,6 +1898,8 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
         isNewUser: boolean;
       };
       const validRows: ValidRow[] = [];
+      // Map for O(1) duplicate email detection within the import file
+      const emailRowMap = new Map<string, number>();
 
       // First pass: validate all rows
       for (let rowNum = 2; rowNum <= worksheet.rowCount; rowNum++) {
@@ -2050,10 +2052,24 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
             }
           }
 
+          // Check for duplicate emails within the import file (O(1) lookup)
+          const normalizedEmail = email.toLowerCase();
+          const firstSeenRow = emailRowMap.get(normalizedEmail);
+          if (firstSeenRow !== undefined) {
+            results.skipped++;
+            results.errors.push({
+              row: rowNum,
+              message: `Duplicate email '${email}' in file (first seen at row ${firstSeenRow})`,
+            });
+            continue;
+          }
+          // Track this email for duplicate detection
+          emailRowMap.set(normalizedEmail, rowNum);
+
           // Add to valid rows
           validRows.push({
             rowNum,
-            email: email.toLowerCase(),
+            email: normalizedEmail,
             firstName: firstName || '',
             lastName: lastName || '',
             role: roleStr?.toUpperCase(),

@@ -17,6 +17,8 @@ A web-based HR Performance Review application for Total Specific Solutions. This
 - **Authentication** - Keycloak integration with EntraID federation support
 - **Role-Based Access** - Employee, Manager, HR, and Admin roles with specific views
 
+> **New to TSS PPM?** See the [Demo Guide](DEMO_GUIDE.md) for test accounts and features to try.
+
 ## Quick Start
 
 ### Prerequisites

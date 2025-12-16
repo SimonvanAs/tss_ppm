@@ -75,6 +75,11 @@
   overflow: hidden;
 }
 
+/* Row wrapper for ARIA structure - invisible to CSS grid */
+.performance-grid-section .grid-row {
+  display: contents;
+}
+
 .performance-grid-section .grid-cell {
   display: flex;
   align-items: center;

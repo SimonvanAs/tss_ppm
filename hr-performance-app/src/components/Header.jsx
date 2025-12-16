@@ -45,31 +45,60 @@ export function Header() {
           {/* Show save status when on review form, otherwise show progress */}
           {saveStatus ? (
             <div className="header-save-status">
+              {/* Aria-live region for save status announcements */}
+              <div
+                className="sr-only"
+                role="status"
+                aria-live="polite"
+                aria-atomic="true"
+              >
+                {saveStatus.saving && t('review.saving')}
+                {!saveStatus.saving && saveStatus.saved && t('review.saved')}
+                {!saveStatus.saving && saveStatus.dirty && t('review.unsaved')}
+              </div>
+              {/* Aria-live region for errors - assertive for immediate attention */}
+              {saveStatus.error && (
+                <div
+                  className="sr-only"
+                  role="alert"
+                  aria-live="assertive"
+                >
+                  {t('review.saveFailed')}
+                </div>
+              )}
+
               {saveStatus.saving && (
-                <span className="save-status-indicator saving">
+                <span className="save-status-indicator saving" aria-hidden="true">
                   <span className="save-spinner" />
                   {t('review.saving')}
                 </span>
               )}
               {!saveStatus.saving && saveStatus.dirty && (
-                <span className="save-status-indicator unsaved">
+                <span className="save-status-indicator unsaved" aria-hidden="true">
                   {t('review.unsaved')}
                 </span>
               )}
               {!saveStatus.saving && saveStatus.saved && (
-                <span className="save-status-indicator saved">
+                <span className="save-status-indicator saved" aria-hidden="true">
                   ✓ {t('review.saved')}
                 </span>
               )}
               {saveStatus.error && (
-                <span className="save-status-indicator error">
+                <span className="save-status-indicator error" aria-hidden="true">
                   ⚠ {t('review.saveFailed')}
                 </span>
               )}
             </div>
           ) : (
             <div className="progress-container">
-              <div className="progress-bar">
+              <div
+                className="progress-bar"
+                role="progressbar"
+                aria-valuenow={progress}
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-label={`${t('app.progress')}: ${progress}%`}
+              >
                 <div
                   className="progress-fill"
                   style={{
@@ -78,7 +107,7 @@ export function Header() {
                   }}
                 />
               </div>
-              <span className="progress-text">{progress}% {t('app.progress')}</span>
+              <span className="progress-text" aria-hidden="true">{progress}% {t('app.progress')}</span>
             </div>
           )}
         </div>

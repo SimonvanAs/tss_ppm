@@ -432,27 +432,59 @@ export function TeamOverview() {
     link.click();
   };
 
-  const SortHeader = ({ field, children }) => (
-    <th
-      onClick={() => handleSort(field)}
-      style={{ cursor: 'pointer', userSelect: 'none' }}
-      className={sortField === field ? 'sorted' : ''}
-    >
-      {children}
-      {sortField === field && (
-        <span className="sort-indicator">
-          {sortDirection === 'asc' ? ' ▲' : ' ▼'}
-        </span>
-      )}
-    </th>
-  );
+  const SortHeader = ({ field, children }) => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleSort(field);
+      }
+    };
+
+    return (
+      <th
+        onClick={() => handleSort(field)}
+        onKeyDown={handleKeyDown}
+        role="button"
+        tabIndex={0}
+        style={{ cursor: 'pointer', userSelect: 'none' }}
+        className={sortField === field ? 'sorted' : ''}
+        aria-sort={
+          sortField === field
+            ? sortDirection === 'asc'
+              ? 'ascending'
+              : 'descending'
+            : 'none'
+        }
+        aria-label={`${children}, sortable column${
+          sortField === field
+            ? `, currently sorted ${sortDirection === 'asc' ? 'ascending' : 'descending'}`
+            : ''
+        }`}
+      >
+        {children}
+        {sortField === field && (
+          <span className="sort-indicator" aria-hidden="true">
+            {sortDirection === 'asc' ? ' ▲' : ' ▼'}
+          </span>
+        )}
+      </th>
+    );
+  };
 
   if (isLoading) {
     return (
       <div className="page">
         <div className="loading-state">
-          <div className="loading-spinner-small"></div>
-          <p>{t('common.loading')}</p>
+          <div
+            className="sr-only"
+            role="status"
+            aria-live="polite"
+            aria-busy="true"
+          >
+            {t('common.loading')}
+          </div>
+          <div className="loading-spinner-small" aria-hidden="true"></div>
+          <p aria-hidden="true">{t('common.loading')}</p>
         </div>
       </div>
     );
@@ -466,9 +498,18 @@ export function TeamOverview() {
       </div>
 
       {error && (
-        <div className="card" style={{ marginBottom: 16, background: 'rgba(220, 53, 69, 0.05)', borderColor: '#DC3545' }}>
-          <p style={{ color: '#DC3545', margin: 0 }}>{error}</p>
-        </div>
+        <>
+          <div
+            className="sr-only"
+            role="alert"
+            aria-live="assertive"
+          >
+            {error}
+          </div>
+          <div className="card" style={{ marginBottom: 16, background: 'rgba(220, 53, 69, 0.05)', borderColor: '#DC3545' }}>
+            <p style={{ color: '#DC3545', margin: 0 }} aria-hidden="true">{error}</p>
+          </div>
+        </>
       )}
 
       {teamMembers.length === 0 ? (

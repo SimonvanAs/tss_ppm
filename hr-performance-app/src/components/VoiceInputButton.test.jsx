@@ -78,14 +78,18 @@ describe('VoiceInputButton', () => {
       mockUseWhisper.isListening = true;
       render(<VoiceInputButton />);
 
-      expect(screen.getByText('Listening...')).toBeInTheDocument();
+      // Text appears in both visible label and sr-only live region
+      const listeningTexts = screen.getAllByText('Listening...');
+      expect(listeningTexts.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should show processing label when processing', () => {
       mockUseWhisper.isProcessing = true;
       render(<VoiceInputButton />);
 
-      expect(screen.getByText('Processing...')).toBeInTheDocument();
+      // Text appears in both visible label and sr-only live region
+      const processingTexts = screen.getAllByText('Processing...');
+      expect(processingTexts.length).toBeGreaterThanOrEqual(1);
     });
 
     it('should show processing spinner when processing', () => {

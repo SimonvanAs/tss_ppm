@@ -71,8 +71,16 @@ export function MyReviews() {
     return (
       <div className="page">
         <div className="loading-state">
-          <div className="loading-spinner-small"></div>
-          <p>{t('pages.myReviews.loading')}</p>
+          <div
+            className="sr-only"
+            role="status"
+            aria-live="polite"
+            aria-busy="true"
+          >
+            {t('pages.myReviews.loading')}
+          </div>
+          <div className="loading-spinner-small" aria-hidden="true"></div>
+          <p aria-hidden="true">{t('pages.myReviews.loading')}</p>
         </div>
       </div>
     );
@@ -81,6 +89,13 @@ export function MyReviews() {
   if (error) {
     return (
       <div className="page">
+        <div
+          className="sr-only"
+          role="alert"
+          aria-live="assertive"
+        >
+          {t('pages.myReviews.errorLoading')}: {error}
+        </div>
         <div className="card">
           <div className="empty-state">
             <p className="empty-state-title">{t('pages.myReviews.errorLoading') || 'Error loading reviews'}</p>

@@ -80,6 +80,18 @@ export function VoiceInputButton({ onTranscript, disabled = false }) {
 
   return (
     <div className="voice-input-wrapper">
+      {/* Aria-live region for voice input status announcements */}
+      <div
+        className="sr-only"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        {isListening && t('voice.listening')}
+        {isProcessing && t('voice.processing')}
+        {error && t('voice.error')}
+      </div>
+
       <button
         type="button"
         className={buttonClass}
@@ -91,6 +103,7 @@ export function VoiceInputButton({ onTranscript, disabled = false }) {
         disabled={disabled || isProcessing || isDisabledByLoading}
         title={isDisabledByLoading ? t('voice.loadingModel') : t('voice.holdToSpeak')}
         aria-label={t('voice.holdToSpeak')}
+        aria-pressed={isListening}
       >
         <div className="voice-button-content">
           {isProcessing ? (
@@ -125,17 +138,17 @@ export function VoiceInputButton({ onTranscript, disabled = false }) {
             </div>
           )}
         </div>
-        {isListening && <span className="listening-label">{t('voice.listening')}</span>}
-        {isProcessing && <span className="listening-label">{t('voice.processing')}</span>}
+        {isListening && <span className="listening-label" aria-hidden="true">{t('voice.listening')}</span>}
+        {isProcessing && <span className="listening-label" aria-hidden="true">{t('voice.processing')}</span>}
       </button>
       {/* Backend indicator (shown when browser backend is active and ready) */}
       {activeBackend === 'browser' && isModelReady && !isListening && !isProcessing && (
-        <div className="backend-indicator" title={`${modelBackend?.toUpperCase()} - Local processing`}>
-          <span className="backend-dot"></span>
+        <div className="backend-indicator" title={`${modelBackend?.toUpperCase()} - Local processing`} aria-label={`${modelBackend?.toUpperCase()} - Local processing`}>
+          <span className="backend-dot" aria-hidden="true"></span>
         </div>
       )}
       {error && (
-        <div className="voice-error-tooltip">
+        <div className="voice-error-tooltip" aria-hidden="true">
           <span className="voice-error-icon">!</span>
           <span className="voice-error-text">{t('voice.error')}</span>
         </div>

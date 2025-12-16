@@ -9,8 +9,11 @@ const prisma = new PrismaClient();
 // Helper to cast multilang objects to Prisma JSON
 const toJson = <T>(obj: T): Prisma.InputJsonValue => obj as unknown as Prisma.InputJsonValue;
 
+// Check if running in production mode
+const isProduction = process.env.NODE_ENV === 'production';
+
 async function main() {
-  console.log('Starting database seed...');
+  console.log(`Starting database seed... (${isProduction ? 'production' : 'development'} mode)`);
 
   // Create default TSS OpCo
   const tssOpCo = await prisma.opCo.upsert({
@@ -131,9 +134,11 @@ async function main() {
   }
   console.log(`Created/updated ${defaultFunctionTitles.length} function titles`);
 
-  // Create test users for development
-  // These users match the Keycloak realm import (keycloak/tss-ppm-realm.json)
-  const testUsers = [
+  // Only create test users and sample data in development mode
+  if (!isProduction) {
+    // Create test users for development
+    // These users match the Keycloak realm import (keycloak/tss-ppm-realm.json)
+    const testUsers = [
     {
       keycloakId: 'employee-test-id',
       email: 'employee@tss.eu',
@@ -317,6 +322,9 @@ async function main() {
 
       console.log(`Created sample review cycle for ${currentYear}`);
     }
+  }
+  } else {
+    console.log('Skipping test users and sample data (production mode)');
   }
 
   console.log('Database seed completed successfully!');

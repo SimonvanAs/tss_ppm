@@ -108,6 +108,8 @@ export function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const isSuperAdmin = hasRole('TSS_SUPER_ADMIN');
+  const isAdmin = hasRole('OPCO_ADMIN') || isSuperAdmin;
+  const isHROnly = hasRole('HR') && !isAdmin;
 
   // Get current page name from path
   const getPageName = () => {
@@ -160,115 +162,135 @@ export function AdminLayout() {
         </div>
 
         <nav className="admin-sidebar-nav">
-          {/* OpCo Admin Section */}
-          <div className="admin-nav-section">
-            <div className="admin-nav-section-title">{t('admin.sections.management')}</div>
+          {/* HR Section - Teams only for HR role */}
+          {isHROnly && (
+            <div className="admin-nav-section">
+              <div className="admin-nav-section-title">{t('admin.sections.management')}</div>
 
-            <NavLink
-              to="/admin"
-              end
-              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              <span className="admin-nav-icon"><DashboardIcon /></span>
-              {t('admin.nav.dashboard')}
-            </NavLink>
+              <NavLink
+                to="/admin/teams"
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><TeamsIcon /></span>
+                {t('admin.nav.teams')}
+              </NavLink>
+            </div>
+          )}
 
-            <NavLink
-              to="/admin/users"
-              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              <span className="admin-nav-icon"><UsersIcon /></span>
-              {t('admin.nav.users')}
-            </NavLink>
+          {/* OpCo Admin Section - Full access for admins */}
+          {isAdmin && (
+            <div className="admin-nav-section">
+              <div className="admin-nav-section-title">{t('admin.sections.management')}</div>
 
-            <NavLink
-              to="/admin/org-chart"
-              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              <span className="admin-nav-icon"><OrgChartIcon /></span>
-              {t('admin.nav.orgChart')}
-            </NavLink>
+              <NavLink
+                to="/admin"
+                end
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><DashboardIcon /></span>
+                {t('admin.nav.dashboard')}
+              </NavLink>
 
-            <NavLink
-              to="/admin/teams"
-              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              <span className="admin-nav-icon"><TeamsIcon /></span>
-              {t('admin.nav.teams')}
-            </NavLink>
-          </div>
+              <NavLink
+                to="/admin/users"
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><UsersIcon /></span>
+                {t('admin.nav.users')}
+              </NavLink>
 
-          {/* Configuration Section */}
-          <div className="admin-nav-section">
-            <div className="admin-nav-section-title">{t('admin.sections.configuration')}</div>
+              <NavLink
+                to="/admin/org-chart"
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><OrgChartIcon /></span>
+                {t('admin.nav.orgChart')}
+              </NavLink>
 
-            <NavLink
-              to="/admin/function-titles"
-              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              <span className="admin-nav-icon"><FunctionIcon /></span>
-              {t('admin.nav.functionTitles')}
-            </NavLink>
+              <NavLink
+                to="/admin/teams"
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><TeamsIcon /></span>
+                {t('admin.nav.teams')}
+              </NavLink>
+            </div>
+          )}
 
-            <NavLink
-              to="/admin/tov-levels"
-              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              <span className="admin-nav-icon"><LevelIcon /></span>
-              {t('admin.nav.tovLevels')}
-            </NavLink>
+          {/* Configuration Section - Admin only */}
+          {isAdmin && (
+            <div className="admin-nav-section">
+              <div className="admin-nav-section-title">{t('admin.sections.configuration')}</div>
 
-            <NavLink
-              to="/admin/competencies"
-              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              <span className="admin-nav-icon"><CompetencyIcon /></span>
-              {t('admin.nav.competencies')}
-            </NavLink>
+              <NavLink
+                to="/admin/function-titles"
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><FunctionIcon /></span>
+                {t('admin.nav.functionTitles')}
+              </NavLink>
 
-            <NavLink
-              to="/admin/import"
-              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              <span className="admin-nav-icon"><ImportIcon /></span>
-              {t('admin.nav.import')}
-            </NavLink>
+              <NavLink
+                to="/admin/tov-levels"
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><LevelIcon /></span>
+                {t('admin.nav.tovLevels')}
+              </NavLink>
 
-            <NavLink
-              to="/admin/import-employees"
-              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              <span className="admin-nav-icon"><ImportEmployeesIcon /></span>
-              {t('admin.nav.importEmployees')}
-            </NavLink>
+              <NavLink
+                to="/admin/competencies"
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><CompetencyIcon /></span>
+                {t('admin.nav.competencies')}
+              </NavLink>
 
-            <NavLink
-              to="/admin/start-new-year"
-              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              <span className="admin-nav-icon"><NewYearIcon /></span>
-              {t('admin.nav.startNewYear')}
-            </NavLink>
+              <NavLink
+                to="/admin/import"
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><ImportIcon /></span>
+                {t('admin.nav.import')}
+              </NavLink>
 
-            <NavLink
-              to="/admin/settings"
-              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
-              onClick={closeSidebar}
-            >
-              <span className="admin-nav-icon"><SettingsIcon /></span>
-              {t('admin.nav.settings')}
-            </NavLink>
-          </div>
+              <NavLink
+                to="/admin/import-employees"
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><ImportEmployeesIcon /></span>
+                {t('admin.nav.importEmployees')}
+              </NavLink>
+
+              <NavLink
+                to="/admin/start-new-year"
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><NewYearIcon /></span>
+                {t('admin.nav.startNewYear')}
+              </NavLink>
+
+              <NavLink
+                to="/admin/settings"
+                className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+                onClick={closeSidebar}
+              >
+                <span className="admin-nav-icon"><SettingsIcon /></span>
+                {t('admin.nav.settings')}
+              </NavLink>
+            </div>
+          )}
 
           {/* Super Admin Section */}
           {isSuperAdmin && (

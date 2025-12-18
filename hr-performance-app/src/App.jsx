@@ -118,6 +118,19 @@ function PrivacyPage() {
   return <PrivacyPolicy onBack={() => navigate(-1)} />;
 }
 
+// Admin index route handler - redirects HR to teams
+function AdminIndexRoute() {
+  const { hasRole } = useAuth();
+  const isAdmin = hasRole('OPCO_ADMIN') || hasRole('TSS_SUPER_ADMIN');
+
+  // HR users go directly to teams, admins see dashboard
+  if (!isAdmin) {
+    return <Navigate to="/admin/teams" replace />;
+  }
+
+  return <AdminDashboard />;
+}
+
 // Main app router
 function AppRouter() {
   return (
@@ -350,7 +363,7 @@ function AppRouter() {
       <Route
         path="/admin"
         element={
-          <ProtectedRoute roles={['OPCO_ADMIN', 'TSS_SUPER_ADMIN']}>
+          <ProtectedRoute roles={['HR', 'OPCO_ADMIN', 'TSS_SUPER_ADMIN']}>
             <LanguageProvider>
               <WhisperProvider>
                 <FormProvider>
@@ -363,7 +376,7 @@ function AppRouter() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<AdminDashboard />} />
+        <Route index element={<AdminIndexRoute />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="org-chart" element={<OrgChart />} />
         <Route path="teams" element={<TeamsManagement />} />

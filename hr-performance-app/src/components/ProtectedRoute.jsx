@@ -1,45 +1,46 @@
 import { useAuth } from '../contexts/AuthContext';
-import { useLanguage } from '../contexts/LanguageContext';
 import { UserRole } from '../config/auth';
 
 /**
  * Loading spinner component
+ * Note: Cannot use useLanguage() here because ProtectedRoute renders
+ * outside of LanguageProvider in the route tree
  */
 function LoadingSpinner() {
-  const { t } = useLanguage();
   return (
     <div className="auth-loading">
       <div className="auth-loading-spinner"></div>
-      <p>{t('common.loading')}</p>
+      <p>Loading...</p>
     </div>
   );
 }
 
 /**
  * Access denied component
+ * Note: Cannot use useLanguage() here because ProtectedRoute renders
+ * outside of LanguageProvider in the route tree
  */
 function AccessDenied({ requiredRoles }) {
   const { user, logout } = useAuth();
-  const { t } = useLanguage();
 
   return (
     <div className="auth-denied">
-      <h2>{t('common.accessDenied')}</h2>
-      <p>{t('pages.accessDenied.message') || 'You do not have permission to access this page.'}</p>
+      <h2>Access Denied</h2>
+      <p>You do not have permission to access this page.</p>
       {user && (
         <p className="auth-denied-info">
-          {t('pages.accessDenied.currentRole') || 'Your current role'}: <strong>{user.role}</strong>
+          Your current role: <strong>{user.role}</strong>
           {requiredRoles && requiredRoles.length > 0 && (
             <>
               <br />
-              {t('pages.accessDenied.requiredRoles') || 'Required roles'}: <strong>{requiredRoles.join(', ')}</strong>
+              Required roles: <strong>{requiredRoles.join(', ')}</strong>
             </>
           )}
         </p>
       )}
       <div className="auth-denied-actions">
-        <button onClick={() => window.history.back()}>{t('common.goBack')}</button>
-        <button onClick={() => logout()}>{t('common.logout') || 'Logout'}</button>
+        <button onClick={() => window.history.back()}>Go Back</button>
+        <button onClick={() => logout()}>Logout</button>
       </div>
     </div>
   );

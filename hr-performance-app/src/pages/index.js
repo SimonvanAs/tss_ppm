@@ -19,6 +19,7 @@ export {
   AdminDashboard,
   UserManagement,
   OrgChart,
+  TeamsManagement,
   FunctionTitles,
   TovLevels,
   Competencies,

@@ -546,6 +546,24 @@ export const adminApi = {
   updateBusinessUnit: (id, data) => apiClient.patch(`/admin/business-units/${id}`, data),
   deleteBusinessUnit: (id) => apiClient.delete(`/admin/business-units/${id}`),
 
+  // Teams
+  getTeams: (businessUnitId = null) => apiClient.get('/admin/teams', businessUnitId ? { businessUnitId } : {}),
+  createTeam: (data) => apiClient.post('/admin/teams', data),
+  updateTeam: (id, data) => apiClient.patch(`/admin/teams/${id}`, data),
+  deleteTeam: (id) => apiClient.delete(`/admin/teams/${id}`),
+  createStandardTeams: (businessUnitId, includeMA = false) => apiClient.post(`/admin/business-units/${businessUnitId}/teams/standard`, { includeMA }),
+  getTeamTypes: () => apiClient.get('/admin/team-types'),
+
+  // HR Assignments to Business Units
+  getHRAssignments: (businessUnitId) => apiClient.get(`/admin/business-units/${businessUnitId}/hr-assignments`),
+  assignHRToBusinessUnit: (businessUnitId, userIds) => apiClient.post(`/admin/business-units/${businessUnitId}/hr-assignments`, { userIds }),
+  removeHRFromBusinessUnit: (businessUnitId, userId) => apiClient.delete(`/admin/business-units/${businessUnitId}/hr-assignments/${userId}`),
+
+  // Admin Assignments to OpCos (Super Admin only)
+  getOpCoAdminAssignments: (opcoId) => apiClient.get(`/admin/opcos/${opcoId}/admin-assignments`),
+  assignAdminToOpCo: (opcoId, userIds) => apiClient.post(`/admin/opcos/${opcoId}/admin-assignments`, { userIds }),
+  removeAdminFromOpCo: (opcoId, userId) => apiClient.delete(`/admin/opcos/${opcoId}/admin-assignments/${userId}`),
+
   // Settings
   getSettings: (opcoId = null) => apiClient.get('/admin/settings', opcoId ? { opcoId } : {}),
   updateSettings: (data) => apiClient.patch('/admin/settings', data),

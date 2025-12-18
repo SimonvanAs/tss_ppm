@@ -32,9 +32,27 @@ model OpCo {
   competencyLevels    CompetencyLevel[]
   reviewCycles        ReviewCycle[]
   businessUnits       BusinessUnit[]
+  teams               Team[]
   calibrationSessions CalibrationSession[]
+  adminAssignments    OpCoAdmin[]
 
   @@map("opcos")
+}
+
+/// Many-to-many: Admins assigned to manage OpCos (TSS Super Admin assigns)
+model OpCoAdmin {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  opcoId String
+  opco   OpCo   @relation(fields: [opcoId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([opcoId, userId])
+  @@index([opcoId])
+  @@index([userId])
+  @@map("opco_admins")
 }
 
 /// User account linked to Keycloak identity
@@ -70,6 +88,17 @@ model User {
   businessUnit        BusinessUnit?   @relation("BUMembership", fields: [businessUnitId], references: [id])
   headOfBusinessUnits BusinessUnit[]  @relation("BUHead")
 
+  // Team membership
+  teamId         String?
+  team           Team?    @relation("TeamMembership", fields: [teamId], references: [id])
+  teamsManaged   Team[]   @relation("TeamManager")
+
+  // HR assignments to Business Units (many-to-many)
+  hrBusinessUnits BusinessUnitHR[]
+
+  // Admin assignments to OpCos (many-to-many)
+  opcoAdminAssignments OpCoAdmin[]
+
   // Relations
   employeeReviews    ReviewCycle[]       @relation("EmployeeReviews")
   managerReviews     ReviewCycle[]       @relation("ManagerReviews")
@@ -87,6 +116,7 @@ model User {
   @@index([opcoId])
   @@index([managerId])
   @@index([businessUnitId])
+  @@index([teamId])
   @@map("users")
 }
 
@@ -129,6 +159,12 @@ model BusinessUnit {
   // Users in this BU
   users User[] @relation("BUMembership")
 
+  // Teams within this BU
+  teams Team[]
+
+  // HR users assigned to manage this BU (many-to-many)
+  hrAssignments BusinessUnitHR[]
+
   // Calibration sessions scoped to this BU
   calibrationSessions CalibrationSession[]
 
@@ -136,6 +172,66 @@ model BusinessUnit {
   @@index([opcoId])
   @@index([parentId])
   @@map("business_units")
+}
+
+/// Many-to-many: HR users assigned to manage Business Units
+model BusinessUnitHR {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  businessUnitId String
+  businessUnit   BusinessUnit @relation(fields: [businessUnitId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([businessUnitId, userId])
+  @@index([businessUnitId])
+  @@index([userId])
+  @@map("business_unit_hr")
+}
+
+/// Standard team types based on TSS organizational structure
+enum TeamType {
+  PS   // Professional Services
+  CS   // Customer Services & Maintenance
+  RD   // Research & Development
+  SM   // Sales & Marketing
+  GA   // General & Administration
+  MA   // Merger & Acquisition (optional per BU)
+}
+
+/// Team within a Business Unit
+model Team {
+  id          String   @id @default(uuid())
+  code        String   // Short code like "PS", "RD", "SM", etc.
+  name        String   // Full display name
+  description String?
+  teamType    TeamType // Standard team type
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Tenant (for easy filtering)
+  opcoId String
+  opco   OpCo   @relation(fields: [opcoId], references: [id])
+
+  // Parent Business Unit
+  businessUnitId String
+  businessUnit   BusinessUnit @relation(fields: [businessUnitId], references: [id], onDelete: Cascade)
+
+  // Team Manager
+  managerId String?
+  manager   User?  @relation("TeamManager", fields: [managerId], references: [id])
+
+  // Team members
+  members User[] @relation("TeamMembership")
+
+  @@unique([businessUnitId, code])
+  @@index([opcoId])
+  @@index([businessUnitId])
+  @@index([managerId])
+  @@map("teams")
 }
 
 // ============================================

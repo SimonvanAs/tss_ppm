@@ -2,6 +2,7 @@ export { AdminLayout } from './AdminLayout';
 export { AdminDashboard } from './AdminDashboard';
 export { UserManagement } from './UserManagement';
 export { OrgChart } from './OrgChart';
+export { TeamsManagement } from './TeamsManagement';
 export { FunctionTitles } from './FunctionTitles';
 export { TovLevels } from './TovLevels';
 export { Competencies } from './Competencies';

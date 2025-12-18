@@ -2738,4 +2738,716 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       details: results.details,
     };
   });
+
+  // ============================================
+  // TEAMS MANAGEMENT (Admin creates, HR manages)
+  // ============================================
+
+  fastify.get('/teams', {
+    schema: {
+      description: 'List all teams for current OpCo (with optional BU filter)',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      querystring: {
+        type: 'object',
+        properties: {
+          businessUnitId: { type: 'string', description: 'Filter by business unit' },
+        },
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request) => {
+    const query = request.query as { businessUnitId?: string };
+
+    const teams = await fastify.prisma.team.findMany({
+      where: {
+        ...withTenantFilter(request),
+        ...(query.businessUnitId && { businessUnitId: query.businessUnitId }),
+        isActive: true,
+      },
+      include: {
+        businessUnit: {
+          select: { id: true, name: true, code: true },
+        },
+        manager: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
+        _count: {
+          select: { members: true },
+        },
+      },
+      orderBy: [{ businessUnit: { name: 'asc' } }, { sortOrder: 'asc' }],
+    });
+    return teams;
+  });
+
+  fastify.post('/teams', {
+    schema: {
+      description: 'Create a team within a business unit',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        properties: {
+          businessUnitId: { type: 'string', description: 'Parent business unit ID' },
+          code: { type: 'string', description: 'Short unique code (e.g., PS, RD)' },
+          name: { type: 'string', description: 'Display name' },
+          description: { type: 'string' },
+          teamType: { type: 'string', enum: ['PS', 'CS', 'RD', 'SM', 'GA', 'MA'], description: 'Standard team type' },
+          managerId: { type: 'string', description: 'Team manager user ID' },
+          sortOrder: { type: 'integer' },
+        },
+        required: ['businessUnitId', 'code', 'name', 'teamType'],
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const body = request.body as {
+      businessUnitId: string;
+      code: string;
+      name: string;
+      description?: string;
+      teamType: 'PS' | 'CS' | 'RD' | 'SM' | 'GA' | 'MA';
+      managerId?: string;
+      sortOrder?: number;
+    };
+
+    // Verify business unit exists in tenant
+    const businessUnit = await fastify.prisma.businessUnit.findFirst({
+      where: {
+        id: body.businessUnitId,
+        ...withTenantFilter(request),
+      },
+    });
+
+    if (!businessUnit) {
+      return reply.status(404).send({
+        error: { message: 'Business unit not found', statusCode: 404 },
+      });
+    }
+
+    // Check for duplicate code within BU
+    const existing = await fastify.prisma.team.findFirst({
+      where: {
+        businessUnitId: body.businessUnitId,
+        code: body.code,
+      },
+    });
+
+    if (existing) {
+      return reply.status(409).send({
+        error: { message: 'A team with this code already exists in this business unit', statusCode: 409 },
+      });
+    }
+
+    const team = await fastify.prisma.team.create({
+      data: {
+        opcoId: request.tenant.opcoId,
+        businessUnitId: body.businessUnitId,
+        code: body.code,
+        name: body.name,
+        description: body.description,
+        teamType: body.teamType,
+        managerId: body.managerId || null,
+        sortOrder: body.sortOrder || 0,
+      },
+      include: {
+        businessUnit: {
+          select: { id: true, name: true, code: true },
+        },
+        manager: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
+    });
+
+    return reply.status(201).send(team);
+  });
+
+  fastify.patch('/teams/:id', {
+    schema: {
+      description: 'Update a team (HR can update manager, Admin can update all fields)',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        properties: {
+          code: { type: 'string' },
+          name: { type: 'string' },
+          description: { type: 'string' },
+          teamType: { type: 'string', enum: ['PS', 'CS', 'RD', 'SM', 'GA', 'MA'] },
+          managerId: { type: 'string' },
+          sortOrder: { type: 'integer' },
+          isActive: { type: 'boolean' },
+        },
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const body = request.body as Partial<{
+      code: string;
+      name: string;
+      description: string;
+      teamType: 'PS' | 'CS' | 'RD' | 'SM' | 'GA' | 'MA';
+      managerId: string | null;
+      sortOrder: number;
+      isActive: boolean;
+    }>;
+
+    // Verify team exists in tenant
+    const existing = await fastify.prisma.team.findFirst({
+      where: {
+        id,
+        ...withTenantFilter(request),
+      },
+    });
+
+    if (!existing) {
+      return reply.status(404).send({
+        error: { message: 'Team not found', statusCode: 404 },
+      });
+    }
+
+    // HR users can only update managerId
+    if (request.user.role === UserRole.HR) {
+      const allowedFields = ['managerId'];
+      const hasDisallowedFields = Object.keys(body).some(key => !allowedFields.includes(key));
+      if (hasDisallowedFields) {
+        return reply.status(403).send({
+          error: {
+            message: 'HR users can only update the team manager',
+            statusCode: 403,
+          },
+        });
+      }
+    }
+
+    // Check for duplicate code if code is being changed
+    if (body.code && body.code !== existing.code) {
+      const duplicate = await fastify.prisma.team.findFirst({
+        where: {
+          businessUnitId: existing.businessUnitId,
+          code: body.code,
+          id: { not: id },
+        },
+      });
+
+      if (duplicate) {
+        return reply.status(409).send({
+          error: { message: 'A team with this code already exists in this business unit', statusCode: 409 },
+        });
+      }
+    }
+
+    // Convert empty string to null for managerId
+    const updateData: typeof body = { ...body };
+    if (updateData.managerId === '') updateData.managerId = null;
+
+    const team = await fastify.prisma.team.update({
+      where: { id },
+      data: updateData,
+      include: {
+        businessUnit: {
+          select: { id: true, name: true, code: true },
+        },
+        manager: {
+          select: { id: true, firstName: true, lastName: true },
+        },
+      },
+    });
+
+    return team;
+  });
+
+  fastify.delete('/teams/:id', {
+    schema: {
+      description: 'Delete a team (soft delete)',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+
+    // Verify team exists in tenant
+    const existing = await fastify.prisma.team.findFirst({
+      where: {
+        id,
+        ...withTenantFilter(request),
+      },
+      include: {
+        _count: { select: { members: true } },
+      },
+    });
+
+    if (!existing) {
+      return reply.status(404).send({
+        error: { message: 'Team not found', statusCode: 404 },
+      });
+    }
+
+    // Check if team has members
+    if (existing._count.members > 0) {
+      return reply.status(400).send({
+        error: {
+          message: `Cannot delete team: ${existing._count.members} members are assigned to it`,
+          statusCode: 400,
+        },
+      });
+    }
+
+    // Soft delete
+    await fastify.prisma.team.update({
+      where: { id },
+      data: { isActive: false },
+    });
+
+    return reply.status(204).send();
+  });
+
+  // Bulk create standard teams for a business unit
+  fastify.post('/business-units/:buId/teams/standard', {
+    schema: {
+      description: 'Create standard teams for a business unit (PS, CS, R&D, S&M, G&A, optionally M&A)',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        properties: {
+          includeMA: { type: 'boolean', description: 'Include Merger & Acquisition team (default false)' },
+        },
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { buId } = request.params as { buId: string };
+    const body = request.body as { includeMA?: boolean };
+
+    // Verify business unit exists in tenant
+    const businessUnit = await fastify.prisma.businessUnit.findFirst({
+      where: {
+        id: buId,
+        ...withTenantFilter(request),
+      },
+    });
+
+    if (!businessUnit) {
+      return reply.status(404).send({
+        error: { message: 'Business unit not found', statusCode: 404 },
+      });
+    }
+
+    // Get existing teams for this BU
+    const existingTeams = await fastify.prisma.team.findMany({
+      where: { businessUnitId: buId },
+      select: { code: true, teamType: true },
+    });
+    const existingCodes = new Set(existingTeams.map(t => t.code));
+
+    // Standard team definitions
+    const standardTeams: Array<{
+      code: string;
+      name: string;
+      teamType: 'PS' | 'CS' | 'RD' | 'SM' | 'GA' | 'MA';
+      sortOrder: number;
+    }> = [
+      { code: 'PS', name: 'Professional Services', teamType: 'PS', sortOrder: 1 },
+      { code: 'CS', name: 'Customer Services & Maintenance', teamType: 'CS', sortOrder: 2 },
+      { code: 'RD', name: 'Research & Development', teamType: 'RD', sortOrder: 3 },
+      { code: 'SM', name: 'Sales & Marketing', teamType: 'SM', sortOrder: 4 },
+      { code: 'GA', name: 'General & Administration', teamType: 'GA', sortOrder: 5 },
+    ];
+
+    // Optionally include M&A
+    if (body.includeMA) {
+      standardTeams.push({ code: 'MA', name: 'Merger & Acquisition', teamType: 'MA', sortOrder: 6 });
+    }
+
+    // Filter out teams that already exist
+    const teamsToCreate = standardTeams.filter(t => !existingCodes.has(t.code));
+
+    if (teamsToCreate.length === 0) {
+      return reply.status(200).send({
+        message: 'All standard teams already exist',
+        created: 0,
+        skipped: standardTeams.length,
+        teams: [],
+      });
+    }
+
+    // Create teams in transaction
+    const createdTeams = await fastify.prisma.$transaction(
+      teamsToCreate.map(team =>
+        fastify.prisma.team.create({
+          data: {
+            opcoId: request.tenant.opcoId,
+            businessUnitId: buId,
+            ...team,
+          },
+          include: {
+            businessUnit: {
+              select: { id: true, name: true, code: true },
+            },
+          },
+        })
+      )
+    );
+
+    return reply.status(201).send({
+      created: createdTeams.length,
+      skipped: standardTeams.length - teamsToCreate.length,
+      teams: createdTeams,
+    });
+  });
+
+  // ============================================
+  // HR ASSIGNMENTS TO BUSINESS UNITS
+  // ============================================
+
+  fastify.get('/business-units/:buId/hr-assignments', {
+    schema: {
+      description: 'List HR users assigned to a business unit',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { buId } = request.params as { buId: string };
+
+    // Verify business unit exists in tenant
+    const businessUnit = await fastify.prisma.businessUnit.findFirst({
+      where: {
+        id: buId,
+        ...withTenantFilter(request),
+      },
+    });
+
+    if (!businessUnit) {
+      return reply.status(404).send({
+        error: { message: 'Business unit not found', statusCode: 404 },
+      });
+    }
+
+    const assignments = await fastify.prisma.businessUnitHR.findMany({
+      where: { businessUnitId: buId },
+      include: {
+        user: {
+          select: { id: true, firstName: true, lastName: true, email: true, role: true },
+        },
+      },
+    });
+
+    return assignments.map(a => ({
+      id: a.id,
+      user: a.user,
+      assignedAt: a.createdAt,
+    }));
+  });
+
+  fastify.post('/business-units/:buId/hr-assignments', {
+    schema: {
+      description: 'Assign HR user(s) to a business unit',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        properties: {
+          userIds: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'User IDs to assign (must have HR role)',
+          },
+        },
+        required: ['userIds'],
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { buId } = request.params as { buId: string };
+    const body = request.body as { userIds: string[] };
+
+    // Verify business unit exists in tenant
+    const businessUnit = await fastify.prisma.businessUnit.findFirst({
+      where: {
+        id: buId,
+        ...withTenantFilter(request),
+      },
+    });
+
+    if (!businessUnit) {
+      return reply.status(404).send({
+        error: { message: 'Business unit not found', statusCode: 404 },
+      });
+    }
+
+    // Verify all users exist and have HR role
+    const users = await fastify.prisma.user.findMany({
+      where: {
+        id: { in: body.userIds },
+        ...withTenantFilter(request),
+        role: UserRole.HR,
+      },
+    });
+
+    if (users.length !== body.userIds.length) {
+      const foundIds = new Set(users.map(u => u.id));
+      const notFound = body.userIds.filter(id => !foundIds.has(id));
+      return reply.status(400).send({
+        error: {
+          message: 'Some users not found or do not have HR role',
+          statusCode: 400,
+          notFoundIds: notFound,
+        },
+      });
+    }
+
+    // Create assignments (skip duplicates using upsert-like behavior)
+    const results = {
+      created: 0,
+      skipped: 0,
+    };
+
+    for (const userId of body.userIds) {
+      const existing = await fastify.prisma.businessUnitHR.findFirst({
+        where: { businessUnitId: buId, userId },
+      });
+
+      if (!existing) {
+        await fastify.prisma.businessUnitHR.create({
+          data: {
+            businessUnitId: buId,
+            userId,
+          },
+        });
+        results.created++;
+      } else {
+        results.skipped++;
+      }
+    }
+
+    return reply.status(201).send(results);
+  });
+
+  fastify.delete('/business-units/:buId/hr-assignments/:userId', {
+    schema: {
+      description: 'Remove HR user assignment from a business unit',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { buId, userId } = request.params as { buId: string; userId: string };
+
+    // Verify business unit exists in tenant
+    const businessUnit = await fastify.prisma.businessUnit.findFirst({
+      where: {
+        id: buId,
+        ...withTenantFilter(request),
+      },
+    });
+
+    if (!businessUnit) {
+      return reply.status(404).send({
+        error: { message: 'Business unit not found', statusCode: 404 },
+      });
+    }
+
+    // Find and delete the assignment
+    const deleted = await fastify.prisma.businessUnitHR.deleteMany({
+      where: {
+        businessUnitId: buId,
+        userId,
+      },
+    });
+
+    if (deleted.count === 0) {
+      return reply.status(404).send({
+        error: { message: 'HR assignment not found', statusCode: 404 },
+      });
+    }
+
+    return reply.status(204).send();
+  });
+
+  // ============================================
+  // OPCO ADMIN ASSIGNMENTS (Super Admin only)
+  // ============================================
+
+  fastify.get('/opcos/:opcoId/admin-assignments', {
+    schema: {
+      description: 'List admin users assigned to an OpCo',
+      tags: ['Super Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { opcoId } = request.params as { opcoId: string };
+
+    // Verify OpCo exists
+    const opco = await fastify.prisma.opCo.findUnique({
+      where: { id: opcoId },
+    });
+
+    if (!opco) {
+      return reply.status(404).send({
+        error: { message: 'OpCo not found', statusCode: 404 },
+      });
+    }
+
+    const assignments = await fastify.prisma.opCoAdmin.findMany({
+      where: { opcoId },
+      include: {
+        user: {
+          select: { id: true, firstName: true, lastName: true, email: true, role: true },
+        },
+      },
+    });
+
+    return assignments.map(a => ({
+      id: a.id,
+      user: a.user,
+      assignedAt: a.createdAt,
+    }));
+  });
+
+  fastify.post('/opcos/:opcoId/admin-assignments', {
+    schema: {
+      description: 'Assign admin user(s) to an OpCo',
+      tags: ['Super Admin'],
+      security: [{ bearerAuth: [] }],
+      body: {
+        type: 'object',
+        properties: {
+          userIds: {
+            type: 'array',
+            items: { type: 'string' },
+            description: 'User IDs to assign (must have OPCO_ADMIN role)',
+          },
+        },
+        required: ['userIds'],
+      },
+    },
+    preHandler: [fastify.authorize(UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { opcoId } = request.params as { opcoId: string };
+    const body = request.body as { userIds: string[] };
+
+    // Verify OpCo exists
+    const opco = await fastify.prisma.opCo.findUnique({
+      where: { id: opcoId },
+    });
+
+    if (!opco) {
+      return reply.status(404).send({
+        error: { message: 'OpCo not found', statusCode: 404 },
+      });
+    }
+
+    // Verify all users exist and have OPCO_ADMIN role
+    const users = await fastify.prisma.user.findMany({
+      where: {
+        id: { in: body.userIds },
+        role: UserRole.OPCO_ADMIN,
+      },
+    });
+
+    if (users.length !== body.userIds.length) {
+      const foundIds = new Set(users.map(u => u.id));
+      const notFound = body.userIds.filter(id => !foundIds.has(id));
+      return reply.status(400).send({
+        error: {
+          message: 'Some users not found or do not have OPCO_ADMIN role',
+          statusCode: 400,
+          notFoundIds: notFound,
+        },
+      });
+    }
+
+    // Create assignments (skip duplicates)
+    const results = {
+      created: 0,
+      skipped: 0,
+    };
+
+    for (const userId of body.userIds) {
+      const existing = await fastify.prisma.opCoAdmin.findFirst({
+        where: { opcoId, userId },
+      });
+
+      if (!existing) {
+        await fastify.prisma.opCoAdmin.create({
+          data: {
+            opcoId,
+            userId,
+          },
+        });
+        results.created++;
+      } else {
+        results.skipped++;
+      }
+    }
+
+    return reply.status(201).send(results);
+  });
+
+  fastify.delete('/opcos/:opcoId/admin-assignments/:userId', {
+    schema: {
+      description: 'Remove admin user assignment from an OpCo',
+      tags: ['Super Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.TSS_SUPER_ADMIN)],
+  }, async (request, reply) => {
+    const { opcoId, userId } = request.params as { opcoId: string; userId: string };
+
+    // Verify OpCo exists
+    const opco = await fastify.prisma.opCo.findUnique({
+      where: { id: opcoId },
+    });
+
+    if (!opco) {
+      return reply.status(404).send({
+        error: { message: 'OpCo not found', statusCode: 404 },
+      });
+    }
+
+    // Find and delete the assignment
+    const deleted = await fastify.prisma.opCoAdmin.deleteMany({
+      where: {
+        opcoId,
+        userId,
+      },
+    });
+
+    if (deleted.count === 0) {
+      return reply.status(404).send({
+        error: { message: 'Admin assignment not found', statusCode: 404 },
+      });
+    }
+
+    return reply.status(204).send();
+  });
+
+  // ============================================
+  // TEAM TYPE REFERENCE
+  // ============================================
+
+  fastify.get('/team-types', {
+    schema: {
+      description: 'Get list of standard team types',
+      tags: ['Admin'],
+      security: [{ bearerAuth: [] }],
+    },
+    preHandler: [fastify.authorize(UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+  }, async () => {
+    return [
+      { code: 'PS', name: 'Professional Services', description: 'Professional Services team' },
+      { code: 'CS', name: 'Customer Services & Maintenance', description: 'Customer Services and Maintenance team' },
+      { code: 'RD', name: 'Research & Development', description: 'Research and Development team' },
+      { code: 'SM', name: 'Sales & Marketing', description: 'Sales and Marketing team' },
+      { code: 'GA', name: 'General & Administration', description: 'General and Administration team' },
+      { code: 'MA', name: 'Merger & Acquisition', description: 'Merger and Acquisition team (optional)' },
+    ];
+  });
 };

@@ -25,6 +25,7 @@ import {
   AdminDashboard,
   UserManagement,
   OrgChart,
+  TeamsManagement,
   FunctionTitles,
   TovLevels,
   Competencies,
@@ -365,6 +366,7 @@ function AppRouter() {
         <Route index element={<AdminDashboard />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="org-chart" element={<OrgChart />} />
+        <Route path="teams" element={<TeamsManagement />} />
         <Route path="function-titles" element={<FunctionTitles />} />
         <Route path="tov-levels" element={<TovLevels />} />
         <Route path="competencies" element={<Competencies />} />

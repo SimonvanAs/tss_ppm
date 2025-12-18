@@ -23,6 +23,12 @@ const OrgChartIcon = () => (
   </svg>
 );
 
+const TeamsIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/>
+  </svg>
+);
+
 const FunctionIcon = () => (
   <svg viewBox="0 0 24 24" fill="currentColor">
     <path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-5 3c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm4 8h-8v-1c0-1.33 2.67-2 4-2s4 .67 4 2v1z"/>
@@ -109,6 +115,7 @@ export function AdminLayout() {
     if (path === '/admin' || path === '/admin/') return t('admin.nav.dashboard');
     if (path.includes('/users')) return t('admin.nav.users');
     if (path.includes('/org-chart')) return t('admin.nav.orgChart');
+    if (path.includes('/teams')) return t('admin.nav.teams');
     if (path.includes('/function-titles')) return t('admin.nav.functionTitles');
     if (path.includes('/tov-levels')) return t('admin.nav.tovLevels');
     if (path.includes('/competencies')) return t('admin.nav.competencies');
@@ -183,6 +190,15 @@ export function AdminLayout() {
             >
               <span className="admin-nav-icon"><OrgChartIcon /></span>
               {t('admin.nav.orgChart')}
+            </NavLink>
+
+            <NavLink
+              to="/admin/teams"
+              className={({ isActive }) => `admin-nav-link ${isActive ? 'active' : ''}`}
+              onClick={closeSidebar}
+            >
+              <span className="admin-nav-icon"><TeamsIcon /></span>
+              {t('admin.nav.teams')}
             </NavLink>
           </div>
 

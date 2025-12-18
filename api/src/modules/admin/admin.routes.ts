@@ -499,7 +499,7 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       tags: ['Admin'],
       security: [{ bearerAuth: [] }],
     },
-    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+    preHandler: [fastify.authorize(UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
   }, async (request) => {
     const businessUnits = await fastify.prisma.businessUnit.findMany({
       where: {
@@ -950,7 +950,7 @@ export const adminRoutes: FastifyPluginAsync = async (fastify: FastifyInstance) 
       tags: ['Admin'],
       security: [{ bearerAuth: [] }],
     },
-    preHandler: [fastify.authorize(UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
+    preHandler: [fastify.authorize(UserRole.HR, UserRole.OPCO_ADMIN, UserRole.TSS_SUPER_ADMIN)],
   }, async (request) => {
     const users = await fastify.prisma.user.findMany({
       where: withTenantFilter(request),

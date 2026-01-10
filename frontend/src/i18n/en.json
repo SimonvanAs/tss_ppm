@@ -1,0 +1,284 @@
+{
+  "app": {
+    "title": "TSS PPM",
+    "subtitle": "Performance Portfolio Management",
+    "version": "v3.0"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "reviews": "Reviews",
+    "team": "Team",
+    "calibration": "Calibration",
+    "analytics": "Analytics",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "loginWith": "Login with {provider}",
+    "sessionExpired": "Your session has expired. Please login again.",
+    "unauthorized": "You are not authorized to view this page."
+  },
+  "dashboard": {
+    "welcome": "Welcome, {name}",
+    "tasksTitle": "Your Tasks",
+    "noTasks": "No pending tasks",
+    "pendingSignatures": "Pending Signatures",
+    "reviewsToComplete": "Reviews to Complete",
+    "goalChanges": "Goal Change Requests",
+    "quickActions": "Quick Actions"
+  },
+  "review": {
+    "title": "Performance Review",
+    "year": "Review Year",
+    "stage": "Stage",
+    "status": "Status",
+    "employee": "Employee",
+    "manager": "Manager",
+    "stages": {
+      "GOAL_SETTING": "Goal Setting",
+      "MID_YEAR_REVIEW": "Mid-Year Review",
+      "END_YEAR_REVIEW": "End-Year Review"
+    },
+    "statuses": {
+      "DRAFT": "Draft",
+      "PENDING_EMPLOYEE_SIGNATURE": "Awaiting Employee Signature",
+      "EMPLOYEE_SIGNED": "Employee Signed",
+      "PENDING_MANAGER_SIGNATURE": "Awaiting Manager Signature",
+      "MANAGER_SIGNED": "Manager Signed",
+      "SIGNED": "Completed",
+      "ARCHIVED": "Archived"
+    },
+    "summaryComments": "Summary Comments",
+    "additionalComments": "Additional Comments",
+    "save": "Save",
+    "saving": "Saving...",
+    "saved": "Saved",
+    "submit": "Submit for Signature",
+    "sign": "Sign Review",
+    "reject": "Request Changes",
+    "generatePdf": "Generate PDF",
+    "lastSaved": "Last saved: {time}",
+    "unsavedChanges": "You have unsaved changes"
+  },
+  "goals": {
+    "title": "Goals",
+    "what": "WHAT (Goals)",
+    "addGoal": "Add Goal",
+    "goalTitle": "Goal Title",
+    "description": "Description",
+    "weight": "Weight",
+    "score": "Score",
+    "type": "Type",
+    "types": {
+      "STANDARD": "Standard",
+      "KAR": "Key Action Required",
+      "SCF": "Strategic Critical Factor"
+    },
+    "weightTotal": "Total Weight",
+    "weightMustBe100": "Goal weights must total 100%",
+    "dragToReorder": "Drag to reorder",
+    "deleteGoal": "Delete Goal",
+    "confirmDelete": "Are you sure you want to delete this goal?",
+    "scores": {
+      "1": "Below Expectations",
+      "2": "Meets Expectations",
+      "3": "Exceeds Expectations"
+    },
+    "noGoals": "No goals added yet",
+    "changeRequest": {
+      "title": "Goal Change Request",
+      "requestChange": "Request Change",
+      "pending": "Change Pending",
+      "approved": "Approved",
+      "rejected": "Rejected",
+      "reason": "Reason for Change"
+    }
+  },
+  "competencies": {
+    "title": "Competencies",
+    "how": "HOW (Competencies)",
+    "tovLevel": "TOV Level",
+    "levels": {
+      "A": "Level A - Entry",
+      "B": "Level B - Professional",
+      "C": "Level C - Senior",
+      "D": "Level D - Leadership"
+    },
+    "categories": {
+      "Dedicated": "Dedicated",
+      "Entrepreneurial": "Entrepreneurial",
+      "Innovative": "Innovative"
+    },
+    "subcategories": {
+      "Result driven": "Result driven",
+      "Committed": "Committed",
+      "Entrepreneurial": "Entrepreneurial",
+      "Ambition": "Ambition",
+      "Market oriented": "Market oriented",
+      "Customer focused": "Customer focused"
+    },
+    "behavioralIndicators": "Behavioral Indicators",
+    "showIndicators": "Show indicators",
+    "hideIndicators": "Hide indicators",
+    "notes": "Notes"
+  },
+  "scoring": {
+    "whatScore": "WHAT Score",
+    "howScore": "HOW Score",
+    "gridPosition": "Grid Position",
+    "vetoActive": "VETO Active",
+    "vetoReason": {
+      "scf": "SCF goal scored 1 - VETO triggered",
+      "kar": "KAR goal scored 1 without compensation",
+      "competency": "Competency scored 1 - VETO triggered"
+    },
+    "gridLabels": {
+      "what": {
+        "1": "Below",
+        "2": "Meets",
+        "3": "Exceeds"
+      },
+      "how": {
+        "1": "Below",
+        "2": "Meets",
+        "3": "Exceeds"
+      }
+    }
+  },
+  "signature": {
+    "title": "Digital Signature",
+    "employee": "Employee Signature",
+    "manager": "Manager Signature",
+    "signedOn": "Signed on {date}",
+    "notSigned": "Not yet signed",
+    "signConfirm": "I confirm that I have reviewed this document",
+    "signButton": "Sign Now",
+    "rejectReason": "Reason for rejection"
+  },
+  "calibration": {
+    "title": "Calibration Sessions",
+    "session": "Session",
+    "create": "Create Session",
+    "status": {
+      "PREPARATION": "Preparation",
+      "IN_PROGRESS": "In Progress",
+      "PENDING_APPROVAL": "Pending Approval",
+      "COMPLETED": "Completed",
+      "CANCELLED": "Cancelled"
+    },
+    "takeSnapshot": "Take Snapshot",
+    "complete": "Complete Session",
+    "adjustScore": "Adjust Score",
+    "originalScore": "Original",
+    "adjustedScore": "Adjusted",
+    "adjustmentNotes": "Adjustment Notes",
+    "noReviewsSelected": "No reviews selected for calibration"
+  },
+  "team": {
+    "title": "Team Overview",
+    "directReports": "Direct Reports",
+    "reviewStatus": "Review Status",
+    "pendingActions": "Pending Actions",
+    "nineGrid": "9-Grid Overview",
+    "approveGoals": "Approve Goals"
+  },
+  "analytics": {
+    "title": "Analytics",
+    "distribution": "Score Distribution",
+    "trends": "Performance Trends",
+    "comparison": "Team Comparison",
+    "export": "Export Data",
+    "exportExcel": "Export to Excel",
+    "exportPdf": "Export to PDF",
+    "period": "Period",
+    "businessUnit": "Business Unit"
+  },
+  "voice": {
+    "holdToRecord": "Hold to record",
+    "recording": "Recording...",
+    "processing": "Processing...",
+    "error": "Voice input failed",
+    "retry": "Try again",
+    "unsupported": "Voice input not supported in this browser"
+  },
+  "pdf": {
+    "generating": "Generating PDF...",
+    "download": "Download PDF",
+    "preview": "Preview",
+    "error": "Failed to generate PDF"
+  },
+  "validation": {
+    "required": "This field is required",
+    "minLength": "Minimum {min} characters",
+    "maxLength": "Maximum {max} characters",
+    "weightRange": "Weight must be between 0 and 100",
+    "weightTotal": "Total weight must equal 100%",
+    "invalidEmail": "Invalid email address"
+  },
+  "errors": {
+    "generic": "An error occurred. Please try again.",
+    "network": "Network error. Please check your connection.",
+    "notFound": "The requested resource was not found.",
+    "forbidden": "You do not have permission to perform this action.",
+    "conflict": "The resource was modified. Please refresh and try again.",
+    "serverError": "Server error. Please try again later."
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "submit": "Submit",
+    "approve": "Approve",
+    "reject": "Reject",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "refresh": "Refresh",
+    "export": "Export",
+    "print": "Print"
+  },
+  "admin": {
+    "title": "Administration",
+    "opcoSettings": "OpCo Settings",
+    "analytics": {
+      "title": "Product Analytics",
+      "description": "Configure Plausible analytics for usage tracking",
+      "enabled": "Enable Analytics",
+      "enabledHelp": "When enabled, anonymous usage events will be sent to your Plausible instance",
+      "plausibleUrl": "Plausible URL",
+      "plausibleUrlHelp": "Base URL of your Plausible instance (e.g., https://plausible.company.com)",
+      "plausibleUrlPlaceholder": "https://plausible.example.com",
+      "siteDomain": "Site Domain",
+      "siteDomainHelp": "The domain configured in Plausible for this site",
+      "siteDomainPlaceholder": "ppm.company.com",
+      "apiKey": "API Key",
+      "apiKeyHelp": "Optional API key for server-side event tracking",
+      "apiKeyPlaceholder": "Enter API key (leave empty to keep existing)",
+      "testConnection": "Test Connection",
+      "testing": "Testing...",
+      "testSuccess": "Connection successful",
+      "testFailed": "Connection failed: {error}",
+      "saveSuccess": "Analytics settings saved",
+      "privacyNote": "Plausible is privacy-friendly and GDPR compliant. No personal data is collected."
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "noData": "No data available",
+    "search": "Search",
+    "filter": "Filter",
+    "sortBy": "Sort by",
+    "all": "All",
+    "yes": "Yes",
+    "no": "No",
+    "date": "Date",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role"
+  }
+}

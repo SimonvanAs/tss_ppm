@@ -1,0 +1,745 @@
+{
+  "description": "IDE Competency Framework - Seed Data for PostgreSQL",
+  "version": "1.0",
+  "total_competencies": 24,
+  "competencies": [
+    {
+      "level": "A",
+      "category": "Dedicated",
+      "subcategory": "Result driven",
+      "display_order": 1,
+      "title_en": "Acts and focuses on achieving the agreed results within the set timeframe.",
+      "title_nl": "Handelt en focust op het behalen van de afgesproken resultaten binnen de gestelde tijdslijnen.",
+      "title_es": "Actua y se enfoca en lograr los resultados acordados dentro del plazo establecido.",
+      "indicators_en": [
+        "Holds on to and achieves the planned result.",
+        "Actively confirms agreements after a meeting.",
+        "Is able to show the results of his/her actions at any given time.",
+        "Offers regular updates on what results have been achieved.",
+        "Asks for the expected objectives and results."
+      ],
+      "indicators_nl": [
+        "Houdt vast aan en behaalt het geplande resultaat.",
+        "Bevestigt actief afspraken na een vergadering.",
+        "Kan op elk moment de resultaten van zijn/haar acties tonen.",
+        "Biedt regelmatig updates over welke resultaten zijn behaald.",
+        "Vraagt naar de verwachte doelstellingen en resultaten."
+      ],
+      "indicators_es": [
+        "Mantiene y logra el resultado planificado.",
+        "Confirma activamente los acuerdos despues de una reunion.",
+        "Es capaz de mostrar los resultados de sus acciones en cualquier momento.",
+        "Ofrece actualizaciones regulares sobre que resultados se han logrado.",
+        "Pregunta por los objetivos y resultados esperados."
+      ]
+    },
+    {
+      "level": "A",
+      "category": "Dedicated",
+      "subcategory": "Committed",
+      "display_order": 2,
+      "title_en": "Knows the framework of goals, priorities and the culture of the organization and accepts them. Commitment means \"keeping your word\".",
+      "title_nl": "Kent het kader van doelen, prioriteiten en de cultuur van de organisatie en accepteert deze. Commitment betekent \"je woord houden\".",
+      "title_es": "Conoce el marco de objetivos, prioridades y la cultura de la organizacion y los acepta. El compromiso significa \"cumplir tu palabra\".",
+      "indicators_en": [
+        "Keeps him or her self informed on the policies that have been set by the management.",
+        "In case of doubt, he/she checks with others if the chosen approach is in line with the objectives and priorities of the Business unit and/or team.",
+        "Takes actions to realize things timely while involving the right support.",
+        "Uses the organization resources in a responsible manner.",
+        "In terms of behaviour adapts to the expectations of the Business unit / team.",
+        "Speaks in positive and professional terms about the Business unit / team."
+      ],
+      "indicators_nl": [
+        "Houdt zich op de hoogte van het beleid dat door het management is vastgesteld.",
+        "Controleert bij twijfel met anderen of de gekozen aanpak in lijn is met de doelstellingen en prioriteiten van de Business unit en/of team.",
+        "Neemt acties om dingen tijdig te realiseren met betrokkenheid van de juiste ondersteuning.",
+        "Gebruikt de organisatiemiddelen op verantwoorde wijze.",
+        "Past gedrag aan aan de verwachtingen van de Business unit / team.",
+        "Spreekt in positieve en professionele termen over de Business unit / team."
+      ],
+      "indicators_es": [
+        "Se mantiene informado sobre las politicas establecidas por la direccion.",
+        "En caso de duda, verifica con otros si el enfoque elegido esta en linea con los objetivos y prioridades de la unidad de negocio y/o equipo.",
+        "Toma acciones para realizar las cosas a tiempo involucrando el apoyo adecuado.",
+        "Utiliza los recursos de la organizacion de manera responsable.",
+        "En terminos de comportamiento, se adapta a las expectativas de la unidad de negocio / equipo.",
+        "Habla en terminos positivos y profesionales sobre la unidad de negocio / equipo."
+      ]
+    },
+    {
+      "level": "A",
+      "category": "Entrepreneurial",
+      "subcategory": "Entrepreneurial",
+      "display_order": 3,
+      "title_en": "Continuously sees opportunities to improve the company solutions and creates (customer) value. Shows the will to use the opportunities.",
+      "title_nl": "Ziet voortdurend kansen om de bedrijfsoplossingen te verbeteren en creeert (klant)waarde. Toont de wil om de kansen te benutten.",
+      "title_es": "Ve continuamente oportunidades para mejorar las soluciones de la empresa y crea valor (para el cliente). Muestra la voluntad de aprovechar las oportunidades.",
+      "indicators_en": [
+        "Contributes to the clear specification of the known and perhaps unknown expectations and basic needs of the customer.",
+        "Is able to oversee the context of a question and offers additional information on top of the original requested solution.",
+        "Points out the opportunities in the profession and the market instead of the risks.",
+        "Sets ambitious goals to contribute to value creation for the organization.",
+        "Takes actions when opportunities arise or to eliminate failures.",
+        "Spots opportunities and threats and follows up on them."
+      ],
+      "indicators_nl": [
+        "Draagt bij aan de duidelijke specificatie van de bekende en mogelijk onbekende verwachtingen en basisbehoeften van de klant.",
+        "Is in staat de context van een vraag te overzien en biedt aanvullende informatie bovenop de oorspronkelijk gevraagde oplossing.",
+        "Wijst op de kansen in het vakgebied en de markt in plaats van op de risico's.",
+        "Stelt ambitieuze doelen om bij te dragen aan waardecreatie voor de organisatie.",
+        "Neemt actie wanneer kansen zich voordoen of om fouten te elimineren.",
+        "Signaleert kansen en bedreigingen en volgt deze op."
+      ],
+      "indicators_es": [
+        "Contribuye a la especificacion clara de las expectativas conocidas y quizas desconocidas y necesidades basicas del cliente.",
+        "Es capaz de supervisar el contexto de una pregunta y ofrece informacion adicional ademas de la solucion solicitada originalmente.",
+        "Senala las oportunidades en la profesion y el mercado en lugar de los riesgos.",
+        "Establece objetivos ambiciosos para contribuir a la creacion de valor para la organizacion.",
+        "Toma acciones cuando surgen oportunidades o para eliminar fallos.",
+        "Detecta oportunidades y amenazas y les da seguimiento."
+      ]
+    },
+    {
+      "level": "A",
+      "category": "Entrepreneurial",
+      "subcategory": "Ambition",
+      "display_order": 4,
+      "title_en": "Shows eagerness for taking up new responsibilities and seizes opportunities for development immediately.",
+      "title_nl": "Toont gretigheid voor het opnemen van nieuwe verantwoordelijkheden en grijpt onmiddellijk ontwikkelingskansen aan.",
+      "title_es": "Muestra entusiasmo por asumir nuevas responsabilidades y aprovecha inmediatamente las oportunidades de desarrollo.",
+      "indicators_en": [
+        "Follows the organizational changes.",
+        "Shows the will to work more independently in the future.",
+        "Sets up a development plan and asks for development opportunities.",
+        "Reacts enthusiastically to more extensive or more difficult tasks / responsibilities.",
+        "Is continuously looking for opportunities to improve own expertise."
+      ],
+      "indicators_nl": [
+        "Volgt de organisatieveranderingen.",
+        "Toont de wil om in de toekomst meer zelfstandig te werken.",
+        "Stelt een ontwikkelplan op en vraagt om ontwikkelingskansen.",
+        "Reageert enthousiast op uitgebreidere of moeilijkere taken / verantwoordelijkheden.",
+        "Is voortdurend op zoek naar mogelijkheden om eigen expertise te verbeteren."
+      ],
+      "indicators_es": [
+        "Sigue los cambios organizacionales.",
+        "Muestra la voluntad de trabajar de manera mas independiente en el futuro.",
+        "Elabora un plan de desarrollo y solicita oportunidades de desarrollo.",
+        "Reacciona con entusiasmo ante tareas / responsabilidades mas extensas o dificiles.",
+        "Busca continuamente oportunidades para mejorar su propia experiencia."
+      ]
+    },
+    {
+      "level": "A",
+      "category": "Innovative",
+      "subcategory": "Market oriented",
+      "display_order": 5,
+      "title_en": "Follows the development of the market, field of expertise and technology.",
+      "title_nl": "Volgt de ontwikkeling van de markt, vakgebied en technologie.",
+      "title_es": "Sigue el desarrollo del mercado, campo de especializacion y tecnologia.",
+      "indicators_en": [
+        "Actively obtains information and knowledge about relevant market and technological trends.",
+        "Shows to be a field expert.",
+        "Is aware of the capabilities of the competition in the same market or field of expertise.",
+        "Contributing to content of internal and external meetings for the business unit as well as organization.",
+        "Makes sure he/she is informed on developments within the field of expertise by networking with colleagues in the field and develops own view."
+      ],
+      "indicators_nl": [
+        "Verkrijgt actief informatie en kennis over relevante markt- en technologische trends.",
+        "Toont zich als vakexpert.",
+        "Is zich bewust van de capaciteiten van de concurrentie in dezelfde markt of vakgebied.",
+        "Draagt bij aan de inhoud van interne en externe bijeenkomsten voor zowel de business unit als de organisatie.",
+        "Zorgt ervoor dat hij/zij op de hoogte is van ontwikkelingen binnen het vakgebied door te netwerken met collega's in het veld en ontwikkelt eigen visie."
+      ],
+      "indicators_es": [
+        "Obtiene activamente informacion y conocimiento sobre tendencias relevantes del mercado y tecnologicas.",
+        "Demuestra ser un experto en el campo.",
+        "Es consciente de las capacidades de la competencia en el mismo mercado o campo de especializacion.",
+        "Contribuye al contenido de reuniones internas y externas para la unidad de negocio asi como para la organizacion.",
+        "Se asegura de estar informado sobre desarrollos dentro del campo de especializacion conectando con colegas en el campo y desarrolla su propia vision."
+      ]
+    },
+    {
+      "level": "A",
+      "category": "Innovative",
+      "subcategory": "Customer focused",
+      "display_order": 6,
+      "title_en": "Knows the customer's request and responds with a proposal that is appropriate for the customer.",
+      "title_nl": "Kent het verzoek van de klant en reageert met een voorstel dat passend is voor de klant.",
+      "title_es": "Conoce la solicitud del cliente y responde con una propuesta adecuada para el cliente.",
+      "indicators_en": [
+        "Asks direct questions to map the customer's spoken and unspoken wishes and needs in order to exceed expectations.",
+        "Asks for help in time to prevent an undesired result.",
+        "Turns a question into appropriate, specific and innovative solutions.",
+        "Checks the level of feasibility of agreements.",
+        "Reacts quickly and adequately to questions and complaints of customers.",
+        "Is always aware of the effect of his/her actions on customer satisfaction."
+      ],
+      "indicators_nl": [
+        "Stelt directe vragen om de uitgesproken en onuitgesproken wensen en behoeften van de klant in kaart te brengen om verwachtingen te overtreffen.",
+        "Vraagt tijdig om hulp om een ongewenst resultaat te voorkomen.",
+        "Zet een vraag om in passende, specifieke en innovatieve oplossingen.",
+        "Controleert het niveau van haalbaarheid van afspraken.",
+        "Reageert snel en adequaat op vragen en klachten van klanten.",
+        "Is zich altijd bewust van het effect van zijn/haar acties op klanttevredenheid."
+      ],
+      "indicators_es": [
+        "Hace preguntas directas para mapear los deseos y necesidades expresados y no expresados del cliente para superar las expectativas.",
+        "Pide ayuda a tiempo para prevenir un resultado no deseado.",
+        "Convierte una pregunta en soluciones apropiadas, especificas e innovadoras.",
+        "Verifica el nivel de viabilidad de los acuerdos.",
+        "Reacciona rapida y adecuadamente a preguntas y quejas de clientes.",
+        "Siempre es consciente del efecto de sus acciones en la satisfaccion del cliente."
+      ]
+    },
+    {
+      "level": "B",
+      "category": "Dedicated",
+      "subcategory": "Result driven",
+      "display_order": 1,
+      "title_en": "Sets ambitious goals independently in a proactive manner and meets them.",
+      "title_nl": "Stelt zelfstandig ambitieuze doelen op een proactieve manier en behaalt deze.",
+      "title_es": "Establece objetivos ambiciosos de manera independiente y proactiva y los cumple.",
+      "indicators_en": [
+        "Sets ambitious objectives.",
+        "Achieves the result better and faster than expected.",
+        "Meets objectives.",
+        "Intervenes when the results are not achieved as expected.",
+        "Makes proposals for methods that are more efficient or effective."
+      ],
+      "indicators_nl": [
+        "Stelt ambitieuze doelstellingen.",
+        "Behaalt het resultaat beter en sneller dan verwacht.",
+        "Behaalt doelstellingen.",
+        "Grijpt in wanneer de resultaten niet zoals verwacht worden behaald.",
+        "Doet voorstellen voor methoden die efficienter of effectiever zijn."
+      ],
+      "indicators_es": [
+        "Establece objetivos ambiciosos.",
+        "Logra el resultado mejor y mas rapido de lo esperado.",
+        "Cumple los objetivos.",
+        "Interviene cuando los resultados no se logran como se esperaba.",
+        "Hace propuestas para metodos que son mas eficientes o efectivos."
+      ]
+    },
+    {
+      "level": "B",
+      "category": "Dedicated",
+      "subcategory": "Committed",
+      "display_order": 2,
+      "title_en": "Aligns his/her own behavior with the objectives, priorities and culture of the organization. Commitment meaning \"what you say is what you do\".",
+      "title_nl": "Stemt zijn/haar eigen gedrag af op de doelstellingen, prioriteiten en cultuur van de organisatie. Commitment betekent \"wat je zegt is wat je doet\".",
+      "title_es": "Alinea su propio comportamiento con los objetivos, prioridades y cultura de la organizacion. El compromiso significa \"lo que dices es lo que haces\".",
+      "indicators_en": [
+        "Is aware of the business plan and priorities.",
+        "Is open to implementing chosen policies even if they do not correspond with the own interests or ideas.",
+        "Is aware of the relationship between own activities and the objectives as stated in the business plan.",
+        "Acts in accordance with the norms and values as they are experienced within the organizational unit.",
+        "Speaks about the organization in positive and professional terms."
+      ],
+      "indicators_nl": [
+        "Is zich bewust van het bedrijfsplan en prioriteiten.",
+        "Staat open voor het implementeren van gekozen beleid, zelfs als deze niet overeenkomen met eigen belangen of ideeen.",
+        "Is zich bewust van de relatie tussen eigen activiteiten en de doelstellingen zoals vermeld in het bedrijfsplan.",
+        "Handelt in overeenstemming met de normen en waarden zoals deze binnen de organisatie-eenheid worden ervaren.",
+        "Spreekt in positieve en professionele termen over de organisatie."
+      ],
+      "indicators_es": [
+        "Es consciente del plan de negocio y las prioridades.",
+        "Esta abierto a implementar politicas elegidas incluso si no corresponden con los propios intereses o ideas.",
+        "Es consciente de la relacion entre las propias actividades y los objetivos establecidos en el plan de negocio.",
+        "Actua de acuerdo con las normas y valores tal como se experimentan dentro de la unidad organizacional.",
+        "Habla sobre la organizacion en terminos positivos y profesionales."
+      ]
+    },
+    {
+      "level": "B",
+      "category": "Entrepreneurial",
+      "subcategory": "Entrepreneurial",
+      "display_order": 3,
+      "title_en": "Takes independent actions to use all the possibilities of business solutions and increases the added value.",
+      "title_nl": "Neemt zelfstandig actie om alle mogelijkheden van bedrijfsoplossingen te benutten en verhoogt de toegevoegde waarde.",
+      "title_es": "Toma acciones independientes para usar todas las posibilidades de soluciones empresariales y aumenta el valor agregado.",
+      "indicators_en": [
+        "During the contacts with customers he/she aims at closing a concrete agreement that holds out prospects for relevant follow-up activities.",
+        "Sees and takes advantage of opportunities that arise.",
+        "Does proposals for actions that have added value for the market or the organizational unit.",
+        "Is aware of developments in the market that are important for their own field. Takes the initiative to convert the possibilities that this offers into added value for the organization or customer.",
+        "Is consciously engaged in increasing and optimizing own added value."
+      ],
+      "indicators_nl": [
+        "Streeft tijdens contacten met klanten naar het sluiten van een concreet akkoord dat perspectieven biedt voor relevante vervolgactiviteiten.",
+        "Ziet en benut kansen die zich voordoen.",
+        "Doet voorstellen voor acties die toegevoegde waarde hebben voor de markt of de organisatie-eenheid.",
+        "Is zich bewust van ontwikkelingen in de markt die belangrijk zijn voor het eigen vakgebied. Neemt het initiatief om de mogelijkheden die dit biedt om te zetten in toegevoegde waarde voor de organisatie of klant.",
+        "Is bewust bezig met het verhogen en optimaliseren van eigen toegevoegde waarde."
+      ],
+      "indicators_es": [
+        "Durante los contactos con clientes, tiene como objetivo cerrar un acuerdo concreto que ofrezca perspectivas para actividades de seguimiento relevantes.",
+        "Ve y aprovecha las oportunidades que surgen.",
+        "Hace propuestas de acciones que tienen valor agregado para el mercado o la unidad organizacional.",
+        "Es consciente de los desarrollos en el mercado que son importantes para su propio campo. Toma la iniciativa de convertir las posibilidades que esto ofrece en valor agregado para la organizacion o el cliente.",
+        "Esta conscientemente comprometido en aumentar y optimizar su propio valor agregado."
+      ]
+    },
+    {
+      "level": "B",
+      "category": "Entrepreneurial",
+      "subcategory": "Ambition",
+      "display_order": 4,
+      "title_en": "Actively searches for new responsibilities and development possibilities, makes extra contributions to activities that are especially important for the organization.",
+      "title_nl": "Zoekt actief naar nieuwe verantwoordelijkheden en ontwikkelingsmogelijkheden, levert extra bijdragen aan activiteiten die bijzonder belangrijk zijn voor de organisatie.",
+      "title_es": "Busca activamente nuevas responsabilidades y posibilidades de desarrollo, hace contribuciones adicionales a actividades que son especialmente importantes para la organizacion.",
+      "indicators_en": [
+        "Is aware of their own qualities and uses them.",
+        "Initiates search for development opportunities.",
+        "Attends specific trainings or searches for learning experiences so he/she can increase his/her expertise.",
+        "Asks for new challenges and responsibilities.",
+        "Seizes opportunities and initiates activities that are especially important for the organization and his/her own development.",
+        "Knows how to profile own added value in and outside the organization."
+      ],
+      "indicators_nl": [
+        "Is zich bewust van eigen kwaliteiten en gebruikt deze.",
+        "Initieert zoektocht naar ontwikkelingskansen.",
+        "Volgt specifieke trainingen of zoekt leerervaringen om zijn/haar expertise te vergroten.",
+        "Vraagt om nieuwe uitdagingen en verantwoordelijkheden.",
+        "Grijpt kansen aan en initieert activiteiten die vooral belangrijk zijn voor de organisatie en zijn/haar eigen ontwikkeling.",
+        "Weet eigen toegevoegde waarde binnen en buiten de organisatie te profileren."
+      ],
+      "indicators_es": [
+        "Es consciente de sus propias cualidades y las utiliza.",
+        "Inicia la busqueda de oportunidades de desarrollo.",
+        "Asiste a capacitaciones especificas o busca experiencias de aprendizaje para aumentar su experiencia.",
+        "Solicita nuevos desafios y responsabilidades.",
+        "Aprovecha oportunidades e inicia actividades que son especialmente importantes para la organizacion y su propio desarrollo.",
+        "Sabe como perfilar su propio valor agregado dentro y fuera de la organizacion."
+      ]
+    },
+    {
+      "level": "B",
+      "category": "Innovative",
+      "subcategory": "Market oriented",
+      "display_order": 5,
+      "title_en": "Uses his/her knowledge of the market and technology developments proactively and shares this knowledge with employees, colleagues and customers.",
+      "title_nl": "Gebruikt zijn/haar kennis van de markt en technologische ontwikkelingen proactief en deelt deze kennis met medewerkers, collega's en klanten.",
+      "title_es": "Utiliza su conocimiento del mercado y desarrollos tecnologicos de manera proactiva y comparte este conocimiento con empleados, colegas y clientes.",
+      "indicators_en": [
+        "Observes and processes current market and technology developments into specific proposals and business solutions.",
+        "Uses his/her knowledge of trends and developments in his/her field of expertise in the own work situation.",
+        "Participates in knowledge networking.",
+        "Shares the knowledge he/she had on relevant developments and has a view on innovations.",
+        "Points out new relevant developments in the market or field of expertise to others in the immediate working environment."
+      ],
+      "indicators_nl": [
+        "Observeert en verwerkt actuele markt- en technologieontwikkelingen in specifieke voorstellen en bedrijfsoplossingen.",
+        "Gebruikt zijn/haar kennis van trends en ontwikkelingen in zijn/haar vakgebied in de eigen werksituatie.",
+        "Neemt deel aan kennisnetwerken.",
+        "Deelt de kennis die hij/zij heeft over relevante ontwikkelingen en heeft een visie op innovaties.",
+        "Wijst anderen in de directe werkomgeving op nieuwe relevante ontwikkelingen in de markt of vakgebied."
+      ],
+      "indicators_es": [
+        "Observa y procesa los desarrollos actuales del mercado y la tecnologia en propuestas especificas y soluciones empresariales.",
+        "Utiliza su conocimiento de tendencias y desarrollos en su campo de especializacion en su propia situacion laboral.",
+        "Participa en redes de conocimiento.",
+        "Comparte el conocimiento que tiene sobre desarrollos relevantes y tiene una vision sobre innovaciones.",
+        "Senala nuevos desarrollos relevantes en el mercado o campo de especializacion a otros en el entorno de trabajo inmediato."
+      ]
+    },
+    {
+      "level": "B",
+      "category": "Innovative",
+      "subcategory": "Customer focused",
+      "display_order": 6,
+      "title_en": "Thinks proactively together with the customer and comes up with appropriate proposals on his/her own initiative.",
+      "title_nl": "Denkt proactief mee met de klant en komt op eigen initiatief met passende voorstellen.",
+      "title_es": "Piensa proactivamente junto con el cliente y presenta propuestas apropiadas por iniciativa propia.",
+      "indicators_en": [
+        "Asks questions on both short and long term customer needs in order to exceed expectations.",
+        "Investigates the objectives and possibilities of the customer, to subsequently come to specific and innovative proposals.",
+        "Brings the customer's injudicious decisions up for discussion and suggesting alternative possibility and improvement to address the customer needs in a better manner.",
+        "Indicates clearly what the customer can expect from the individual, the team, the business unit or the organization.",
+        "Is always aiming for improvement of customer care. During as well as after finishing an assignment."
+      ],
+      "indicators_nl": [
+        "Stelt vragen over zowel kortetermijn als langetermijn klantbehoeften om verwachtingen te overtreffen.",
+        "Onderzoekt de doelstellingen en mogelijkheden van de klant, om vervolgens tot specifieke en innovatieve voorstellen te komen.",
+        "Bespreekt onverstandige beslissingen van de klant en stelt alternatieve mogelijkheden en verbeteringen voor om de klantbehoeften beter te adresseren.",
+        "Geeft duidelijk aan wat de klant kan verwachten van het individu, het team, de business unit of de organisatie.",
+        "Streeft altijd naar verbetering van klantenservice. Zowel tijdens als na het voltooien van een opdracht."
+      ],
+      "indicators_es": [
+        "Hace preguntas sobre las necesidades del cliente a corto y largo plazo para superar las expectativas.",
+        "Investiga los objetivos y posibilidades del cliente, para posteriormente llegar a propuestas especificas e innovadoras.",
+        "Pone en discusion las decisiones imprudentes del cliente y sugiere posibilidades alternativas y mejoras para abordar las necesidades del cliente de mejor manera.",
+        "Indica claramente lo que el cliente puede esperar del individuo, el equipo, la unidad de negocio o la organizacion.",
+        "Siempre busca mejorar la atencion al cliente. Durante y despues de terminar una asignacion."
+      ]
+    },
+    {
+      "level": "C",
+      "category": "Dedicated",
+      "subcategory": "Result driven",
+      "display_order": 1,
+      "title_en": "Encourages others in the immediate working environment to set ambitious objectives and meet them, also by showing exemplary behavior.",
+      "title_nl": "Moedigt anderen in de directe werkomgeving aan om ambitieuze doelstellingen te stellen en te behalen, ook door voorbeeldgedrag te tonen.",
+      "title_es": "Anima a otros en el entorno de trabajo inmediato a establecer objetivos ambiciosos y cumplirlos, tambien mostrando un comportamiento ejemplar.",
+      "indicators_en": [
+        "Encourages employees/colleagues to set specific objectives and action plans.",
+        "Gives feedback on (not) achieving the desired result.",
+        "Sets measurable deadlines and standards for the results to be achieved for work they are (partially) responsible for.",
+        "Periodically evaluates the results of activities. Takes corrective action if the intended result is not likely to be achieved.",
+        "Takes actions to eliminate obstacles which have a negative effect on the results."
+      ],
+      "indicators_nl": [
+        "Moedigt medewerkers/collega's aan om specifieke doelstellingen en actieplannen op te stellen.",
+        "Geeft feedback over het (niet) behalen van het gewenste resultaat.",
+        "Stelt meetbare deadlines en standaarden voor de te behalen resultaten voor werk waarvoor zij (gedeeltelijk) verantwoordelijk zijn.",
+        "Evalueert periodiek de resultaten van activiteiten. Neemt corrigerende maatregelen als het beoogde resultaat waarschijnlijk niet wordt behaald.",
+        "Neemt actie om obstakels die een negatief effect hebben op de resultaten te elimineren."
+      ],
+      "indicators_es": [
+        "Anima a empleados/colegas a establecer objetivos especificos y planes de accion.",
+        "Da retroalimentacion sobre (no) lograr el resultado deseado.",
+        "Establece plazos y estandares medibles para los resultados a alcanzar para el trabajo del que son (parcialmente) responsables.",
+        "Evalua periodicamente los resultados de las actividades. Toma medidas correctivas si es probable que no se logre el resultado previsto.",
+        "Toma acciones para eliminar obstaculos que tienen un efecto negativo en los resultados."
+      ]
+    },
+    {
+      "level": "C",
+      "category": "Dedicated",
+      "subcategory": "Committed",
+      "display_order": 2,
+      "title_en": "Encourages others in the immediate working environment to align own behavior with the objectives, priorities and culture of the organization and own Business Unit, showing exemplary behaviour.",
+      "title_nl": "Moedigt anderen in de directe werkomgeving aan om eigen gedrag af te stemmen op de doelstellingen, prioriteiten en cultuur van de organisatie en eigen Business Unit, door voorbeeldgedrag te tonen.",
+      "title_es": "Anima a otros en el entorno de trabajo inmediato a alinear su propio comportamiento con los objetivos, prioridades y cultura de la organizacion y su propia Unidad de Negocio, mostrando un comportamiento ejemplar.",
+      "indicators_en": [
+        "Is involved in the development of policies and plans.",
+        "Monitors, within working environment, the alignment of activities to the objectives or priorities of the own Business Unit.",
+        "Monitors if the activities are in line with the goals and priorities of the Business Unit.",
+        "Is loyal to the management decisions in collaboration with others, even though they do not always match their own opinion.",
+        "Feels responsible at all times for achieving the goals and priorities and encourages others to do the same.",
+        "Creates constructive partnerships within or outside the organization in the interest of the organization or business unit objectives."
+      ],
+      "indicators_nl": [
+        "Is betrokken bij de ontwikkeling van beleid en plannen.",
+        "Bewaakt, binnen de werkomgeving, de afstemming van activiteiten op de doelstellingen of prioriteiten van de eigen Business Unit.",
+        "Bewaakt of de activiteiten in lijn zijn met de doelen en prioriteiten van de Business Unit.",
+        "Is loyaal aan managementbeslissingen in samenwerking met anderen, ook al komen deze niet altijd overeen met de eigen mening.",
+        "Voelt zich te allen tijde verantwoordelijk voor het behalen van de doelen en prioriteiten en moedigt anderen aan hetzelfde te doen.",
+        "Creeert constructieve partnerschappen binnen of buiten de organisatie in het belang van de organisatie of business unit doelstellingen."
+      ],
+      "indicators_es": [
+        "Esta involucrado en el desarrollo de politicas y planes.",
+        "Monitorea, dentro del entorno de trabajo, la alineacion de actividades con los objetivos o prioridades de su propia Unidad de Negocio.",
+        "Monitorea si las actividades estan en linea con las metas y prioridades de la Unidad de Negocio.",
+        "Es leal a las decisiones de gestion en colaboracion con otros, aunque no siempre coincidan con su propia opinion.",
+        "Se siente responsable en todo momento de lograr las metas y prioridades y anima a otros a hacer lo mismo.",
+        "Crea asociaciones constructivas dentro o fuera de la organizacion en interes de los objetivos de la organizacion o unidad de negocio."
+      ]
+    },
+    {
+      "level": "C",
+      "category": "Entrepreneurial",
+      "subcategory": "Entrepreneurial",
+      "display_order": 3,
+      "title_en": "Encourages others in the immediate working environment to make the most of the possibilities of selling business solutions. Shows exemplary behavior by translating opportunities into product proposals and business plans for the Business Unit.",
+      "title_nl": "Moedigt anderen in de directe werkomgeving aan om optimaal gebruik te maken van de mogelijkheden voor het verkopen van bedrijfsoplossingen. Toont voorbeeldgedrag door kansen te vertalen naar productvoorstellen en businessplannen voor de Business Unit.",
+      "title_es": "Anima a otros en el entorno de trabajo inmediato a aprovechar al maximo las posibilidades de vender soluciones empresariales. Muestra un comportamiento ejemplar traduciendo oportunidades en propuestas de productos y planes de negocio para la Unidad de Negocio.",
+      "indicators_en": [
+        "Encourages others to take advantage of the opportunities that arise, outside the direct trigger by a (customer) conversation.",
+        "Shows appreciation for the colleagues who seize opportunities in the market or the field of expertise and takes (responsible) risks to achieve (financial) advantage.",
+        "Sees (sales) opportunities in the market and translates them into concrete (business) plans.",
+        "Does proposals (including financial substantiation) that meet the needs of the (potential) customers or developments in the market / field of expertise.",
+        "Is able to create rapid and adequate support for new products, services or markets, internally or externally."
+      ],
+      "indicators_nl": [
+        "Moedigt anderen aan om gebruik te maken van kansen die zich voordoen, buiten de directe aanleiding door een (klant)gesprek.",
+        "Toont waardering voor collega's die kansen in de markt of het vakgebied aangrijpen en (verantwoorde) risico's nemen om (financieel) voordeel te behalen.",
+        "Ziet (verkoop)kansen in de markt en vertaalt deze naar concrete (business)plannen.",
+        "Doet voorstellen (inclusief financiele onderbouwing) die voldoen aan de behoeften van de (potentiele) klanten of ontwikkelingen in de markt / vakgebied.",
+        "Is in staat om snel en adequaat draagvlak te creeren voor nieuwe producten, diensten of markten, intern of extern."
+      ],
+      "indicators_es": [
+        "Anima a otros a aprovechar las oportunidades que surgen, fuera del desencadenante directo de una conversacion (con el cliente).",
+        "Muestra aprecio por los colegas que aprovechan oportunidades en el mercado o el campo de especializacion y toman riesgos (responsables) para lograr ventaja (financiera).",
+        "Ve oportunidades (de venta) en el mercado y las traduce en planes (de negocio) concretos.",
+        "Hace propuestas (incluyendo justificacion financiera) que satisfacen las necesidades de los clientes (potenciales) o desarrollos en el mercado / campo de especializacion.",
+        "Es capaz de crear apoyo rapido y adecuado para nuevos productos, servicios o mercados, interna o externamente."
+      ]
+    },
+    {
+      "level": "C",
+      "category": "Entrepreneurial",
+      "subcategory": "Ambition",
+      "display_order": 4,
+      "title_en": "Encourages others in the immediate working environment to take on new responsibilities and to develop furthermore, also by showing exemplary behavior.",
+      "title_nl": "Moedigt anderen in de directe werkomgeving aan om nieuwe verantwoordelijkheden op zich te nemen en zich verder te ontwikkelen, ook door voorbeeldgedrag te tonen.",
+      "title_es": "Anima a otros en el entorno de trabajo inmediato a asumir nuevas responsabilidades y a desarrollarse aun mas, tambien mostrando un comportamiento ejemplar.",
+      "indicators_en": [
+        "Stimulates others to take on new or more responsibilities.",
+        "Encourages others in the immediate working environment to attend specific training or to search for learning experiences.",
+        "Involves others in the immediate working environment in activities/projects that can offer them new learning experiences.",
+        "Visibly attracts more and more responsibilities toward his/herself.",
+        "Attends specific training or takes on new learning experiences that could be useful in future career steps."
+      ],
+      "indicators_nl": [
+        "Stimuleert anderen om nieuwe of meer verantwoordelijkheden op zich te nemen.",
+        "Moedigt anderen in de directe werkomgeving aan om specifieke trainingen te volgen of te zoeken naar leerervaringen.",
+        "Betrekt anderen in de directe werkomgeving bij activiteiten/projecten die hen nieuwe leerervaringen kunnen bieden.",
+        "Trekt zichtbaar steeds meer verantwoordelijkheden naar zich toe.",
+        "Volgt specifieke trainingen of neemt nieuwe leerervaringen aan die nuttig kunnen zijn in toekomstige carrierestappen."
+      ],
+      "indicators_es": [
+        "Estimula a otros a asumir responsabilidades nuevas o adicionales.",
+        "Anima a otros en el entorno de trabajo inmediato a asistir a capacitaciones especificas o a buscar experiencias de aprendizaje.",
+        "Involucra a otros en el entorno de trabajo inmediato en actividades/proyectos que pueden ofrecerles nuevas experiencias de aprendizaje.",
+        "Atrae visiblemente cada vez mas responsabilidades hacia si mismo/a.",
+        "Asiste a capacitaciones especificas o asume nuevas experiencias de aprendizaje que podrian ser utiles en futuros pasos de carrera."
+      ]
+    },
+    {
+      "level": "C",
+      "category": "Innovative",
+      "subcategory": "Market oriented",
+      "display_order": 5,
+      "title_en": "Encourages others in the immediate working environment by having proactive knowledge about developments in the market, about trends and technology and by translating this knowledge into opportunities and concrete business solutions. Shows exemplary behavior by regularly communicating about market and technology developments.",
+      "title_nl": "Moedigt anderen in de directe werkomgeving aan door proactieve kennis te hebben over ontwikkelingen in de markt, over trends en technologie en door deze kennis te vertalen naar kansen en concrete bedrijfsoplossingen. Toont voorbeeldgedrag door regelmatig te communiceren over markt- en technologieontwikkelingen.",
+      "title_es": "Anima a otros en el entorno de trabajo inmediato teniendo conocimiento proactivo sobre desarrollos en el mercado, sobre tendencias y tecnologia y traduciendo este conocimiento en oportunidades y soluciones empresariales concretas. Muestra un comportamiento ejemplar comunicando regularmente sobre desarrollos del mercado y tecnologia.",
+      "indicators_en": [
+        "Discusses possible effects of trends and developments in the market, the field of expertise and technology for the organization and the customer.",
+        "Encourages employees/colleagues to stay up-to-date with the future developments in the own field of expertise and to develop a view.",
+        "Is able to translate opportunities to proposals for concrete business solutions.",
+        "Acts as a specialist in a certain field of expertise and/or market.",
+        "Organizes knowledge networks concerning future developments in own market/field of expertise.",
+        "Shares knowledge about strengths and weaknesses of the relevant market parties."
+      ],
+      "indicators_nl": [
+        "Bespreekt mogelijke effecten van trends en ontwikkelingen in de markt, het vakgebied en technologie voor de organisatie en de klant.",
+        "Moedigt medewerkers/collega's aan om op de hoogte te blijven van toekomstige ontwikkelingen in het eigen vakgebied en een visie te ontwikkelen.",
+        "Is in staat om kansen te vertalen naar voorstellen voor concrete bedrijfsoplossingen.",
+        "Treedt op als specialist in een bepaald vakgebied en/of markt.",
+        "Organiseert kennisnetwerken met betrekking tot toekomstige ontwikkelingen in eigen markt/vakgebied.",
+        "Deelt kennis over sterke en zwakke punten van de relevante marktpartijen."
+      ],
+      "indicators_es": [
+        "Discute posibles efectos de tendencias y desarrollos en el mercado, el campo de especializacion y tecnologia para la organizacion y el cliente.",
+        "Anima a empleados/colegas a mantenerse actualizados con los desarrollos futuros en su propio campo de especializacion y a desarrollar una vision.",
+        "Es capaz de traducir oportunidades en propuestas para soluciones empresariales concretas.",
+        "Actua como especialista en un cierto campo de especializacion y/o mercado.",
+        "Organiza redes de conocimiento sobre desarrollos futuros en su propio mercado/campo de especializacion.",
+        "Comparte conocimiento sobre fortalezas y debilidades de las partes relevantes del mercado."
+      ]
+    },
+    {
+      "level": "C",
+      "category": "Innovative",
+      "subcategory": "Customer focused",
+      "display_order": 6,
+      "title_en": "Encourages others in his/her immediate working environment to optimize the services for the customers by having a critical attitude and by showing exemplary behavior.",
+      "title_nl": "Moedigt anderen in zijn/haar directe werkomgeving aan om de dienstverlening aan klanten te optimaliseren door een kritische houding te hebben en door voorbeeldgedrag te tonen.",
+      "title_es": "Anima a otros en su entorno de trabajo inmediato a optimizar los servicios para los clientes teniendo una actitud critica y mostrando un comportamiento ejemplar.",
+      "indicators_en": [
+        "Discusses with others what 'good services' and 'customer focus' means and encourages a proactive work attitude.",
+        "Encourages employees/colleagues to first identify the customer needs and objectives before they make a proposal.",
+        "Proposes actions and procedures to colleagues to create a better understanding of the customer needs.",
+        "Ensures that others are not hindered by internal organizational structures.",
+        "Takes additional steps to significantly increase customer satisfaction."
+      ],
+      "indicators_nl": [
+        "Bespreekt met anderen wat 'goede dienstverlening' en 'klantgerichtheid' betekent en moedigt een proactieve werkhouding aan.",
+        "Moedigt medewerkers/collega's aan om eerst de behoeften en doelstellingen van de klant te identificeren voordat zij een voorstel doen.",
+        "Stelt acties en procedures voor aan collega's om een beter begrip te creeren van de klantbehoeften.",
+        "Zorgt ervoor dat anderen niet worden gehinderd door interne organisatiestructuren.",
+        "Neemt extra stappen om de klanttevredenheid aanzienlijk te verhogen."
+      ],
+      "indicators_es": [
+        "Discute con otros que significa 'buenos servicios' y 'enfoque en el cliente' y fomenta una actitud de trabajo proactiva.",
+        "Anima a empleados/colegas a identificar primero las necesidades y objetivos del cliente antes de hacer una propuesta.",
+        "Propone acciones y procedimientos a colegas para crear una mejor comprension de las necesidades del cliente.",
+        "Asegura que otros no se vean obstaculizados por estructuras organizacionales internas.",
+        "Toma pasos adicionales para aumentar significativamente la satisfaccion del cliente."
+      ]
+    },
+    {
+      "level": "D",
+      "category": "Dedicated",
+      "subcategory": "Result driven",
+      "display_order": 1,
+      "title_en": "Inspires and facilitates others also outside the immediate working environment to set and realize ambitious goals. Leads by example.",
+      "title_nl": "Inspireert en faciliteert anderen ook buiten de directe werkomgeving om ambitieuze doelen te stellen en te realiseren. Geeft het goede voorbeeld.",
+      "title_es": "Inspira y facilita a otros tambien fuera del entorno de trabajo inmediato para establecer y realizar objetivos ambiciosos. Lidera con el ejemplo.",
+      "indicators_en": [
+        "Encourages in the organization the importance of setting ambitious objectives.",
+        "Defines clear structures, divides tasks and procedures that increases effectiveness.",
+        "Clarifies what measurable results he/she expects from the different BU's or teams.",
+        "Initiates changes that have a positive contribution to the results of the organization.",
+        "Adjusts objectives set beforehand by the BU or team. Revises the policy or intervenes otherwise in order to be able to achieve these objectives."
+      ],
+      "indicators_nl": [
+        "Benadrukt in de organisatie het belang van het stellen van ambitieuze doelstellingen.",
+        "Definieert duidelijke structuren, verdeelt taken en procedures die de effectiviteit verhogen.",
+        "Verduidelijkt welke meetbare resultaten hij/zij verwacht van de verschillende BU's of teams.",
+        "Initieert veranderingen die een positieve bijdrage leveren aan de resultaten van de organisatie.",
+        "Past vooraf gestelde doelstellingen door de BU of het team aan. Herziet het beleid of grijpt anderszins in om deze doelstellingen te kunnen bereiken."
+      ],
+      "indicators_es": [
+        "Fomenta en la organizacion la importancia de establecer objetivos ambiciosos.",
+        "Define estructuras claras, divide tareas y procedimientos que aumentan la efectividad.",
+        "Aclara que resultados medibles espera de las diferentes Unidades de Negocio o equipos.",
+        "Inicia cambios que tienen una contribucion positiva a los resultados de la organizacion.",
+        "Ajusta objetivos establecidos previamente por la Unidad de Negocio o equipo. Revisa la politica o interviene de otra manera para poder lograr estos objetivos."
+      ]
+    },
+    {
+      "level": "D",
+      "category": "Dedicated",
+      "subcategory": "Committed",
+      "display_order": 2,
+      "title_en": "Inspires others, also outside the immediate working environment, to bring their own behavior in line with the goals, priorities and culture of the organization. Leads by example.",
+      "title_nl": "Inspireert anderen, ook buiten de directe werkomgeving, om hun eigen gedrag in lijn te brengen met de doelen, prioriteiten en cultuur van de organisatie. Geeft het goede voorbeeld.",
+      "title_es": "Inspira a otros, tambien fuera del entorno de trabajo inmediato, a alinear su propio comportamiento con las metas, prioridades y cultura de la organizacion. Lidera con el ejemplo.",
+      "indicators_en": [
+        "Enthuses others to pay attention to activities that perfectly fit in with the objectives of the organization.",
+        "Creates a 'we-feeling' by his/her way of communicating with others within the organization.",
+        "Shows that he/she finds it important that others behave in line with the culture of the organization.",
+        "Initiates only activities or projects that perfectly align with the objectives of the organization.",
+        "Is loyal to the management decisions, even when he/she does not fully agree with them."
+      ],
+      "indicators_nl": [
+        "Enthousiasmeert anderen om aandacht te besteden aan activiteiten die perfect passen bij de doelstellingen van de organisatie.",
+        "Creeert een 'wij-gevoel' door zijn/haar manier van communiceren met anderen binnen de organisatie.",
+        "Toont dat hij/zij het belangrijk vindt dat anderen zich gedragen in lijn met de cultuur van de organisatie.",
+        "Initieert alleen activiteiten of projecten die perfect aansluiten bij de doelstellingen van de organisatie.",
+        "Is loyaal aan de managementbeslissingen, zelfs wanneer hij/zij het er niet volledig mee eens is."
+      ],
+      "indicators_es": [
+        "Entusiasma a otros para prestar atencion a actividades que encajan perfectamente con los objetivos de la organizacion.",
+        "Crea un 'sentimiento de nosotros' por su forma de comunicarse con otros dentro de la organizacion.",
+        "Muestra que considera importante que otros se comporten en linea con la cultura de la organizacion.",
+        "Inicia solo actividades o proyectos que se alinean perfectamente con los objetivos de la organizacion.",
+        "Es leal a las decisiones de gestion, incluso cuando no esta completamente de acuerdo con ellas."
+      ]
+    },
+    {
+      "level": "D",
+      "category": "Entrepreneurial",
+      "subcategory": "Entrepreneurial",
+      "display_order": 3,
+      "title_en": "Inspires and facilitates others, even outside the immediate working environment, to use opportunities for selling business solutions. Leads by example.",
+      "title_nl": "Inspireert en faciliteert anderen, ook buiten de directe werkomgeving, om kansen te benutten voor het verkopen van bedrijfsoplossingen. Geeft het goede voorbeeld.",
+      "title_es": "Inspira y facilita a otros, incluso fuera del entorno de trabajo inmediato, a usar oportunidades para vender soluciones empresariales. Lidera con el ejemplo.",
+      "indicators_en": [
+        "Carries out that he/she thinks it is important that employees in the Organizational Unit approach client signals in a proactive manner.",
+        "Encourages others to show appreciation towards employees/colleagues who take responsible risks in order to obtain a financial advantage.",
+        "Invests in time and resources to optimally utilize (potential) opportunities in the market.",
+        "Searches for strategic positions in markets that would fit in the future business.",
+        "Aims at integrating separate business plans into one business plan for the entire organization."
+      ],
+      "indicators_nl": [
+        "Draagt uit dat hij/zij het belangrijk vindt dat medewerkers in de Organisatie-eenheid op een proactieve manier met klantsignalen omgaan.",
+        "Moedigt anderen aan om waardering te tonen naar medewerkers/collega's die verantwoorde risico's nemen om financieel voordeel te behalen.",
+        "Investeert in tijd en middelen om (potentiele) kansen in de markt optimaal te benutten.",
+        "Zoekt naar strategische posities in markten die passen bij de toekomstige business.",
+        "Streeft ernaar om afzonderlijke businessplannen te integreren in een businessplan voor de hele organisatie."
+      ],
+      "indicators_es": [
+        "Transmite que considera importante que los empleados en la Unidad Organizacional aborden las senales de los clientes de manera proactiva.",
+        "Anima a otros a mostrar aprecio hacia empleados/colegas que toman riesgos responsables para obtener una ventaja financiera.",
+        "Invierte en tiempo y recursos para utilizar opticamente las oportunidades (potenciales) en el mercado.",
+        "Busca posiciones estrategicas en mercados que encajarian en el negocio futuro.",
+        "Tiene como objetivo integrar planes de negocio separados en un plan de negocio para toda la organizacion."
+      ]
+    },
+    {
+      "level": "D",
+      "category": "Entrepreneurial",
+      "subcategory": "Ambition",
+      "display_order": 4,
+      "title_en": "Inspires and facilitates others, also outside the immediate working environment, to take on new responsibilities and to develop further. Leads by example.",
+      "title_nl": "Inspireert en faciliteert anderen, ook buiten de directe werkomgeving, om nieuwe verantwoordelijkheden op zich te nemen en zich verder te ontwikkelen. Geeft het goede voorbeeld.",
+      "title_es": "Inspira y facilita a otros, tambien fuera del entorno de trabajo inmediato, a asumir nuevas responsabilidades y a desarrollarse mas. Lidera con el ejemplo.",
+      "indicators_en": [
+        "Creates preconditions within the organization to have regular discussions about the ambitions of the employees.",
+        "Communicates clearly about advancement and promotion possibilities inside the organization.",
+        "Encourages people within the BU to take on new responsibilities.",
+        "Attracts external responsibilities towards him/herself that could influence the name of the own BU or organization, for example management functions.",
+        "Takes a leading role in activities/projects that are important for the BU or the organization."
+      ],
+      "indicators_nl": [
+        "Creeert voorwaarden binnen de organisatie om regelmatig gesprekken te voeren over de ambities van de medewerkers.",
+        "Communiceert duidelijk over doorgroei- en promotiemogelijkheden binnen de organisatie.",
+        "Moedigt mensen binnen de BU aan om nieuwe verantwoordelijkheden op zich te nemen.",
+        "Trekt externe verantwoordelijkheden naar zich toe die de naam van de eigen BU of organisatie kunnen beinvloeden, bijvoorbeeld managementfuncties.",
+        "Neemt een leidende rol in activiteiten/projecten die belangrijk zijn voor de BU of de organisatie."
+      ],
+      "indicators_es": [
+        "Crea precondiciones dentro de la organizacion para tener discusiones regulares sobre las ambiciones de los empleados.",
+        "Comunica claramente sobre las posibilidades de avance y promocion dentro de la organizacion.",
+        "Anima a las personas dentro de la Unidad de Negocio a asumir nuevas responsabilidades.",
+        "Atrae responsabilidades externas hacia si mismo/a que podrian influir en el nombre de su propia Unidad de Negocio u organizacion, por ejemplo funciones de gestion.",
+        "Toma un papel de liderazgo en actividades/proyectos que son importantes para la Unidad de Negocio o la organizacion."
+      ]
+    },
+    {
+      "level": "D",
+      "category": "Innovative",
+      "subcategory": "Market oriented",
+      "display_order": 5,
+      "title_en": "Proactively and timely sees market developments, trends and new technologies, uses knowledge and translates to clear vision. Communicates and anticipates on future customer requirements and translates these to concrete solutions.",
+      "title_nl": "Ziet proactief en tijdig marktontwikkelingen, trends en nieuwe technologieen, gebruikt kennis en vertaalt naar een duidelijke visie. Communiceert en anticipeert op toekomstige klantvereisten en vertaalt deze naar concrete oplossingen.",
+      "title_es": "Ve proactiva y oportunamente desarrollos del mercado, tendencias y nuevas tecnologias, usa conocimiento y traduce a una vision clara. Comunica y anticipa requisitos futuros del cliente y los traduce a soluciones concretas.",
+      "indicators_en": [
+        "Carries out that he/she thinks it is important to proactively follow the developments in the market and technology and translates them into concrete solution directions for the business unit or organization.",
+        "Invests (time and/or money) in the early acquisition of knowledge about developments in the market and new application possibilities.",
+        "Translates market developments to various relevant internal policy areas, external opportunities and business solutions.",
+        "Acts as a specialist in a certain field of expertise and/or market.",
+        "Explains market developments, discipline, trends and technology inside the own business unit and organization and translates them into opportunities for the organization and customer."
+      ],
+      "indicators_nl": [
+        "Draagt uit dat hij/zij het belangrijk vindt om de ontwikkelingen in de markt en technologie proactief te volgen en deze te vertalen naar concrete oplossingsrichtingen voor de business unit of organisatie.",
+        "Investeert (tijd en/of geld) in de vroegtijdige verwerving van kennis over ontwikkelingen in de markt en nieuwe toepassingsmogelijkheden.",
+        "Vertaalt marktontwikkelingen naar verschillende relevante interne beleidsgebieden, externe kansen en bedrijfsoplossingen.",
+        "Treedt op als specialist in een bepaald vakgebied en/of markt.",
+        "Legt marktontwikkelingen, discipline, trends en technologie uit binnen de eigen business unit en organisatie en vertaalt deze naar kansen voor de organisatie en klant."
+      ],
+      "indicators_es": [
+        "Transmite que considera importante seguir proactivamente los desarrollos en el mercado y la tecnologia y traducirlos en direcciones de solucion concretas para la unidad de negocio u organizacion.",
+        "Invierte (tiempo y/o dinero) en la adquisicion temprana de conocimiento sobre desarrollos en el mercado y nuevas posibilidades de aplicacion.",
+        "Traduce desarrollos del mercado a varias areas de politica interna relevantes, oportunidades externas y soluciones empresariales.",
+        "Actua como especialista en un cierto campo de especializacion y/o mercado.",
+        "Explica desarrollos del mercado, disciplina, tendencias y tecnologia dentro de su propia unidad de negocio y organizacion y los traduce en oportunidades para la organizacion y el cliente."
+      ]
+    },
+    {
+      "level": "D",
+      "category": "Innovative",
+      "subcategory": "Customer focused",
+      "display_order": 6,
+      "title_en": "Inspires and facilitates others, also outside the immediate working environment to optimize Customer Service via a visionary mindset and through exemplary behaviour.",
+      "title_nl": "Inspireert en faciliteert anderen, ook buiten de directe werkomgeving, om de klantenservice te optimaliseren via een visionaire mindset en door voorbeeldgedrag.",
+      "title_es": "Inspira y facilita a otros, tambien fuera del entorno de trabajo inmediato, a optimizar el Servicio al Cliente a traves de una mentalidad visionaria y un comportamiento ejemplar.",
+      "indicators_en": [
+        "Carries out the view of 'state of the art' services to the customers are important. Viewed from the total environmental context and the companies specific solutions.",
+        "Aims at researching (future) long-term customer wishes and needs.",
+        "Builds and maintains sustainable and/or regularly contact with (potential) customers that can be important to the business unit or organization.",
+        "Coordinates several departments and domain expertise from which services are offered to customers.",
+        "Continuously takes specific actions to increase customer satisfaction."
+      ],
+      "indicators_nl": [
+        "Draagt de visie uit dat 'state of the art' dienstverlening aan klanten belangrijk is. Gezien vanuit de totale omgevingscontext en de bedrijfsspecifieke oplossingen.",
+        "Richt zich op het onderzoeken van (toekomstige) langetermijnwensen en -behoeften van klanten.",
+        "Bouwt en onderhoudt duurzaam en/of regelmatig contact met (potentiele) klanten die belangrijk kunnen zijn voor de business unit of organisatie.",
+        "Coordineert verschillende afdelingen en domeinexpertise vanwaaruit diensten aan klanten worden aangeboden.",
+        "Neemt voortdurend specifieke acties om de klanttevredenheid te verhogen."
+      ],
+      "indicators_es": [
+        "Transmite la vision de que los servicios de 'ultima generacion' a los clientes son importantes. Vistos desde el contexto ambiental total y las soluciones especificas de la empresa.",
+        "Tiene como objetivo investigar deseos y necesidades (futuras) a largo plazo del cliente.",
+        "Construye y mantiene contacto sostenible y/o regular con clientes (potenciales) que pueden ser importantes para la unidad de negocio u organizacion.",
+        "Coordina varios departamentos y experiencia de dominio desde los cuales se ofrecen servicios a los clientes.",
+        "Toma continuamente acciones especificas para aumentar la satisfaccion del cliente."
+      ]
+    }
+  ]
+}

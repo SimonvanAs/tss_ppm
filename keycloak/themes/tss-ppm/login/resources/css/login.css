@@ -1,0 +1,409 @@
+/* TSS PPM Keycloak Theme - Matching Application Style */
+
+/* Import Tahoma font */
+@import url('https://fonts.googleapis.com/css2?family=Tahoma:wght@400;500;600&display=swap');
+
+/* CSS Variables */
+:root {
+  --color-magenta: #CC0E70;
+  --color-magenta-dark: #a00b5a;
+  --color-navy: #004A91;
+  --color-text: #333333;
+  --color-text-light: #666666;
+  --color-border: #ddd;
+  --color-error: #DC3545;
+  --color-success: #28A745;
+  --color-bg: #ffffff;
+  --color-bg-light: #f5f5f5;
+  --font-family: 'Tahoma', 'Segoe UI', system-ui, sans-serif;
+}
+
+/* Reset and Base */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: linear-gradient(135deg, rgba(204, 14, 112, 0.03) 0%, rgba(255, 255, 255, 1) 50%, rgba(204, 14, 112, 0.05) 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Login Container */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+/* Login Card */
+.login-card {
+  width: 100% !important;
+  max-width: 420px !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.95) 100%) !important;
+  border-radius: 12px !important;
+  padding: 40px !important;
+  box-shadow: 0 2px 8px rgba(204, 14, 112, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06) !important;
+  border: 1px solid rgba(204, 14, 112, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  box-sizing: border-box !important;
+}
+
+/* Logo */
+.kc-logo-wrapper {
+  text-align: center;
+  margin-bottom: 32px;
+  width: 100%;
+}
+
+.kc-logo {
+  max-height: 60px;
+  width: auto;
+  margin: 0 auto 16px;
+  display: block;
+}
+
+/* Form Elements */
+#kc-form {
+  width: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+#kc-form-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  width: 100%;
+  display: block;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  width: 100%;
+  text-align: left;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-family: var(--font-family);
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  box-sizing: border-box;
+  display: block;
+}
+
+/* Override Keycloak default classes */
+[class*="kcFormGroup"],
+[class*="kcFormSetting"],
+[class*="kcFormOptions"] {
+  width: 100% !important;
+  display: block !important;
+  box-sizing: border-box !important;
+}
+
+[class*="kcLabelClass"] {
+  display: block !important;
+  width: 100% !important;
+  text-align: left !important;
+  margin-bottom: 8px !important;
+}
+
+[class*="kcInputClass"] {
+  width: 100% !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  padding: 12px 14px !important;
+}
+
+/* Ensure form wrapper is centered */
+#kc-form-wrapper > * {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Fix any inline styles or misaligned elements */
+form#kc-form-login {
+  width: 100% !important;
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+form#kc-form-login > * {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Force alignment for all form inputs */
+#kc-form-login input[type="text"],
+#kc-form-login input[type="email"],
+#kc-form-login input[type="password"] {
+  width: 100% !important;
+  max-width: 100% !important;
+  display: block !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+}
+
+/* Override any Keycloak inline styles */
+#username,
+#password {
+  width: 100% !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+/* Ensure form groups are properly aligned */
+#kc-form-login .form-group {
+  width: 100% !important;
+  display: block !important;
+  margin-bottom: 20px !important;
+  padding: 0 !important;
+}
+
+#kc-form-login .form-group > * {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-magenta);
+  box-shadow: 0 0 0 3px rgba(204, 14, 112, 0.1);
+}
+
+.form-group input[aria-invalid="true"] {
+  border-color: var(--color-error);
+}
+
+/* Error Messages */
+#input-error {
+  display: block;
+  color: var(--color-error);
+  font-size: 0.875rem;
+  margin-top: 6px;
+}
+
+/* Alert Messages */
+.alert {
+  padding: 12px 16px;
+  border-radius: 4px;
+  margin-bottom: 24px;
+  font-size: 0.875rem;
+}
+
+.alert-error {
+  background-color: rgba(220, 53, 69, 0.1);
+  border: 1px solid var(--color-error);
+  color: var(--color-error);
+}
+
+.alert-warning {
+  background-color: rgba(255, 165, 0, 0.1);
+  border: 1px solid #FFA500;
+  color: #FFA500;
+}
+
+.alert-success {
+  background-color: rgba(40, 167, 69, 0.1);
+  border: 1px solid var(--color-success);
+  color: var(--color-success);
+}
+
+.alert-info {
+  background-color: rgba(0, 74, 145, 0.1);
+  border: 1px solid var(--color-navy);
+  color: var(--color-navy);
+}
+
+/* Buttons */
+#kc-form-buttons {
+  margin-top: 24px;
+  width: 100%;
+  display: block;
+  box-sizing: border-box;
+}
+
+#kc-login {
+  width: 100% !important;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--color-magenta), var(--color-magenta-dark));
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  font-family: var(--font-family);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  display: block;
+  margin: 0;
+}
+
+[class*="kcButtonBlock"] {
+  width: 100% !important;
+  display: block !important;
+}
+
+#kc-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(204, 14, 112, 0.3);
+}
+
+#kc-login:active {
+  transform: translateY(0);
+}
+
+#kc-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Form Options */
+#kc-form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+[class*="kcFormOptionsWrapper"] {
+  width: auto !important;
+  display: inline-block !important;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  cursor: pointer;
+  color: var(--color-text-light);
+}
+
+.checkbox input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+/* Links */
+a {
+  color: var(--color-navy);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--color-magenta);
+  text-decoration: underline;
+}
+
+/* Registration Link */
+#kc-registration-container {
+  width: 100%;
+}
+
+#kc-registration {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(204, 14, 112, 0.1);
+  font-size: 0.875rem;
+  color: var(--color-text-light);
+  width: 100%;
+}
+
+#kc-registration a {
+  color: var(--color-navy);
+  font-weight: 500;
+}
+
+#kc-registration a:hover {
+  color: var(--color-magenta);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .login-card {
+    padding: 32px 24px;
+  }
+
+  html, body {
+    font-size: 14px;
+  }
+}
+
+/* Placeholder */
+::placeholder {
+  color: #999;
+  opacity: 1;
+}
+
+/* Loading State */
+#kc-login:disabled {
+  position: relative;
+  color: transparent;
+}
+
+#kc-login:disabled::after {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  top: 50%;
+  left: 50%;
+  margin-left: -8px;
+  margin-top: -8px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

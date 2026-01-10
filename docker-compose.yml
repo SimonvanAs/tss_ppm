@@ -1,0 +1,147 @@
+# TSS PPM v3.0 - Development Environment
+# Run: docker compose up -d
+
+services:
+  # ==========================================================================
+  # DATABASE
+  # ==========================================================================
+  postgres:
+    image: postgres:17-alpine
+    container_name: tss_ppm_db
+    environment:
+      POSTGRES_USER: ${DB_USER:-ppm}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-ppm_dev_password}
+      POSTGRES_DB: ${DB_NAME:-tss_ppm}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-ppm} -d ${DB_NAME:-tss_ppm}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ==========================================================================
+  # AUTHENTICATION
+  # ==========================================================================
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: tss_ppm_auth
+    command: start-dev --import-realm
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME:-tss_ppm}
+      KC_DB_USERNAME: ${DB_USER:-ppm}
+      KC_DB_PASSWORD: ${DB_PASSWORD:-ppm_dev_password}
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8080
+      KC_HTTP_ENABLED: "true"
+      KC_HEALTH_ENABLED: "true"
+      KEYCLOAK_ADMIN: ${KC_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak/themes/tss-ppm:/opt/keycloak/themes/tss-ppm:ro
+      - ./keycloak/tss-ppm-realm.json:/opt/keycloak/data/import/tss-ppm-realm.json:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  # ==========================================================================
+  # VOICE SERVICE (Speech-to-Text)
+  # ==========================================================================
+  whisper:
+    image: fedirz/faster-whisper-server:latest-cpu
+    container_name: tss_ppm_voice
+    environment:
+      WHISPER__MODEL: Systran/faster-whisper-small
+      WHISPER__DEVICE: cpu
+      WHISPER__COMPUTE_TYPE: int8
+    ports:
+      - "8001:8000"
+    volumes:
+      - whisper_cache:/root/.cache/huggingface
+
+  # ==========================================================================
+  # BACKEND API
+  # ==========================================================================
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tss_ppm_api
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-ppm}:${DB_PASSWORD:-ppm_dev_password}@postgres:5432/${DB_NAME:-tss_ppm}
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: tss-ppm
+      KEYCLOAK_CLIENT_ID: tss-ppm-api
+      WHISPER_URL: http://whisper:8000
+      CORS_ORIGINS: http://localhost:5173
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/src:/app/src:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_started
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend/src
+          target: /app/src
+
+  # ==========================================================================
+  # FRONTEND (Development)
+  # ==========================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: tss_ppm_web
+    environment:
+      VITE_API_URL: http://localhost:8000
+      VITE_KEYCLOAK_URL: http://localhost:8080
+      VITE_KEYCLOAK_REALM: tss-ppm
+      VITE_KEYCLOAK_CLIENT_ID: tss-ppm-web
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    depends_on:
+      - api
+
+  # ==========================================================================
+  # REVERSE PROXY (Production-like)
+  # ==========================================================================
+  caddy:
+    image: caddy:2-alpine
+    container_name: tss_ppm_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - frontend
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+  whisper_cache:
+  caddy_data:
+  caddy_config:
+
+networks:
+  default:
+    name: tss_ppm_network

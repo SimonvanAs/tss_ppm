@@ -1,0 +1,284 @@
+{
+  "app": {
+    "title": "TSS PPM",
+    "subtitle": "Performance Portfolio Management",
+    "version": "v3.0"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "reviews": "Beoordelingen",
+    "team": "Team",
+    "calibration": "Kalibratie",
+    "analytics": "Analyses",
+    "settings": "Instellingen",
+    "logout": "Uitloggen"
+  },
+  "auth": {
+    "login": "Inloggen",
+    "logout": "Uitloggen",
+    "loginWith": "Inloggen met {provider}",
+    "sessionExpired": "Uw sessie is verlopen. Log opnieuw in.",
+    "unauthorized": "U bent niet gemachtigd om deze pagina te bekijken."
+  },
+  "dashboard": {
+    "welcome": "Welkom, {name}",
+    "tasksTitle": "Uw Taken",
+    "noTasks": "Geen openstaande taken",
+    "pendingSignatures": "Wachtende Handtekeningen",
+    "reviewsToComplete": "Af te ronden Beoordelingen",
+    "goalChanges": "Doelwijzigingsverzoeken",
+    "quickActions": "Snelle Acties"
+  },
+  "review": {
+    "title": "Prestatiebeoordeling",
+    "year": "Beoordelingsjaar",
+    "stage": "Fase",
+    "status": "Status",
+    "employee": "Medewerker",
+    "manager": "Manager",
+    "stages": {
+      "GOAL_SETTING": "Doelen Stellen",
+      "MID_YEAR_REVIEW": "Halfjaarlijkse Beoordeling",
+      "END_YEAR_REVIEW": "Eindejaars Beoordeling"
+    },
+    "statuses": {
+      "DRAFT": "Concept",
+      "PENDING_EMPLOYEE_SIGNATURE": "Wacht op Medewerker Handtekening",
+      "EMPLOYEE_SIGNED": "Medewerker Getekend",
+      "PENDING_MANAGER_SIGNATURE": "Wacht op Manager Handtekening",
+      "MANAGER_SIGNED": "Manager Getekend",
+      "SIGNED": "Voltooid",
+      "ARCHIVED": "Gearchiveerd"
+    },
+    "summaryComments": "Samenvattende Opmerkingen",
+    "additionalComments": "Aanvullende Opmerkingen",
+    "save": "Opslaan",
+    "saving": "Opslaan...",
+    "saved": "Opgeslagen",
+    "submit": "Indienen voor Handtekening",
+    "sign": "Beoordeling Ondertekenen",
+    "reject": "Wijzigingen Aanvragen",
+    "generatePdf": "PDF Genereren",
+    "lastSaved": "Laatst opgeslagen: {time}",
+    "unsavedChanges": "U heeft niet-opgeslagen wijzigingen"
+  },
+  "goals": {
+    "title": "Doelen",
+    "what": "WAT (Doelen)",
+    "addGoal": "Doel Toevoegen",
+    "goalTitle": "Doeltitel",
+    "description": "Beschrijving",
+    "weight": "Gewicht",
+    "score": "Score",
+    "type": "Type",
+    "types": {
+      "STANDARD": "Standaard",
+      "KAR": "Key Action Required",
+      "SCF": "Strategic Critical Factor"
+    },
+    "weightTotal": "Totaal Gewicht",
+    "weightMustBe100": "Doelgewichten moeten optellen tot 100%",
+    "dragToReorder": "Sleep om te herordenen",
+    "deleteGoal": "Doel Verwijderen",
+    "confirmDelete": "Weet u zeker dat u dit doel wilt verwijderen?",
+    "scores": {
+      "1": "Onder Verwachtingen",
+      "2": "Voldoet aan Verwachtingen",
+      "3": "Overtreft Verwachtingen"
+    },
+    "noGoals": "Nog geen doelen toegevoegd",
+    "changeRequest": {
+      "title": "Doelwijzigingsverzoek",
+      "requestChange": "Wijziging Aanvragen",
+      "pending": "Wijziging in Behandeling",
+      "approved": "Goedgekeurd",
+      "rejected": "Afgewezen",
+      "reason": "Reden voor Wijziging"
+    }
+  },
+  "competencies": {
+    "title": "Competenties",
+    "how": "HOE (Competenties)",
+    "tovLevel": "TOV Niveau",
+    "levels": {
+      "A": "Niveau A - Instap",
+      "B": "Niveau B - Professioneel",
+      "C": "Niveau C - Senior",
+      "D": "Niveau D - Leiderschap"
+    },
+    "categories": {
+      "Dedicated": "Toegewijd",
+      "Entrepreneurial": "Ondernemend",
+      "Innovative": "Innovatief"
+    },
+    "subcategories": {
+      "Result driven": "Resultaatgericht",
+      "Committed": "Betrokken",
+      "Entrepreneurial": "Ondernemend",
+      "Ambition": "Ambitie",
+      "Market oriented": "Marktgericht",
+      "Customer focused": "Klantgericht"
+    },
+    "behavioralIndicators": "Gedragsindicatoren",
+    "showIndicators": "Indicatoren tonen",
+    "hideIndicators": "Indicatoren verbergen",
+    "notes": "Notities"
+  },
+  "scoring": {
+    "whatScore": "WAT Score",
+    "howScore": "HOE Score",
+    "gridPosition": "Grid Positie",
+    "vetoActive": "VETO Actief",
+    "vetoReason": {
+      "scf": "SCF doel gescoord 1 - VETO geactiveerd",
+      "kar": "KAR doel gescoord 1 zonder compensatie",
+      "competency": "Competentie gescoord 1 - VETO geactiveerd"
+    },
+    "gridLabels": {
+      "what": {
+        "1": "Onder",
+        "2": "Voldoet",
+        "3": "Overtreft"
+      },
+      "how": {
+        "1": "Onder",
+        "2": "Voldoet",
+        "3": "Overtreft"
+      }
+    }
+  },
+  "signature": {
+    "title": "Digitale Handtekening",
+    "employee": "Medewerker Handtekening",
+    "manager": "Manager Handtekening",
+    "signedOn": "Ondertekend op {date}",
+    "notSigned": "Nog niet ondertekend",
+    "signConfirm": "Ik bevestig dat ik dit document heb beoordeeld",
+    "signButton": "Nu Ondertekenen",
+    "rejectReason": "Reden voor afwijzing"
+  },
+  "calibration": {
+    "title": "Kalibratiesessies",
+    "session": "Sessie",
+    "create": "Sessie Aanmaken",
+    "status": {
+      "PREPARATION": "Voorbereiding",
+      "IN_PROGRESS": "In Uitvoering",
+      "PENDING_APPROVAL": "Wacht op Goedkeuring",
+      "COMPLETED": "Voltooid",
+      "CANCELLED": "Geannuleerd"
+    },
+    "takeSnapshot": "Snapshot Maken",
+    "complete": "Sessie Voltooien",
+    "adjustScore": "Score Aanpassen",
+    "originalScore": "Origineel",
+    "adjustedScore": "Aangepast",
+    "adjustmentNotes": "Aanpassingsnotities",
+    "noReviewsSelected": "Geen beoordelingen geselecteerd voor kalibratie"
+  },
+  "team": {
+    "title": "Team Overzicht",
+    "directReports": "Directe Medewerkers",
+    "reviewStatus": "Beoordelingsstatus",
+    "pendingActions": "Openstaande Acties",
+    "nineGrid": "9-Grid Overzicht",
+    "approveGoals": "Doelen Goedkeuren"
+  },
+  "analytics": {
+    "title": "Analyses",
+    "distribution": "Score Verdeling",
+    "trends": "Prestatie Trends",
+    "comparison": "Team Vergelijking",
+    "export": "Data Exporteren",
+    "exportExcel": "Exporteren naar Excel",
+    "exportPdf": "Exporteren naar PDF",
+    "period": "Periode",
+    "businessUnit": "Business Unit"
+  },
+  "voice": {
+    "holdToRecord": "Houd ingedrukt om op te nemen",
+    "recording": "Opnemen...",
+    "processing": "Verwerken...",
+    "error": "Spraakinvoer mislukt",
+    "retry": "Probeer opnieuw",
+    "unsupported": "Spraakinvoer niet ondersteund in deze browser"
+  },
+  "pdf": {
+    "generating": "PDF genereren...",
+    "download": "PDF Downloaden",
+    "preview": "Voorbeeld",
+    "error": "PDF genereren mislukt"
+  },
+  "validation": {
+    "required": "Dit veld is verplicht",
+    "minLength": "Minimaal {min} tekens",
+    "maxLength": "Maximaal {max} tekens",
+    "weightRange": "Gewicht moet tussen 0 en 100 liggen",
+    "weightTotal": "Totaal gewicht moet gelijk zijn aan 100%",
+    "invalidEmail": "Ongeldig e-mailadres"
+  },
+  "errors": {
+    "generic": "Er is een fout opgetreden. Probeer het opnieuw.",
+    "network": "Netwerkfout. Controleer uw verbinding.",
+    "notFound": "De opgevraagde bron is niet gevonden.",
+    "forbidden": "U heeft geen toestemming om deze actie uit te voeren.",
+    "conflict": "De bron is gewijzigd. Vernieuw de pagina en probeer opnieuw.",
+    "serverError": "Serverfout. Probeer het later opnieuw."
+  },
+  "actions": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "view": "Bekijken",
+    "submit": "Indienen",
+    "approve": "Goedkeuren",
+    "reject": "Afwijzen",
+    "confirm": "Bevestigen",
+    "back": "Terug",
+    "next": "Volgende",
+    "close": "Sluiten",
+    "refresh": "Vernieuwen",
+    "export": "Exporteren",
+    "print": "Afdrukken"
+  },
+  "admin": {
+    "title": "Beheer",
+    "opcoSettings": "OpCo Instellingen",
+    "analytics": {
+      "title": "Product Analytics",
+      "description": "Configureer Plausible analytics voor gebruiksstatistieken",
+      "enabled": "Analytics Inschakelen",
+      "enabledHelp": "Indien ingeschakeld worden anonieme gebruiksgebeurtenissen naar uw Plausible instance gestuurd",
+      "plausibleUrl": "Plausible URL",
+      "plausibleUrlHelp": "Basis-URL van uw Plausible instance (bijv. https://plausible.bedrijf.nl)",
+      "plausibleUrlPlaceholder": "https://plausible.voorbeeld.nl",
+      "siteDomain": "Site Domein",
+      "siteDomainHelp": "Het domein dat in Plausible is geconfigureerd voor deze site",
+      "siteDomainPlaceholder": "ppm.bedrijf.nl",
+      "apiKey": "API Sleutel",
+      "apiKeyHelp": "Optionele API sleutel voor server-side event tracking",
+      "apiKeyPlaceholder": "Voer API sleutel in (laat leeg om bestaande te behouden)",
+      "testConnection": "Verbinding Testen",
+      "testing": "Testen...",
+      "testSuccess": "Verbinding succesvol",
+      "testFailed": "Verbinding mislukt: {error}",
+      "saveSuccess": "Analytics instellingen opgeslagen",
+      "privacyNote": "Plausible is privacyvriendelijk en AVG-conform. Er worden geen persoonlijke gegevens verzameld."
+    }
+  },
+  "common": {
+    "loading": "Laden...",
+    "noData": "Geen gegevens beschikbaar",
+    "search": "Zoeken",
+    "filter": "Filteren",
+    "sortBy": "Sorteren op",
+    "all": "Alle",
+    "yes": "Ja",
+    "no": "Nee",
+    "date": "Datum",
+    "name": "Naam",
+    "email": "E-mail",
+    "role": "Rol"
+  }
+}

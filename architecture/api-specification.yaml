@@ -1,0 +1,1526 @@
+openapi: 3.0.3
+info:
+  title: TSS PPM API
+  description: Performance Portfolio Management API for HR performance scoring
+  version: 1.0.0
+  contact:
+    name: TSS Development Team
+
+servers:
+  - url: /api/v1
+    description: API v1
+
+security:
+  - bearerAuth: []
+
+tags:
+  - name: Auth
+    description: Authentication endpoints
+  - name: Reviews
+    description: Performance review management
+  - name: Goals
+    description: Goal management within reviews
+  - name: Competencies
+    description: Competency framework and scoring
+  - name: Calibration
+    description: Calibration session management
+  - name: Users
+    description: User and team management
+  - name: OpCos
+    description: Operating company management
+  - name: Reports
+    description: Report generation and analytics
+  - name: Voice
+    description: Voice transcription
+  - name: Analytics
+    description: Product analytics configuration (Plausible)
+
+paths:
+  # ============================================================================
+  # AUTH
+  # ============================================================================
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Logout user
+      description: Clear server-side session (Keycloak handles token invalidation)
+      responses:
+        '204':
+          description: Successfully logged out
+
+  # ============================================================================
+  # REVIEWS
+  # ============================================================================
+  /reviews:
+    get:
+      tags: [Reviews]
+      summary: List reviews
+      description: Returns reviews filtered by user role (own, team, or all)
+      parameters:
+        - $ref: '#/components/parameters/yearFilter'
+        - $ref: '#/components/parameters/stageFilter'
+        - $ref: '#/components/parameters/statusFilter'
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: List of reviews
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewList'
+
+    post:
+      tags: [Reviews]
+      summary: Create new review
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewCreate'
+      responses:
+        '201':
+          description: Review created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+
+  /reviews/{id}:
+    get:
+      tags: [Reviews]
+      summary: Get review details
+      parameters:
+        - $ref: '#/components/parameters/reviewId'
+      responses:
+        '200':
+          description: Review details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReviewDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags: [Reviews]
+      summary: Update review
+      parameters:
+        - $ref: '#/components/parameters/reviewId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewUpdate'
+      responses:
+        '200':
+          description: Review updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+
+    delete:
+      tags: [Reviews]
+      summary: Delete review (soft delete)
+      parameters:
+        - $ref: '#/components/parameters/reviewId'
+      responses:
+        '204':
+          description: Review deleted
+
+  /reviews/{id}/stage:
+    put:
+      tags: [Reviews]
+      summary: Transition review stage
+      parameters:
+        - $ref: '#/components/parameters/reviewId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [stage]
+              properties:
+                stage:
+                  type: string
+                  enum: [GOAL_SETTING, MID_YEAR_REVIEW, END_YEAR_REVIEW]
+      responses:
+        '200':
+          description: Stage transitioned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /reviews/{id}/sign:
+    post:
+      tags: [Reviews]
+      summary: Sign review
+      description: Employee or manager signs the review
+      parameters:
+        - $ref: '#/components/parameters/reviewId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [role]
+              properties:
+                role:
+                  type: string
+                  enum: [employee, manager]
+      responses:
+        '200':
+          description: Review signed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+
+  /reviews/{id}/history:
+    get:
+      tags: [Reviews]
+      summary: Get review change history
+      parameters:
+        - $ref: '#/components/parameters/reviewId'
+      responses:
+        '200':
+          description: Audit history
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuditEntry'
+
+  # ============================================================================
+  # GOALS
+  # ============================================================================
+  /reviews/{id}/goals:
+    get:
+      tags: [Goals]
+      summary: List goals for review
+      parameters:
+        - $ref: '#/components/parameters/reviewId'
+      responses:
+        '200':
+          description: List of goals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Goal'
+
+    post:
+      tags: [Goals]
+      summary: Add goal to review
+      parameters:
+        - $ref: '#/components/parameters/reviewId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoalCreate'
+      responses:
+        '201':
+          description: Goal created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+
+  /reviews/{id}/goals/order:
+    put:
+      tags: [Goals]
+      summary: Reorder goals
+      parameters:
+        - $ref: '#/components/parameters/reviewId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [goal_ids]
+              properties:
+                goal_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                  description: Goal IDs in desired order
+      responses:
+        '200':
+          description: Goals reordered
+
+  /goals/{id}:
+    put:
+      tags: [Goals]
+      summary: Update goal
+      parameters:
+        - $ref: '#/components/parameters/goalId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoalUpdate'
+      responses:
+        '200':
+          description: Goal updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Goal'
+
+    delete:
+      tags: [Goals]
+      summary: Remove goal
+      parameters:
+        - $ref: '#/components/parameters/goalId'
+      responses:
+        '204':
+          description: Goal removed
+
+  /goals/{id}/change-request:
+    post:
+      tags: [Goals]
+      summary: Request goal change
+      parameters:
+        - $ref: '#/components/parameters/goalId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GoalChangeRequest'
+      responses:
+        '201':
+          description: Change request created
+
+  # ============================================================================
+  # COMPETENCIES
+  # ============================================================================
+  /competencies:
+    get:
+      tags: [Competencies]
+      summary: Get all competencies
+      parameters:
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum: [A, B, C, D]
+        - name: lang
+          in: query
+          schema:
+            type: string
+            enum: [en, nl, es]
+            default: en
+      responses:
+        '200':
+          description: List of competencies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Competency'
+
+  /competencies/{level}:
+    get:
+      tags: [Competencies]
+      summary: Get competencies by TOV level
+      parameters:
+        - name: level
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [A, B, C, D]
+        - name: lang
+          in: query
+          schema:
+            type: string
+            enum: [en, nl, es]
+            default: en
+      responses:
+        '200':
+          description: Competencies for level
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Competency'
+
+  /reviews/{id}/competencies:
+    put:
+      tags: [Competencies]
+      summary: Update competency scores
+      parameters:
+        - $ref: '#/components/parameters/reviewId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CompetencyScoreUpdate'
+      responses:
+        '200':
+          description: Scores updated
+
+  # ============================================================================
+  # CALIBRATION
+  # ============================================================================
+  /calibration/sessions:
+    get:
+      tags: [Calibration]
+      summary: List calibration sessions
+      parameters:
+        - $ref: '#/components/parameters/yearFilter'
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PREPARATION, IN_PROGRESS, PENDING_APPROVAL, COMPLETED, CANCELLED]
+      responses:
+        '200':
+          description: List of sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CalibrationSession'
+
+    post:
+      tags: [Calibration]
+      summary: Create calibration session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalibrationSessionCreate'
+      responses:
+        '201':
+          description: Session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalibrationSession'
+
+  /calibration/sessions/{id}:
+    get:
+      tags: [Calibration]
+      summary: Get session details
+      parameters:
+        - $ref: '#/components/parameters/sessionId'
+      responses:
+        '200':
+          description: Session details with reviews
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CalibrationSessionDetail'
+
+    put:
+      tags: [Calibration]
+      summary: Update session (adjustments)
+      parameters:
+        - $ref: '#/components/parameters/sessionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CalibrationAdjustment'
+      responses:
+        '200':
+          description: Adjustment recorded
+
+  /calibration/sessions/{id}/snapshot:
+    post:
+      tags: [Calibration]
+      summary: Take score snapshot
+      parameters:
+        - $ref: '#/components/parameters/sessionId'
+      responses:
+        '200':
+          description: Snapshot taken
+
+  /calibration/sessions/{id}/complete:
+    post:
+      tags: [Calibration]
+      summary: Complete session
+      parameters:
+        - $ref: '#/components/parameters/sessionId'
+      responses:
+        '200':
+          description: Session completed
+
+  # ============================================================================
+  # USERS
+  # ============================================================================
+  /users:
+    get:
+      tags: [Users]
+      summary: List users (HR/Admin only)
+      parameters:
+        - name: role
+          in: query
+          schema:
+            type: string
+            enum: [employee, manager, hr, admin]
+        - name: business_unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+      responses:
+        '200':
+          description: List of users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get current user profile
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /users/{id}/team:
+    get:
+      tags: [Users]
+      summary: Get manager's team
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: Team members
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+
+    put:
+      tags: [Users]
+      summary: Update team assignments
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                add_user_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+                remove_user_ids:
+                  type: array
+                  items:
+                    type: string
+                    format: uuid
+      responses:
+        '200':
+          description: Team updated
+
+  # ============================================================================
+  # OPCOS
+  # ============================================================================
+  /opcos:
+    get:
+      tags: [OpCos]
+      summary: List OpCos (Admin only)
+      responses:
+        '200':
+          description: List of OpCos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/OpCo'
+
+    post:
+      tags: [OpCos]
+      summary: Create OpCo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpCoCreate'
+      responses:
+        '201':
+          description: OpCo created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OpCo'
+
+  /opcos/{id}:
+    put:
+      tags: [OpCos]
+      summary: Update OpCo settings
+      parameters:
+        - $ref: '#/components/parameters/opcoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OpCoUpdate'
+      responses:
+        '200':
+          description: OpCo updated
+
+  /opcos/{id}/business-units:
+    get:
+      tags: [OpCos]
+      summary: List business units
+      parameters:
+        - $ref: '#/components/parameters/opcoId'
+      responses:
+        '200':
+          description: Business units
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BusinessUnit'
+
+    post:
+      tags: [OpCos]
+      summary: Create business unit
+      parameters:
+        - $ref: '#/components/parameters/opcoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessUnitCreate'
+      responses:
+        '201':
+          description: Business unit created
+
+  /opcos/{id}/settings/analytics:
+    get:
+      tags: [Analytics]
+      summary: Get analytics configuration
+      description: Get Plausible analytics settings for this OpCo. HR can view, Admin can modify.
+      parameters:
+        - $ref: '#/components/parameters/opcoId'
+      responses:
+        '200':
+          description: Analytics configuration
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsSettings'
+        '403':
+          description: HR or Admin role required
+
+    put:
+      tags: [Analytics]
+      summary: Update analytics configuration
+      description: Update Plausible analytics settings. Admin only.
+      parameters:
+        - $ref: '#/components/parameters/opcoId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnalyticsSettingsUpdate'
+      responses:
+        '200':
+          description: Analytics configuration updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsSettings'
+        '403':
+          description: Admin role required
+
+  /opcos/{id}/settings/analytics/test:
+    post:
+      tags: [Analytics]
+      summary: Test analytics connection
+      description: Test connectivity to configured Plausible instance. Admin only.
+      parameters:
+        - $ref: '#/components/parameters/opcoId'
+      responses:
+        '200':
+          description: Connection successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsTestResult'
+        '400':
+          description: Connection failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsTestResult'
+        '403':
+          description: Admin role required
+
+  # ============================================================================
+  # REPORTS
+  # ============================================================================
+  /reports/pdf/{reviewId}:
+    post:
+      tags: [Reports]
+      summary: Generate PDF report
+      parameters:
+        - name: reviewId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: PDF file
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+
+  /reports/analytics:
+    get:
+      tags: [Reports]
+      summary: Get analytics data
+      parameters:
+        - $ref: '#/components/parameters/yearFilter'
+        - name: scope
+          in: query
+          schema:
+            type: string
+            enum: [team, business_unit, company]
+        - name: business_unit_id
+          in: query
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Analytics data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnalyticsData'
+
+  /reports/export:
+    post:
+      tags: [Reports]
+      summary: Export data (Excel/CSV)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [format, type]
+              properties:
+                format:
+                  type: string
+                  enum: [excel, csv]
+                type:
+                  type: string
+                  enum: [reviews, analytics, calibration]
+                year:
+                  type: integer
+                business_unit_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Export file
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+
+  # ============================================================================
+  # VOICE
+  # ============================================================================
+  /transcribe:
+    post:
+      tags: [Voice]
+      summary: Transcribe audio
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [audio, language]
+              properties:
+                audio:
+                  type: string
+                  format: binary
+                  description: WAV audio file (16kHz, mono)
+                language:
+                  type: string
+                  enum: [en, nl, es]
+      responses:
+        '200':
+          description: Transcription result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TranscriptionResult'
+
+  # ============================================================================
+  # HEALTH
+  # ============================================================================
+  /health:
+    get:
+      tags: [Health]
+      summary: Health check
+      security: []
+      responses:
+        '200':
+          description: Service healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+
+  /ready:
+    get:
+      tags: [Health]
+      summary: Readiness check
+      description: Returns ready when all dependencies (database, Keycloak) are available
+      security: []
+      responses:
+        '200':
+          description: Service ready
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ready
+                  checks:
+                    type: object
+                    properties:
+                      database:
+                        type: boolean
+                      keycloak:
+                        type: boolean
+        '503':
+          description: Service not ready
+
+# ==============================================================================
+# COMPONENTS
+# ==============================================================================
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    reviewId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    goalId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    sessionId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    userId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    opcoId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+    yearFilter:
+      name: year
+      in: query
+      schema:
+        type: integer
+        example: 2026
+
+    stageFilter:
+      name: stage
+      in: query
+      schema:
+        type: string
+        enum: [GOAL_SETTING, MID_YEAR_REVIEW, END_YEAR_REVIEW]
+
+    statusFilter:
+      name: status
+      in: query
+      schema:
+        type: string
+        enum: [DRAFT, PENDING_EMPLOYEE_SIGNATURE, EMPLOYEE_SIGNED, PENDING_MANAGER_SIGNATURE, MANAGER_SIGNED, SIGNED, ARCHIVED]
+
+    pageParam:
+      name: page
+      in: query
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+
+    limitParam:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        default: 20
+        minimum: 1
+        maximum: 100
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    BadRequest:
+      description: Invalid request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+
+    # Reviews
+    Review:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        employee_id:
+          type: string
+          format: uuid
+        manager_id:
+          type: string
+          format: uuid
+        review_year:
+          type: integer
+        stage:
+          type: string
+          enum: [GOAL_SETTING, MID_YEAR_REVIEW, END_YEAR_REVIEW]
+        status:
+          type: string
+        tov_level:
+          type: string
+          enum: [A, B, C, D]
+        what_score:
+          type: number
+        how_score:
+          type: number
+        what_veto_active:
+          type: boolean
+        how_veto_active:
+          type: boolean
+        grid_position_what:
+          type: integer
+        grid_position_how:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ReviewDetail:
+      allOf:
+        - $ref: '#/components/schemas/Review'
+        - type: object
+          properties:
+            employee_name:
+              type: string
+            manager_name:
+              type: string
+            summary_comments:
+              type: string
+            additional_comments:
+              type: string
+            goals:
+              type: array
+              items:
+                $ref: '#/components/schemas/Goal'
+            competency_scores:
+              type: array
+              items:
+                $ref: '#/components/schemas/CompetencyScore'
+
+    ReviewList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Review'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    ReviewCreate:
+      type: object
+      required: [employee_id, review_year, stage]
+      properties:
+        employee_id:
+          type: string
+          format: uuid
+        review_year:
+          type: integer
+        stage:
+          type: string
+          enum: [GOAL_SETTING, MID_YEAR_REVIEW, END_YEAR_REVIEW]
+        tov_level:
+          type: string
+          enum: [A, B, C, D]
+
+    ReviewUpdate:
+      type: object
+      properties:
+        tov_level:
+          type: string
+          enum: [A, B, C, D]
+        summary_comments:
+          type: string
+        additional_comments:
+          type: string
+
+    # Goals
+    Goal:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        review_id:
+          type: string
+          format: uuid
+        goal_type:
+          type: string
+          enum: [STANDARD, KAR, SCF]
+        title:
+          type: string
+        description:
+          type: string
+        score:
+          type: integer
+          minimum: 1
+          maximum: 3
+        weight:
+          type: integer
+          minimum: 0
+          maximum: 100
+        display_order:
+          type: integer
+
+    GoalCreate:
+      type: object
+      required: [title, weight]
+      properties:
+        goal_type:
+          type: string
+          enum: [STANDARD, KAR, SCF]
+          default: STANDARD
+        title:
+          type: string
+          maxLength: 500
+        description:
+          type: string
+        weight:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    GoalUpdate:
+      type: object
+      properties:
+        goal_type:
+          type: string
+          enum: [STANDARD, KAR, SCF]
+        title:
+          type: string
+          maxLength: 500
+        description:
+          type: string
+        score:
+          type: integer
+          minimum: 1
+          maximum: 3
+        weight:
+          type: integer
+          minimum: 0
+          maximum: 100
+
+    GoalChangeRequest:
+      type: object
+      required: [request_type]
+      properties:
+        request_type:
+          type: string
+          enum: [ADD, EDIT, DELETE]
+        proposed_title:
+          type: string
+        proposed_description:
+          type: string
+        proposed_weight:
+          type: integer
+        proposed_type:
+          type: string
+          enum: [STANDARD, KAR, SCF]
+
+    # Competencies
+    Competency:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        level:
+          type: string
+          enum: [A, B, C, D]
+        category:
+          type: string
+        subcategory:
+          type: string
+        title:
+          type: string
+        indicators:
+          type: array
+          items:
+            type: string
+        display_order:
+          type: integer
+
+    CompetencyScore:
+      type: object
+      properties:
+        competency_id:
+          type: string
+          format: uuid
+        competency:
+          $ref: '#/components/schemas/Competency'
+        score:
+          type: integer
+          minimum: 1
+          maximum: 3
+        notes:
+          type: string
+
+    CompetencyScoreUpdate:
+      type: object
+      required: [competency_id]
+      properties:
+        competency_id:
+          type: string
+          format: uuid
+        score:
+          type: integer
+          minimum: 1
+          maximum: 3
+        notes:
+          type: string
+
+    # Calibration
+    CalibrationSession:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        review_year:
+          type: integer
+        scope:
+          type: string
+          enum: [BUSINESS_UNIT, COMPANY_WIDE]
+        business_unit_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [PREPARATION, IN_PROGRESS, PENDING_APPROVAL, COMPLETED, CANCELLED]
+        facilitator_id:
+          type: string
+          format: uuid
+        snapshot_taken_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+
+    CalibrationSessionDetail:
+      allOf:
+        - $ref: '#/components/schemas/CalibrationSession'
+        - type: object
+          properties:
+            reviews:
+              type: array
+              items:
+                $ref: '#/components/schemas/CalibrationReview'
+
+    CalibrationReview:
+      type: object
+      properties:
+        review_id:
+          type: string
+          format: uuid
+        employee_name:
+          type: string
+        original_what_score:
+          type: number
+        original_how_score:
+          type: number
+        adjusted_what_score:
+          type: number
+        adjusted_how_score:
+          type: number
+
+    CalibrationSessionCreate:
+      type: object
+      required: [name, review_year, scope]
+      properties:
+        name:
+          type: string
+        review_year:
+          type: integer
+        scope:
+          type: string
+          enum: [BUSINESS_UNIT, COMPANY_WIDE]
+        business_unit_id:
+          type: string
+          format: uuid
+
+    CalibrationAdjustment:
+      type: object
+      required: [review_id]
+      properties:
+        review_id:
+          type: string
+          format: uuid
+        adjusted_what_score:
+          type: number
+        adjusted_how_score:
+          type: number
+        adjustment_notes:
+          type: string
+
+    # Users
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        function_title:
+          type: string
+        business_unit_id:
+          type: string
+          format: uuid
+        manager_id:
+          type: string
+          format: uuid
+        tov_level:
+          type: string
+          enum: [A, B, C, D]
+        roles:
+          type: array
+          items:
+            type: string
+            enum: [employee, manager, hr, admin]
+        is_active:
+          type: boolean
+
+    UserList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+
+    # OpCos
+    OpCo:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        code:
+          type: string
+        logo_url:
+          type: string
+        default_language:
+          type: string
+          enum: [en, nl, es]
+        settings:
+          type: object
+
+    OpCoCreate:
+      type: object
+      required: [name, code]
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+        default_language:
+          type: string
+          enum: [en, nl, es]
+
+    OpCoUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        logo_url:
+          type: string
+        default_language:
+          type: string
+          enum: [en, nl, es]
+        settings:
+          type: object
+
+    BusinessUnit:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        code:
+          type: string
+        parent_id:
+          type: string
+          format: uuid
+
+    BusinessUnitCreate:
+      type: object
+      required: [name, code]
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+        parent_id:
+          type: string
+          format: uuid
+
+    # Analytics (Plausible)
+    AnalyticsSettings:
+      type: object
+      description: Plausible analytics configuration. Note that api_key is write-only and never returned in GET responses for security.
+      properties:
+        enabled:
+          type: boolean
+          description: Whether Plausible analytics is enabled for this OpCo
+          default: false
+        plausible_url:
+          type: string
+          format: uri
+          description: Base URL of the Plausible instance (e.g., https://plausible.example.com)
+          example: https://plausible.company.com
+        site_domain:
+          type: string
+          description: Site domain configured in Plausible (e.g., ppm.company.com)
+          example: ppm.company.com
+        api_key:
+          type: string
+          description: Plausible API key for server-side events. Never returned in responses.
+          writeOnly: true
+        api_key_configured:
+          type: boolean
+          description: Indicates whether an API key has been configured (returned in GET responses)
+          readOnly: true
+
+    AnalyticsSettingsUpdate:
+      type: object
+      description: Partial update for analytics settings. All fields are optional.
+      properties:
+        enabled:
+          type: boolean
+        plausible_url:
+          type: string
+          format: uri
+        site_domain:
+          type: string
+        api_key:
+          type: string
+          description: Set new API key. Leave empty/null to keep existing key. Set to empty string to clear.
+
+    AnalyticsTestResult:
+      type: object
+      properties:
+        success:
+          type: boolean
+        message:
+          type: string
+        response_time_ms:
+          type: integer
+        plausible_version:
+          type: string
+
+    # Reports
+    AnalyticsData:
+      type: object
+      properties:
+        total_employees:
+          type: integer
+        total_reviews:
+          type: integer
+        completion_rate:
+          type: number
+        average_what_score:
+          type: number
+        average_how_score:
+          type: number
+        grid_distribution:
+          type: array
+          items:
+            type: object
+            properties:
+              what:
+                type: integer
+              how:
+                type: integer
+              count:
+                type: integer
+
+    # Voice
+    TranscriptionResult:
+      type: object
+      properties:
+        text:
+          type: string
+        language:
+          type: string
+        confidence:
+          type: number
+        processing_time_ms:
+          type: integer
+
+    # Audit
+    AuditEntry:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+        action:
+          type: string
+        entity_type:
+          type: string
+        entity_id:
+          type: string
+          format: uuid
+        changes:
+          type: object
+        created_at:
+          type: string
+          format: date-time

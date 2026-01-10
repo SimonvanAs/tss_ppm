@@ -1,0 +1,284 @@
+{
+  "app": {
+    "title": "TSS PPM",
+    "subtitle": "Performance Portfolio Management",
+    "version": "v3.0"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "reviews": "Evaluaciones",
+    "team": "Equipo",
+    "calibration": "Calibración",
+    "analytics": "Análisis",
+    "settings": "Configuración",
+    "logout": "Cerrar sesión"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "logout": "Cerrar sesión",
+    "loginWith": "Iniciar sesión con {provider}",
+    "sessionExpired": "Su sesión ha expirado. Por favor inicie sesión nuevamente.",
+    "unauthorized": "No está autorizado para ver esta página."
+  },
+  "dashboard": {
+    "welcome": "Bienvenido, {name}",
+    "tasksTitle": "Sus Tareas",
+    "noTasks": "No hay tareas pendientes",
+    "pendingSignatures": "Firmas Pendientes",
+    "reviewsToComplete": "Evaluaciones por Completar",
+    "goalChanges": "Solicitudes de Cambio de Objetivos",
+    "quickActions": "Acciones Rápidas"
+  },
+  "review": {
+    "title": "Evaluación de Desempeño",
+    "year": "Año de Evaluación",
+    "stage": "Etapa",
+    "status": "Estado",
+    "employee": "Empleado",
+    "manager": "Gerente",
+    "stages": {
+      "GOAL_SETTING": "Establecimiento de Objetivos",
+      "MID_YEAR_REVIEW": "Evaluación de Medio Año",
+      "END_YEAR_REVIEW": "Evaluación de Fin de Año"
+    },
+    "statuses": {
+      "DRAFT": "Borrador",
+      "PENDING_EMPLOYEE_SIGNATURE": "Esperando Firma del Empleado",
+      "EMPLOYEE_SIGNED": "Empleado Firmó",
+      "PENDING_MANAGER_SIGNATURE": "Esperando Firma del Gerente",
+      "MANAGER_SIGNED": "Gerente Firmó",
+      "SIGNED": "Completado",
+      "ARCHIVED": "Archivado"
+    },
+    "summaryComments": "Comentarios Resumidos",
+    "additionalComments": "Comentarios Adicionales",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "saved": "Guardado",
+    "submit": "Enviar para Firma",
+    "sign": "Firmar Evaluación",
+    "reject": "Solicitar Cambios",
+    "generatePdf": "Generar PDF",
+    "lastSaved": "Último guardado: {time}",
+    "unsavedChanges": "Tiene cambios sin guardar"
+  },
+  "goals": {
+    "title": "Objetivos",
+    "what": "QUÉ (Objetivos)",
+    "addGoal": "Agregar Objetivo",
+    "goalTitle": "Título del Objetivo",
+    "description": "Descripción",
+    "weight": "Peso",
+    "score": "Puntuación",
+    "type": "Tipo",
+    "types": {
+      "STANDARD": "Estándar",
+      "KAR": "Key Action Required",
+      "SCF": "Strategic Critical Factor"
+    },
+    "weightTotal": "Peso Total",
+    "weightMustBe100": "Los pesos de los objetivos deben sumar 100%",
+    "dragToReorder": "Arrastrar para reordenar",
+    "deleteGoal": "Eliminar Objetivo",
+    "confirmDelete": "¿Está seguro de que desea eliminar este objetivo?",
+    "scores": {
+      "1": "Por Debajo de las Expectativas",
+      "2": "Cumple las Expectativas",
+      "3": "Supera las Expectativas"
+    },
+    "noGoals": "Aún no se han agregado objetivos",
+    "changeRequest": {
+      "title": "Solicitud de Cambio de Objetivo",
+      "requestChange": "Solicitar Cambio",
+      "pending": "Cambio Pendiente",
+      "approved": "Aprobado",
+      "rejected": "Rechazado",
+      "reason": "Razón del Cambio"
+    }
+  },
+  "competencies": {
+    "title": "Competencias",
+    "how": "CÓMO (Competencias)",
+    "tovLevel": "Nivel TOV",
+    "levels": {
+      "A": "Nivel A - Entrada",
+      "B": "Nivel B - Profesional",
+      "C": "Nivel C - Senior",
+      "D": "Nivel D - Liderazgo"
+    },
+    "categories": {
+      "Dedicated": "Dedicado",
+      "Entrepreneurial": "Emprendedor",
+      "Innovative": "Innovador"
+    },
+    "subcategories": {
+      "Result driven": "Orientado a resultados",
+      "Committed": "Comprometido",
+      "Entrepreneurial": "Emprendedor",
+      "Ambition": "Ambición",
+      "Market oriented": "Orientado al mercado",
+      "Customer focused": "Enfocado en el cliente"
+    },
+    "behavioralIndicators": "Indicadores de Comportamiento",
+    "showIndicators": "Mostrar indicadores",
+    "hideIndicators": "Ocultar indicadores",
+    "notes": "Notas"
+  },
+  "scoring": {
+    "whatScore": "Puntuación QUÉ",
+    "howScore": "Puntuación CÓMO",
+    "gridPosition": "Posición en la Cuadrícula",
+    "vetoActive": "VETO Activo",
+    "vetoReason": {
+      "scf": "Objetivo SCF puntuado 1 - VETO activado",
+      "kar": "Objetivo KAR puntuado 1 sin compensación",
+      "competency": "Competencia puntuada 1 - VETO activado"
+    },
+    "gridLabels": {
+      "what": {
+        "1": "Debajo",
+        "2": "Cumple",
+        "3": "Supera"
+      },
+      "how": {
+        "1": "Debajo",
+        "2": "Cumple",
+        "3": "Supera"
+      }
+    }
+  },
+  "signature": {
+    "title": "Firma Digital",
+    "employee": "Firma del Empleado",
+    "manager": "Firma del Gerente",
+    "signedOn": "Firmado el {date}",
+    "notSigned": "Aún no firmado",
+    "signConfirm": "Confirmo que he revisado este documento",
+    "signButton": "Firmar Ahora",
+    "rejectReason": "Razón del rechazo"
+  },
+  "calibration": {
+    "title": "Sesiones de Calibración",
+    "session": "Sesión",
+    "create": "Crear Sesión",
+    "status": {
+      "PREPARATION": "Preparación",
+      "IN_PROGRESS": "En Progreso",
+      "PENDING_APPROVAL": "Pendiente de Aprobación",
+      "COMPLETED": "Completado",
+      "CANCELLED": "Cancelado"
+    },
+    "takeSnapshot": "Tomar Instantánea",
+    "complete": "Completar Sesión",
+    "adjustScore": "Ajustar Puntuación",
+    "originalScore": "Original",
+    "adjustedScore": "Ajustado",
+    "adjustmentNotes": "Notas de Ajuste",
+    "noReviewsSelected": "No hay evaluaciones seleccionadas para calibración"
+  },
+  "team": {
+    "title": "Vista General del Equipo",
+    "directReports": "Reportes Directos",
+    "reviewStatus": "Estado de Evaluación",
+    "pendingActions": "Acciones Pendientes",
+    "nineGrid": "Vista de 9-Cuadrículas",
+    "approveGoals": "Aprobar Objetivos"
+  },
+  "analytics": {
+    "title": "Análisis",
+    "distribution": "Distribución de Puntuaciones",
+    "trends": "Tendencias de Desempeño",
+    "comparison": "Comparación de Equipos",
+    "export": "Exportar Datos",
+    "exportExcel": "Exportar a Excel",
+    "exportPdf": "Exportar a PDF",
+    "period": "Período",
+    "businessUnit": "Unidad de Negocio"
+  },
+  "voice": {
+    "holdToRecord": "Mantener presionado para grabar",
+    "recording": "Grabando...",
+    "processing": "Procesando...",
+    "error": "Error en entrada de voz",
+    "retry": "Intentar de nuevo",
+    "unsupported": "Entrada de voz no soportada en este navegador"
+  },
+  "pdf": {
+    "generating": "Generando PDF...",
+    "download": "Descargar PDF",
+    "preview": "Vista Previa",
+    "error": "Error al generar PDF"
+  },
+  "validation": {
+    "required": "Este campo es requerido",
+    "minLength": "Mínimo {min} caracteres",
+    "maxLength": "Máximo {max} caracteres",
+    "weightRange": "El peso debe estar entre 0 y 100",
+    "weightTotal": "El peso total debe ser igual a 100%",
+    "invalidEmail": "Dirección de correo inválida"
+  },
+  "errors": {
+    "generic": "Ocurrió un error. Por favor intente de nuevo.",
+    "network": "Error de red. Por favor verifique su conexión.",
+    "notFound": "El recurso solicitado no fue encontrado.",
+    "forbidden": "No tiene permiso para realizar esta acción.",
+    "conflict": "El recurso fue modificado. Por favor actualice e intente de nuevo.",
+    "serverError": "Error del servidor. Por favor intente más tarde."
+  },
+  "actions": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "submit": "Enviar",
+    "approve": "Aprobar",
+    "reject": "Rechazar",
+    "confirm": "Confirmar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "close": "Cerrar",
+    "refresh": "Actualizar",
+    "export": "Exportar",
+    "print": "Imprimir"
+  },
+  "admin": {
+    "title": "Administración",
+    "opcoSettings": "Configuración de OpCo",
+    "analytics": {
+      "title": "Análisis de Producto",
+      "description": "Configure Plausible analytics para seguimiento de uso",
+      "enabled": "Habilitar Analytics",
+      "enabledHelp": "Cuando está habilitado, se enviarán eventos de uso anónimos a su instancia de Plausible",
+      "plausibleUrl": "URL de Plausible",
+      "plausibleUrlHelp": "URL base de su instancia de Plausible (ej. https://plausible.empresa.com)",
+      "plausibleUrlPlaceholder": "https://plausible.ejemplo.com",
+      "siteDomain": "Dominio del Sitio",
+      "siteDomainHelp": "El dominio configurado en Plausible para este sitio",
+      "siteDomainPlaceholder": "ppm.empresa.com",
+      "apiKey": "Clave API",
+      "apiKeyHelp": "Clave API opcional para seguimiento de eventos del lado del servidor",
+      "apiKeyPlaceholder": "Ingrese clave API (deje vacío para mantener existente)",
+      "testConnection": "Probar Conexión",
+      "testing": "Probando...",
+      "testSuccess": "Conexión exitosa",
+      "testFailed": "Conexión fallida: {error}",
+      "saveSuccess": "Configuración de analytics guardada",
+      "privacyNote": "Plausible es respetuoso con la privacidad y cumple con GDPR. No se recopilan datos personales."
+    }
+  },
+  "common": {
+    "loading": "Cargando...",
+    "noData": "No hay datos disponibles",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "sortBy": "Ordenar por",
+    "all": "Todos",
+    "yes": "Sí",
+    "no": "No",
+    "date": "Fecha",
+    "name": "Nombre",
+    "email": "Correo electrónico",
+    "role": "Rol"
+  }
+}

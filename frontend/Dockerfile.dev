@@ -1,0 +1,15 @@
+# TSS PPM v3.0 - Frontend Development Dockerfile
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Install dependencies
+COPY package.json package-lock.json* ./
+RUN npm install
+
+# Copy source (volumes override in dev)
+COPY . .
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]

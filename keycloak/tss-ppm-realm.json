@@ -1,0 +1,252 @@
+{
+  "id": "tss-ppm",
+  "realm": "tss-ppm",
+  "displayName": "TSS PPM",
+  "enabled": true,
+  "loginTheme": "tss-ppm",
+  "sslRequired": "external",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 5,
+  "roles": {
+    "realm": [
+      {
+        "name": "employee",
+        "description": "Employee role - can view and edit own reviews"
+      },
+      {
+        "name": "manager",
+        "description": "Manager role - can manage team reviews and approvals"
+      },
+      {
+        "name": "hr",
+        "description": "HR role - can view all reviews and statistics"
+      },
+      {
+        "name": "admin",
+        "description": "Admin role - can configure OpCo settings. Cross-OpCo access requires groupAccess flag in database."
+      }
+    ]
+  },
+  "defaultRoles": ["employee"],
+  "clients": [
+    {
+      "clientId": "tss-ppm-frontend",
+      "name": "TSS PPM Frontend",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "rootUrl": "",
+      "baseUrl": "/",
+      "redirectUris": [
+        "http://localhost:5173/*",
+        "http://localhost/*",
+        "https://ppm.tss-vms.co.uk/*",
+        "*"
+      ],
+      "webOrigins": [
+        "http://localhost:5173",
+        "http://localhost",
+        "https://ppm.tss-vms.co.uk",
+        "*"
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access"
+      ],
+      "protocolMappers": [
+        {
+          "name": "opco_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "userinfo.token.claim": "true",
+            "user.attribute": "opco_id",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "opco_id",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "name": "realm roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "multivalued": "true",
+            "userinfo.token.claim": "true",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "roles",
+            "jsonType.label": "String"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "tss-ppm-api",
+      "name": "TSS PPM API",
+      "enabled": true,
+      "bearerOnly": true,
+      "publicClient": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false
+    }
+  ],
+  "users": [
+    {
+      "username": "employee@tss.eu",
+      "email": "employee@tss.eu",
+      "firstName": "Emma",
+      "lastName": "Employee",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["employee"],
+      "attributes": {
+        "opco_id": ["tss"]
+      }
+    },
+    {
+      "username": "manager@tss.eu",
+      "email": "manager@tss.eu",
+      "firstName": "Michael",
+      "lastName": "Manager",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["employee", "manager"],
+      "attributes": {
+        "opco_id": ["tss"]
+      }
+    },
+    {
+      "username": "hr@tss.eu",
+      "email": "hr@tss.eu",
+      "firstName": "Hannah",
+      "lastName": "HR",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["employee", "hr"],
+      "attributes": {
+        "opco_id": ["tss"]
+      }
+    },
+    {
+      "username": "admin@tss.eu",
+      "email": "admin@tss.eu",
+      "firstName": "Adam",
+      "lastName": "Admin",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["employee", "manager", "hr", "admin"],
+      "attributes": {
+        "opco_id": ["tss"]
+      }
+    },
+    {
+      "username": "superadmin@tss.eu",
+      "email": "superadmin@tss.eu",
+      "firstName": "Sarah",
+      "lastName": "SuperAdmin",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["employee", "manager", "hr", "admin"],
+      "attributes": {
+        "opco_id": ["tss"]
+      }
+    },
+    {
+      "username": "dev1@tss.eu",
+      "email": "dev1@tss.eu",
+      "firstName": "David",
+      "lastName": "Developer",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["employee"],
+      "attributes": {
+        "opco_id": ["tss"]
+      }
+    },
+    {
+      "username": "dev2@tss.eu",
+      "email": "dev2@tss.eu",
+      "firstName": "Diana",
+      "lastName": "Developer",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "test123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["employee"],
+      "attributes": {
+        "opco_id": ["tss"]
+      }
+    }
+  ]
+}
